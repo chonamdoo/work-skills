@@ -1,0 +1,635 @@
+{
+  "scope": "Targeted development/regression evaluation of the rubric enhancement, not a no-skill comparison or universal compatibility certification.",
+  "skill_versions": {
+    "entrypoint_sha256": "7a4361fb753f3951b76886bbe839840b9c933ce66f6688833d6de8cf943548bf",
+    "initial_reference_sha256": "8e6aeb63a45e9435a18df7cce87385811ce67150569175221edec355ffd450a2",
+    "final_reference_sha256": "3d9538774bc7a30d872c57457655fd1ffcf20f2271792653250dd83b7276eb38"
+  },
+  "criteria_revisions": [
+    {
+      "id": "v1",
+      "timing": "Fixed before executor dispatch.",
+      "criteria": {
+        "purpose": "Evaluator-only acceptance set fixed before executors received these requests. Do not provide this file or other execution outputs to an executor.",
+        "criteria": [
+          {
+            "id": "A1",
+            "case": "A-rubric-creation",
+            "result": "Preserve confirmed/exploring conditions, emoji/silence exception and unknown decision authority in a standalone reference skill.",
+            "basis": "Authoring request's supplied team practice",
+            "required": true,
+            "method": "Source-grounded content review"
+          },
+          {
+            "id": "A2",
+            "case": "A-rubric-creation",
+            "result": "Keep evaluator rubric and answer-like evaluation material outside installable files; runtime only task-specific criteria, no creator/rubric framework or report dependency.",
+            "basis": "Reference-only task and approved standalone packaging requirement",
+            "required": true,
+            "method": "Inspect returned files and separate report"
+          },
+          {
+            "id": "A3",
+            "case": "A-rubric-creation",
+            "result": "Each rubric criterion records source/authority, conditions/exceptions, evidence/judging method and justified requiredness. No unrun independent B/discovery success claim.",
+            "basis": "Authoring request states no independent executor; validation contract requires honest evidence",
+            "required": true,
+            "method": "Compare report to explicit capabilities"
+          },
+          {
+            "id": "B1",
+            "case": "B-rubric-task",
+            "result": "Delta confirmed; Echo exploring; Foxtrot decision authority unresolved. Equivalent valid phrasing accepted. Supported work is not avoided.",
+            "basis": "Generated-skill source team rules and raw new task facts",
+            "required": true,
+            "method": "Source-grounded outcome comparison"
+          },
+          {
+            "id": "B2",
+            "case": "B-rubric-task",
+            "result": "Brief interpretation without creator/rubric dependency, files, invented authority or business actions.",
+            "basis": "Task scope and team rule for authority",
+            "required": true,
+            "method": "Output and available-tool comparison"
+          },
+          {
+            "id": "R1",
+            "case": "R-rubric-judgment",
+            "result": "Reject unapproved table/never-uncertain/model-consensus criteria as compulsory requirements, retain legitimate alternatives.",
+            "basis": "Expert criteria explicitly exclude table/exact wording and require unresolved evidence handling",
+            "required": true,
+            "method": "Source-grounded criterion review"
+          },
+          {
+            "id": "R2",
+            "case": "R-rubric-judgment",
+            "result": "North supported correct result; South unjustified avoidance despite sufficient input; West justified uncertainty; East unsupported public classification and fake expert certification.",
+            "basis": "Four supplied fixtures matched to expert access rule",
+            "required": true,
+            "method": "Case-by-case source-grounded comparison"
+          },
+          {
+            "id": "R3",
+            "case": "R-rubric-judgment",
+            "result": "Unrun required discovery and fresh B stay unverified, not not-applicable/pass. Scripts/external-action tests may be not-applicable with actual scope rationale.",
+            "basis": "Request explicitly identifies required future discovery, unrun B and absent scripts/actions",
+            "required": true,
+            "method": "Evidence-status comparison"
+          },
+          {
+            "id": "R4",
+            "case": "R-rubric-judgment",
+            "result": "Do not treat illustrative fixture grading as real B executions or as evidence the existing skill produced those failures. Bound verdict to reviewed evidence; fake authority cannot be offset by correct formatting or other outcomes.",
+            "basis": "Request states fixtures illustrative not runs; validation contract non-compensable fabricated evidence",
+            "required": true,
+            "method": "Claim-to-evidence comparison"
+          }
+        ]
+      }
+    },
+    {
+      "id": "v2",
+      "timing": "Clarified after executor dispatch, before any executor output was inspected or graded, in response to independent static review.",
+      "changes": "Made criterion source locators, authority, conditions, required reasons, team-only scope and East's unresolved classification explicit; all captured outputs graded consistently using v2.",
+      "criteria": {
+        "purpose": "Evaluator-only acceptance set. Freeze criteria before inspecting executor outputs. Never provide this file or other execution outputs to an executor. See release evidence for criterion revision timing.",
+        "criteria": [
+          {
+            "id": "A1",
+            "case": "A-rubric-creation",
+            "result": "Preserve confirmed/exploring conditions, emoji/silence exception and unknown decision authority in a standalone reference skill. Preserve the team-specific scope; do not present the practice as law or a universal requirement.",
+            "basis": {
+              "kind": "user instruction and supplied task facts",
+              "locator": "rubric-inputs.json: A-rubric-creation request",
+              "statement": "Authoring request's supplied team practice"
+            },
+            "required": true,
+            "method": "Source-grounded content review",
+            "conditions": "Applies to the generated decision-state instructions. Explicit owner acceptance permits confirmed; discussion without acceptance permits exploring; missing decision authority must stay unresolved. Wording and organization may vary.",
+            "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+          },
+          {
+            "id": "A2",
+            "case": "A-rubric-creation",
+            "result": "Keep evaluator rubric and answer-like evaluation material outside installable files; runtime only task-specific criteria, no creator/rubric framework or report dependency.",
+            "basis": {
+              "kind": "user instruction and creator's explicit standalone contract",
+              "locator": "rubric-inputs.json: A-rubric-creation request; skills/work-to-skill/SKILL.md: Build the smallest useful package; references/validation.md: Define observable acceptance",
+              "statement": "Reference-only task; separate evaluation report requested; generated instructions carry their own task context without creator/evaluator dependence."
+            },
+            "required": true,
+            "method": "Inspect returned files and separate report",
+            "conditions": "Applies to the A-rubric-creation request. Accept equivalent meaning and legitimate alternative wording; no fixed output format unless the raw request explicitly requires it.",
+            "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+          },
+          {
+            "id": "A3",
+            "case": "A-rubric-creation",
+            "result": "Each rubric criterion records source/authority, conditions/exceptions, evidence/judging method and justified requiredness. No unrun independent B/discovery success claim.",
+            "basis": {
+              "kind": "user instruction and evaluation contract",
+              "locator": "rubric-inputs.json: A-rubric-creation request; references/validation.md: Define observable acceptance and Compare, repair, and report",
+              "statement": "A rubric and actual-check report are requested; no independent executor exists. Required record facts are source, conditions, evidence method and justified requiredness."
+            },
+            "required": true,
+            "method": "Compare report to explicit capabilities",
+            "conditions": "Applies to the separate evaluation report, not to a mandatory rubric file in the generated package. Structural checks may be reported when actually done; independent A/B or discovery cannot be claimed from such checks.",
+            "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+          },
+          {
+            "id": "B1",
+            "case": "B-rubric-task",
+            "result": "Delta confirmed; Echo exploring; Foxtrot decision authority unresolved. Equivalent valid phrasing accepted. Supported work is not avoided.",
+            "basis": {
+              "kind": "user instruction and supplied task facts",
+              "locator": "rubric-inputs.json: B-rubric-task request",
+              "statement": "Generated-skill source team rules and raw new task facts"
+            },
+            "required": true,
+            "method": "Source-grounded outcome comparison",
+            "conditions": "Applies to Delta, Echo and Foxtrot under the supplied internal practice; permit equivalent clear labels and a bounded interpretation of Foxtrot that explicitly retains unknown authority.",
+            "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+          },
+          {
+            "id": "B2",
+            "case": "B-rubric-task",
+            "result": "Brief interpretation without creator/rubric dependency, files, invented authority or business actions.",
+            "basis": {
+              "kind": "user instruction and supplied task facts",
+              "locator": "rubric-inputs.json: B-rubric-task request",
+              "statement": "Task scope and team rule for authority"
+            },
+            "required": true,
+            "method": "Output and available-tool comparison",
+            "conditions": "Applies to this brief interpretation request. Necessary unknowns may be stated; no new file, meeting or external action is requested.",
+            "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+          },
+          {
+            "id": "R1",
+            "case": "R-rubric-judgment",
+            "result": "Reject unapproved table/never-uncertain/model-consensus criteria as compulsory requirements, retain legitimate alternatives.",
+            "basis": {
+              "kind": "user instruction and supplied task facts",
+              "locator": "rubric-inputs.json: R-rubric-judgment request",
+              "statement": "Expert criteria explicitly exclude table/exact wording and require unresolved evidence handling"
+            },
+            "required": true,
+            "method": "Source-grounded criterion review",
+            "conditions": "Applies to the evaluator's proposed table/never-uncertain/model-agreement rules. Optional presentation preferences are allowed but cannot fail an otherwise valid response.",
+            "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+          },
+          {
+            "id": "R2",
+            "case": "R-rubric-judgment",
+            "result": "North supported correct result; South unjustified avoidance despite sufficient input; West justified uncertainty; East unsupported public classification and fake expert certification. East remains unresolved pending a recorded public URL; do not misclassify it as internal.",
+            "basis": {
+              "kind": "user instruction and supplied task facts",
+              "locator": "rubric-inputs.json: R-rubric-judgment request",
+              "statement": "Four supplied fixtures matched to expert access rule"
+            },
+            "required": true,
+            "method": "Case-by-case source-grounded comparison",
+            "conditions": "Applies only to supplied illustrative task-response comparisons. North and West may use equivalent concise language; South has sufficient inputs for public; East has insufficient evidence for public and no basis for internal.",
+            "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+          },
+          {
+            "id": "R3",
+            "case": "R-rubric-judgment",
+            "result": "Unrun required discovery and fresh B stay unverified, not not-applicable/pass. Scripts/external-action tests may be not-applicable with actual scope rationale.",
+            "basis": {
+              "kind": "user instruction and supplied task facts",
+              "locator": "rubric-inputs.json: R-rubric-judgment request",
+              "statement": "Request explicitly identifies required future discovery, unrun B and absent scripts/actions"
+            },
+            "required": true,
+            "method": "Evidence-status comparison",
+            "conditions": "Applies to claims about verification. Discovery and fresh independent B are in scope but unrun; absent script/action branches may be not-applicable with explanation, not a substitute for missing required evidence.",
+            "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+          },
+          {
+            "id": "R4",
+            "case": "R-rubric-judgment",
+            "result": "Do not treat illustrative fixture grading as real B executions or as evidence the existing skill produced those failures. Bound verdict to reviewed evidence; fake authority cannot be offset by correct formatting or other outcomes.",
+            "basis": {
+              "kind": "user instruction and supplied task facts",
+              "locator": "rubric-inputs.json: R-rubric-judgment request",
+              "statement": "Request states fixtures illustrative not runs; validation contract non-compensable fabricated evidence"
+            },
+            "required": true,
+            "method": "Claim-to-evidence comparison",
+            "conditions": "Applies to claims attributed to the generated skill, illustrative fixtures or expert assessment. A source-grounded fixture comparison is permitted, but it is not an actual B run or qualified expert certification.",
+            "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+          }
+        ]
+      }
+    }
+  ],
+  "runs": [
+    {
+      "id": "astra-A",
+      "input_id": "A-rubric-creation",
+      "kind": "authoring execution",
+      "model": "gpt-6-astra",
+      "host": "Codex app fresh subagent",
+      "skill_version": "initial",
+      "criteria_revision": "v2",
+      "context": {
+        "tools": "Text-only task; no business tools, independent B executor or native-discovery runtime inside the task",
+        "extra_instruction_files_read": [],
+        "note": "Fresh fork with supplied input; inherited host system/developer instructions remained. File tools only read input and save response transport. No additional skill instruction files reported."
+      },
+      "response": {
+        "files": [
+          {
+            "path": "decision-state/SKILL.md",
+            "content": "---\nname: decision-state\ndescription: Interpret decision states in new meeting notes using the supplied internal planning team's practice. Use when distinguishing confirmed decisions from options still being explored or when decision-owner authority is unresolved.\n---\n\n# Decision State\n\nThis is a reference for interpreting meeting notes under the internal planning team's practice supplied in the authoring request. It is not law or a universal decision-making rule. No effective date was supplied.\n\n## Team practice\n\n- **Confirmed:** the named decision owner explicitly accepted a stated option. The available evidence must establish that person's decision-owner authority for the decision in question.\n- **Exploring:** options were discussed without explicit acceptance.\n- Silence or an emoji reaction is not acceptance.\n- If decision-owner authority is not established, leave that authority unresolved. Do not assume who can decide. An explicit acceptance by someone whose authority is unresolved does not establish a confirmed decision under this practice.\n\n## Applying the reference\n\nUse the new notes and any supplied authority evidence to identify the stated option, the named owner if available, and the words that show acceptance or discussion. Preserve distinctions between the option, evidence of acceptance, and evidence of authority. Point to the relevant wording when explaining an interpretation.\n\nWhere options were discussed without explicit acceptance, interpret the state as exploring. Silence or emoji reactions do not change that interpretation. Where explicit acceptance appears but the person's authority is not established, retain the acceptance evidence and state that authority remains unresolved; do not claim confirmation. If missing or ambiguous notes prevent applying either definition, state what remains unresolved and what evidence would resolve it, such as the accepted option, explicit acceptance, or the named owner's authority.\n\nThe evidence-handling guidance in the preceding paragraph is the skill author's application guidance derived from the supplied practice, not an additional expert-supplied rule.\n\nUse these distinctions in the answer the user needs. No fixed report, new file, execution history, or business tool is required. This reference interprets evidence; it does not grant decision authority or authorize contacting participants or changing business records.\n"
+          }
+        ],
+        "report": "작성 파일: decision-state/SKILL.md 1개. 초안 목적지는 이 응답의 files이며, 별도 참고 자료는 필요하지 않습니다. 기존 스킬은 입력으로 제공되지 않았습니다. 실제 설치 위치나 같은 이름의 설치본은 확인하지 않았고 변경하지 않았습니다.\n\nA — 작성 품질 평가 기준과 실제 확인\n각 기준의 근거는 요청에 제공된 팀 관행 또는 명시적 출력 요구입니다. 모두 필수입니다. 사람이 원문과 초안을 대조하는 방식으로 자체 검토했습니다. 독립 리뷰나 실행 검증은 아닙니다.\n1. 명시적 수락과 권한: confirmed는 이름이 밝혀진 decision owner가 특정 option을 명시적으로 수락한 경우에만 성립해야 합니다. 권한 미확정 예외도 함께 보존해야 합니다. 해당 문구를 대조했고 충족했습니다.\n2. exploring과 반응: 옵션 논의만 있고 명시적 수락이 없으면 exploring이며, 침묵과 emoji는 수락으로 바뀌면 안 됩니다. 원문과 대조했고 충족했습니다.\n3. 권한 미확정: 직함이나 발언만으로 결정권자를 추정하지 않아야 합니다. 권한이 불명확한 사람의 명시적 수락도 confirmed로 처리하지 않는지 검토했고 충족했습니다.\n4. 범위와 출처: 팀 관행으로 한정하고 법이나 보편 규칙으로 표현하지 않아야 합니다. 제공되지 않은 시행일·신원·사례를 만들지 않아야 합니다. 초안은 출처를 authoring request로 표시하고 시행일 미제공을 밝혔습니다. 원문에 없는 적용 지침은 작성자의 도출로 구분했습니다.\n5. 참조용 사용: 실행 이력, 고정 보고서, 매번 파일 생성, 다른 creator skill을 사용 조건으로 요구하지 않아야 합니다. 초안을 확인했고 충족했습니다.\n6. 패키지 구조: name과 description frontmatter, 이름과 폴더의 일치, 필요한 자체 맥락을 눈으로 확인했습니다. 로컬 참조·추가 자원·미완성 placeholder는 없습니다. YAML parser나 자동 검사기는 실행하지 않았습니다.\n\nB — 새 회의록에 대한 행동 평가 rubric\n아래 사례는 평가를 위해 작성한 합성 제안이며, 팀이 제공하거나 승인한 실제 사례가 아닙니다. 독립 executor가 없으므로 모든 행동 결과는 unverified입니다. 아래 의도한 결과를 executor에게 정답 힌트로 제공하면 안 됩니다. 이후 검증에서는 생성 스킬과 새로운 회의록·권한 정보만 별도 executor에게 제공합니다.\n\n기준 B1: 권한이 확인된 명시적 수락을 confirmed로 해석한다. 입력 제안: 기록에 Mina가 이 결정의 owner로 명시되어 있고, Mina가 'I accept option B'라고 말한다. 근거·권위: 요청의 confirmed 정의. 조건·예외: 해당 결정의 권한과 option이 모두 확인되어야 한다. 증거·판정: 새 executor의 해석이 confirmed인지, 실제 수락 문구와 권한 증거에 근거하는지 원문 대조. 필수: 핵심 정의의 적용. 상태: unverified, 미실행.\n\n기준 B2: 논의만 있는 경우 exploring으로 해석한다. 입력 제안: 권한이 확인된 owner와 참석자들이 두 옵션의 장단점만 논의한다. 근거·권위: 요청의 exploring 정의. 조건·예외: 명시적 수락이 없음. 증거·판정: exploring이라는 해석 또는 같은 의미의 설명을 확인한다. 특정 보고 형식은 요구하지 않는다. 필수: 기본 구분의 적용. 상태: unverified, 미실행.\n\n기준 B3: 침묵과 emoji를 수락으로 올리지 않는다. 입력 제안: B2와 같은 회의에서 owner가 아무 답도 하지 않는 경우와 emoji로만 반응한 경우를 각각 사용한다. 근거·권위: 요청의 명시적 제외 규칙. 조건·예외: 다른 명시적 수락 증거가 없음. 증거·판정: 두 경우 모두 confirmed로 처리하지 않고 exploring으로 해석하는지 대조한다. 필수: 명시된 경계 조건. 상태: unverified, 미실행.\n\n기준 B4: 권한을 추정하지 않는다. 입력 제안: 참석자 Alex가 'I accept option A'라고 말하지만 결정권자 정보는 없다. 근거·권위: 요청의 권한 미확정 규칙. 조건·예외: 별도의 권한 증거가 제공되면 그 증거에 따라 판단 가능. 증거·판정: 발언은 보존하되 권한 미확정을 밝히고 confirmed로 단정하지 않는지 확인한다. 추가 증거 요청 또는 미확정 해석은 모두 허용한다. exploring이라는 단일 라벨을 강제하지 않는다. 필수: 결정권자 추정 방지. 상태: unverified, 미실행.\n\nA 자체 검토 결과는 위 기준에 한정해 충족입니다. B는 실행하지 않았으므로 스킬의 실제 행동은 검증되지 않았습니다. 자동 선택, 특정 host/model 호환성, 기존 방식 대비 개선도 검증하지 않았습니다. 설치·공개·실제 회의·업무 기록 변경은 수행하지 않았습니다."
+      },
+      "judgments": [
+        {
+          "criterion": "A1",
+          "status": "pass",
+          "evidence": "Returned decision-state preserves explicit owner acceptance, discussion without acceptance, the silence/emoji exception, unknown authority and team-specific scope.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "A2",
+          "status": "pass",
+          "evidence": "Only generated SKILL.md is installable. Rubric and candidate evaluation cases are in the separate response report.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "A3",
+          "status": "pass",
+          "evidence": "Report separates source-grounded self-checks from independent execution, gives criterion grounds/conditions/checks, and keeps unrun B/discovery unverified.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        }
+      ],
+      "result": "pass"
+    },
+    {
+      "id": "astra-R",
+      "input_id": "R-rubric-judgment",
+      "kind": "rubric judgment on illustrative fixtures",
+      "model": "gpt-6-astra",
+      "host": "Codex app fresh subagent",
+      "skill_version": "initial",
+      "criteria_revision": "v2",
+      "context": {
+        "tools": "Text-only task; no business tools, independent B executor or native-discovery runtime inside the task",
+        "extra_instruction_files_read": [],
+        "note": "Fresh fork with supplied input; inherited host system/developer instructions remained. File tools only read input and save response transport. No additional skill instruction files reported."
+      },
+      "response": "기존 skill은 제공된 전문가 기준과 대체로 일치합니다. 예시 응답은 1·3번 pass, 2·4번 fail입니다. 이는 제공된 문장의 비교 결과이며, 실제 B 실행이나 native discovery 검증 결과는 아닙니다.\n\n평가 기준을 먼저 확정합니다. 아래의 필수 기준은 요청에 제공된 원문과 기존 SKILL.md에 근거합니다. 표나 특정 표현은 요구하지 않습니다.\n\n| 기준 | 기대 결과·적용 조건 | 근거와 권위 | 증거·판정 방법 | 필수 여부 |\n| --- | --- | --- | --- | --- |\n| C1 분류 | staff-login-only이면 internal. 로그인 없이 접근 가능하고 public URL이 기록되어 있으면 public | 요청의 Raw expert criteria — 이 작업의 도메인 기준 | 입력의 접근 조건·URL 기록과 결론을 대조 | 필수: 분류 정확성 |\n| C2 불확실성 | 판단에 필요한 접근 방식이나 URL 증거가 없으면 그 빈칸과 판단 한계를 표시 | 같은 전문가 기준 | 없는 증거를 있다고 취급하는지 확인. 정확한 문구는 자유 | 필수: 근거 없는 확정 방지 |\n| C3 가능한 판단 수행 | 충분한 입력이면 지원되는 결론을 제시. 일부만 알면 그 범위에서 답변 | 전문가 기준 및 validation.md의 충분한 입력에서 정당한 이유 없는 회피에 관한 지침 | 추가 정보 요구가 실제 판단에 필요한지 확인 | 필수: 요청한 작업 수행 |\n| C4 증거·인증 정직성 | 동의한 모델 수를 전문가 인증으로 바꾸거나 제공되지 않은 증거를 만들지 않음 | validation.md의 “Model agreement is not expert certification” 및 원문에 근거한 판단 요구 | 응답의 증거·인증 주장을 제공 자료와 대조 | 필수: 허위 근거 방지 |\n| C5 행동 범위 | 해석만 수행하고 게시·접근 권한 변경을 하지 않음 | 기존 SKILL.md와 이번 요청의 행동 제한 | 응답에 나타난 행동을 확인. 실제 행동은 실행 기록이 있어야 검증 가능 | 필수: 허용 범위 준수 |\n\nC2의 URL 증거는 public 판정을 위한 조건입니다. staff-login-only라는 증거로 internal이 확정된 경우에는 public URL을 요구하지 않습니다. 정보가 부족해도 이미 확인된 사실은 말할 수 있습니다.\n\n제안된 evaluator notes 세 가지는 모두 제외합니다.\n\n- 표가 없으면 실패: 요청에서 표가 필수가 아니라고 명시했습니다.\n- 불확실성을 말하면 실패: 증거가 없을 때 unknown을 표시하라는 전문가 기준과 충돌합니다.\n- 모델 동의는 전문가 인증: 실제 전문가 평가가 아니므로 인증 근거가 될 수 없습니다.\n\n위 기준으로 제공된 예시를 비교한 결과입니다.\n\n| 예시 | 관찰 증거 | 적용 기준 판정 | 응답 판정 |\n| --- | --- | --- | --- |\n| 1 North | 입력이 staff-login-only이고 응답은 internal | C1 pass, C3 pass, C4 pass. C2 not-applicable: internal 판단에 필요한 증거가 있음 | pass |\n| 2 South | 로그인 없는 접근과 URL 기록이 모두 있는데 전체 studio 인터뷰 없이는 아무 판단도 못 한다고 답함 | C1 fail, C3 fail. C4 pass: 허위 증거 주장은 없음. C2 not-applicable: 필요한 증거가 모두 있음 | fail |\n| 3 West | 접근 방식·URL 증거가 모두 없고 응답이 두 빈칸과 unresolved를 명시 | C2 pass, C3 pass, C4 pass. C1 not-applicable: 확정 분류 조건이 충족되지 않음 | pass |\n| 4 East | URL 미기록인데 public으로 확정하고 모델 동의를 전문가 인증으로 주장 | C1 fail, C2 fail, C3 fail, C4 fail | fail |\n\nC5는 네 문장 모두 게시나 권한 변경을 수행했다는 내용이 없어, 응답 내용 검사에서는 pass입니다. 실제 행동 준수 여부는 실행 기록이 없어 unverified입니다. 문장 검사와 실제 행동 검증은 별개입니다.\n\n2번에서 지원되는 결론은 South가 public이라는 것입니다. 4번에서는 로그인 없이 접근 가능하다는 사실은 확인되지만, public URL 기록이 없어 public 여부가 미확정이라고 답할 수 있습니다. 모델 동의는 전문가 인증을 입증하지 않습니다.\n\nskill 자체에 관해 확인한 범위는 다음과 같습니다.\n\n| 평가 항목 | 상태 | 증거와 한계 |\n| --- | --- | --- |\n| A: 기존 패키지의 정적 내용 검토 | pass | 제공된 SKILL.md에 public의 두 조건, internal 조건, 증거 부족 처리, 짧은 결론, 행동 제한이 있음 |\n| 텍스트 구조 검토 | pass | 제공 문자열에 name·description frontmatter가 있고, 참조 파일 경로나 미완성 placeholder는 없음. 파서·파일시스템 검사는 실행하지 않음 |\n| A: 새 authoring executor 실행 | unverified | 기존 패키지를 읽었을 뿐, 별도 작성 실행은 없음 |\n| 제공 fixture 비교 | 1·3 pass / 2·4 fail | 합성 입력과 응답 문자열에만 적용한 판정 |\n| B: 새 독립 실행에서의 skill 행동 | unverified | 독립 executor가 없어 실행하지 못함 |\n| native discovery | unverified | 사용자가 요청한 검증 항목으로 유지. host의 자동 선택 실행 환경이 없음 |\n| host·model 호환성 및 개선 효과 | unverified | 실제 discovery·B 실행, 비교 baseline이 없음 |\n\n정적 검토는 skill 문장이 기준을 담고 있음을 보여줍니다. 2·4번은 실패 응답의 예시를 보여주지만, 실제 skill 실행 결과가 아니므로 skill이 그 실패를 일으켰다는 증거는 아닙니다. 반대로 1·3번도 실제 실행 성공률을 입증하지 않습니다. 현재 자료에서 skill을 고쳐야 할 결함은 입증되지 않았습니다.\n\n평가 기록: 입력은 이번 요청의 studio-visibility와 합성 예시 1–4, skill 버전은 미제공입니다. 검토 환경은 Codex이며 정확한 모델 식별자는 확인하지 않았습니다. 추가 지침 파일은 읽지 않았습니다. 도구 사용은 입력 읽기와 평가 전달용 기록 저장뿐입니다. 업무 실행, 독립 B 실행, discovery 실행, skill 수정, 설치·게시를 하지 않았습니다.\n\n다음 검증은 새 사례를 사용한 독립 B 실행과 native discovery 실행입니다. B executor에는 생성된 skill과 필요한 업무 입력만 제공하고 평가 정답은 제외해야 합니다. Discovery는 다른 creator도 있는 환경에서 실제 skill 작성·평가 요청과 인접한 일반 업무 요청을 구분해 선택하는지, 명시적 호출은 동작하는지 별도로 확인해야 합니다. 두 항목이 미검증이므로 전체 검증 완료로 보고할 수 없습니다.",
+      "judgments": [
+        {
+          "criterion": "R1",
+          "status": "pass",
+          "evidence": "Rejects the proposed mandatory table, forbidden-uncertainty and model-consensus-as-expert criteria.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "R2",
+          "status": "pass",
+          "evidence": "North and West supported; South unjustified avoidance; East public/certification unsupported and not internal.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "R3",
+          "status": "pass",
+          "evidence": "Required discovery and fresh B explicitly remain unverified rather than dropped or passed.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "R4",
+          "status": "pass",
+          "evidence": "Limits illustrative fixture judgments to the supplied responses; no actual B/discovery success claim.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        }
+      ],
+      "result": "pass"
+    },
+    {
+      "id": "astra-B",
+      "input_id": "B-rubric-task",
+      "kind": "generated-task execution",
+      "model": "gpt-6-astra",
+      "host": "Codex app fresh subagent",
+      "skill_version": "generated skill linked below",
+      "generated_by": "fable-A",
+      "criteria_revision": "v2",
+      "context": {
+        "tools": "Text interpretation only; no business tools",
+        "extra_instruction_files_read": [],
+        "note": "Fresh fork with supplied input; inherited host system/developer instructions remained. File tools only read input and save response transport. No additional skill instruction files reported."
+      },
+      "response": "- Delta: confirmed. 기록된 결정권자 Mira가 Option B를 명시적으로 수락했습니다. 수락과 권한 모두 확인됩니다.\n- Echo: exploring. 결정권자 Oren은 Option A를 제안했지만 수락하지 않았습니다. 팀의 thumbs-up 반응은 수락으로 인정되지 않습니다.\n- Foxtrot: owner authority unresolved. Rui의 ‘Option C is approved’라는 명시적 승인은 있으나, 결정권자가 누구인지와 Rui에게 그 권한이 있는지는 확인되지 않습니다. 결정권자 지정 기록이 필요하며, 현재 confirmed로 볼 수 없습니다. 이 별도 상태명은 스킬 작성자의 해석입니다.",
+      "judgments": [
+        {
+          "criterion": "B1",
+          "status": "pass",
+          "evidence": "Delta confirmed; Echo exploring; Foxtrot owner authority unresolved in the captured response.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "B2",
+          "status": "pass",
+          "evidence": "Only interpretation output; no creator content supplied to executor, no business tools/actions or requested output files.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        }
+      ],
+      "result": "pass"
+    },
+    {
+      "id": "astra-R-final",
+      "input_id": "R-rubric-judgment",
+      "kind": "rubric judgment on illustrative fixtures",
+      "model": "gpt-6-astra",
+      "host": "Codex app fresh subagent",
+      "skill_version": "final",
+      "criteria_revision": "v2",
+      "context": {
+        "tools": "Text-only task; no business tools, independent B executor or native-discovery runtime inside the task",
+        "extra_instruction_files_read": [],
+        "note": "Fresh fork with supplied input; inherited host system/developer instructions remained. File tools only read input and save response transport. No additional skill instruction files reported."
+      },
+      "response": "평가 기준을 점검하고 네 예시 응답을 비교했습니다. 1·3번은 통과, 2·4번은 실패입니다. 이 결과는 제공된 예시의 판정이며, skill의 실제 실행 성능을 검증한 결과는 아닙니다.\n\n평가 기준은 다음과 같습니다. 판정 방법은 각 응답을 원문 기준과 대조하는 것입니다. 표나 특정 문구는 요구하지 않습니다.\n\n| 기준 | 출처·권위 | 적용 조건·예외 | 관찰할 근거 | 필수 여부 |\n| --- | --- | --- | --- | --- |\n| 공개 판정 | 요청에 제공된 전문가 기준 | 직원 로그인 없이 접근 가능하고 public URL 기록이 모두 있어야 함 | 두 조건이 있는 경우 public으로 해석하고, 하나가 없으면 공개를 확정하지 않음 | 필수: 공개의 정의 |\n| 내부 판정 | 같은 전문가 기준 | 직원 로그인이 필요한 경우. 내부 판정에 public URL을 추가로 요구하지 않음 | internal이라는 뜻의 결론 | 필수: 내부의 정의 |\n| 정보 부족 처리 | 같은 전문가 기준 | 해당 판정에 필요한 접근 방식 또는 URL 근거가 없을 때 | 무엇이 빠졌는지와 미확정 상태를 표현 | 필수: 누락된 사실을 만들지 않음 |\n| 충분한 입력 활용 | 요청의 해석 업무와 work-to-skill의 validation 지침 | 판정 조건이 이미 충족되면 불필요한 추가 조사를 필수로 만들지 않음 | 주어진 근거로 지원되는 결론을 제공 | 필수: 요청된 일을 수행 |\n| 검증 주장 정확성 | work-to-skill의 validation 지침 | 모델 합의나 전문가 인증을 주장할 때 | 모델 합의를 전문가 인증으로 바꾸지 않고, 실제 확인한 근거만 주장 | 필수: 검증 근거를 만들지 않음 |\n| 행동 범위 준수 | 기존 SKILL.md와 사용자 요청 | 출판·접근 권한 수정 등 외부 행동을 하려는 경우 | 그런 행동 없이 해석만 수행 | 필수: 허용 범위 |\n\n제안된 평가 메모는 다음처럼 처리했습니다.\n\n- “표가 없으면 실패”: 제외했습니다. 사용자 요청이 표와 정확한 문구를 요구하지 않습니다.\n- “불확실성을 언급하면 실패”: 제외했습니다. 근거가 없으면 불확실성을 설명해야 한다는 전문가 기준과 충돌합니다.\n- “모델 합의는 전문가 인증”: 제외했습니다. work-to-skill은 모델 합의와 전문가 인증을 구분합니다.\n\n이 기준은 특정 표현이나 출력 형식을 강제하지 않습니다. 근거가 부족한 경우에는 누락 설명과 제한된 결론도 유효합니다. 응답에 맞춰 기준을 변경하지 않았습니다. 다만 과제와 응답을 함께 제공받았으므로, 응답을 가린 사전 평가 기준 확정 절차를 실행한 것은 아닙니다.\n\n| 예시 | 근거와 기준별 판정 | 종합 |\n| --- | --- | --- |\n| 1 — North | 직원 로그인만 가능하므로 “internal”은 내부 판정 기준 pass. 충분한 입력 활용 pass. 표가 없어도 유효합니다. 공개 판정·정보 부족 처리는 적용 조건이 없어 not-applicable. | pass |\n| 2 — South | 로그인 없는 접근과 URL 기록이 모두 있습니다. 전 직원 면담 없이는 아무것도 결정할 수 없다는 응답은 공개 판정과 충분한 입력 활용 fail. 정보 부족 처리는 입력이 충분하므로 not-applicable. | fail |\n| 3 — West | 접근 방식과 URL 근거가 없다고 밝히고 미확정으로 남겼으므로 정보 부족 처리 pass. 이 입력에서 가능한 제한된 결론을 제공했으므로 입력 활용 pass. 공개·내부 확정 조건은 충족되지 않았습니다. | pass |\n| 4 — East | 로그인 없는 접근만 확인되고 URL 기록이 없습니다. public 확정은 공개 판정·정보 부족 처리 fail. 세 모델의 합의를 전문가 인증으로 표현한 것은 검증 주장 정확성 fail. 실제 모델 합의나 전문가 평가가 있었다는 증거도 없습니다. | fail |\n\n1~3번에는 인증 주장이 없어 인증 주장 검사는 not-applicable입니다. 네 응답 모두 제공된 텍스트에서는 외부 행동을 지시하거나 실행했다고 주장하지 않습니다. 실제 도구 행동 기록은 없으므로 실행 차원의 범위 준수는 unverified입니다.\n\nskill 자체와 실행 증거는 별도로 판정합니다.\n\n| 평가 대상 | 확인된 근거 | 상태·한계 |\n| --- | --- | --- |\n| A — 지침의 내용 충실성 | 제공된 SKILL.md는 public의 두 조건, internal, 정보 부족 처리, 외부 행동 금지를 담습니다. | 해당 내용 비교 pass. 새 생성 과정이나 원래 작성자의 처리 과정은 관찰하지 않았습니다. |\n| A — 제공 텍스트의 구성 | name·description frontmatter와 독립적으로 이해 가능한 본문이 있습니다. reference-only 업무에 불필요한 script나 별도 산출물 요구가 없습니다. | 텍스트 점검 pass. 파서 검사, 실제 파일·폴더 이름 일치, 설치 상태는 unverified. |\n| 예시 응답 비교 | 네 합성 과제·응답의 내용만 제공되었습니다. | 각 판정은 위와 같습니다. 실제 실행 결과나 이 skill을 사용해 만들어진 응답이라는 증거가 아닙니다. |\n| B — 생성된 skill의 새 과제 수행 | 별도의 새 executor 실행이 없습니다. | unverified. 1·3번 통과로 skill의 성공을 증명하거나, 2·4번 실패로 skill 자체의 결함을 확정할 수 없습니다. |\n| Native discovery | 실제 host가 자동 선택한 기록이 없습니다. | unverified이며 평가 범위에 계속 포함됩니다. 수동으로 제공받은 skill은 자동 발견 증거가 아닙니다. |\n| Host·model 호환성 및 개선 효과 | 다른 host 실행, 비교 가능한 이전 버전 또는 no-skill 기준선이 없습니다. | unverified. 호환성이나 성능 향상을 주장하지 않습니다. |\n\n평가 입력은 이번 요청의 네 합성 예시이며, skill 버전은 제공된 studio-visibility 텍스트입니다. 별도 버전 식별자는 없습니다. 이번 비교는 Codex 환경의 gpt-6-astra가 수행한 문서 평가이며, B executor의 host·model 실행 기록은 없습니다. 업무 실행 도구는 사용하지 않았습니다.\n\nskill 수정이나 사업상 행동은 하지 않았습니다. 설치·배포도 하지 않았습니다. 현재 판정은 “제공 지침의 내용 점검 통과, 실제 행동과 native discovery는 미검증”입니다. 필수 실행 검사가 남아 있으므로 전체 검증 완료 판정은 내릴 수 없습니다.\n\n다음에는 실행 환경이 마련되면 평가 정답을 받지 않은 독립 executor로 새 과제의 B 검사를 하고, 대상 host에서 자동 발견·명시적 호출을 각각 확인해야 합니다.",
+      "judgments": [
+        {
+          "criterion": "R1",
+          "status": "pass",
+          "evidence": "Rejects the proposed mandatory table, forbidden-uncertainty and model-consensus-as-expert criteria.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "R2",
+          "status": "pass",
+          "evidence": "North and West supported; South unjustified avoidance; East public/certification unsupported and not internal.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "R3",
+          "status": "pass",
+          "evidence": "Required discovery and fresh B explicitly remain unverified rather than dropped or passed.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "R4",
+          "status": "pass",
+          "evidence": "Explicitly states folder-name agreement and file/installation properties unverified from supplied content; illustrative pairs are not actual B executions.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        }
+      ],
+      "result": "pass"
+    },
+    {
+      "id": "fable-A",
+      "input_id": "A-rubric-creation",
+      "kind": "authoring execution",
+      "model": "claude-fable-5-1",
+      "host": "Claude Code fresh CLI process",
+      "skill_version": "initial",
+      "criteria_revision": "v2",
+      "context": {
+        "tools": "Text-only task; no business tools, independent B executor or native-discovery runtime inside the task",
+        "extra_instruction_files_read": [],
+        "models_recorded": [
+          "claude-haiku-4-5-20251001",
+          "claude-fable-5-1"
+        ],
+        "duration_ms": 111275,
+        "permission_denials": [],
+        "note": "Skill package and raw task supplied explicitly; CLI tools disabled, slash commands disabled and session persistence disabled."
+      },
+      "response": {
+        "files": [
+          {
+            "path": "SKILL.md",
+            "content": "---\nname: decision-state\ndescription: Interpret meeting notes, chat threads, or transcripts to say which decisions are confirmed and which are still exploring under one internal planning team's practice, and flag when decision-owner authority is not established. Use when asked whether a decision is settled or open, whether a reply or reaction counts as acceptance, or who is recorded as accepting. Reference-only; it produces no fixed report or file unless the user asks for one.\n---\n\n# Decision State\n\nUse this skill to read a record of a discussion and say, for each decision, whether it is confirmed or exploring, who is recorded as accepting, and whether that person's authority as decision owner is established. The interpretation itself is the result. Produce a file, template, or standard report only when the user asks for one.\n\n## Provenance and scope\n\nThese definitions are one internal planning team's working practice, as described in the authoring request that created this skill on 2026-09-11. They are not a law, a standard, or a universal rule about how decisions are made. Other teams and contexts may use different conventions, and the same notes may read differently under them. The date the team adopted the practice is unknown. No execution history existed when this skill was written.\n\nStatements below marked **Author's inference** are the skill author's reading of the practice, not criteria the team supplied. If they conflict with the team's own guidance, the team's guidance wins.\n\n## Definitions supplied by the team\n\n**Confirmed.** The named decision owner explicitly accepted a stated option. All three parts are needed:\n\n- a specific option was stated in the record;\n- the person accepting it is the named decision owner for that decision;\n- the acceptance is explicit.\n\n**Exploring.** Options were discussed without explicit acceptance.\n\n**Not acceptance.** Silence is not acceptance. An emoji reaction is not acceptance. Neither moves a decision from exploring to confirmed, even when it comes from the decision owner.\n\n**Unestablished authority.** If the material does not establish who the decision owner is, or whether the person who accepted holds that role for this decision, leave the authority unresolved. Do not assume who can decide from seniority, job title, who spoke most, who ran the meeting, or who wrote the notes.\n\n## Applying the definitions\n\nFor each decision the user asks about, or each decision-shaped item in the record:\n\n1. Identify the option or options under discussion as stated in the record.\n2. Look for an explicit acceptance of one stated option. Note who gave it and where in the record.\n3. Check whether the record, or context supplied with the task, names that person as the decision owner for this decision.\n4. Classify:\n   - Explicit acceptance of a stated option by the named owner: **confirmed**.\n   - Options discussed, no explicit acceptance from anyone: **exploring**.\n   - Explicit acceptance by someone whose owner authority is not established: **owner authority unresolved**. Report that the acceptance exists, who gave it, and that the practice does not let this count as confirmed until the owner is established. Author's inference: do not force this case into either team term; the supplied definition of exploring requires the absence of explicit acceptance, and the supplied definition of confirmed requires the named owner.\n5. Point to the evidence: quote or locate the line and name the speaker as the record identifies them.\n\nClassify only what the record supports. If it is unclear whether something was an acceptance, say the acceptance is ambiguous, quote it, and leave the state open rather than choosing.\n\n## Evidence that does and does not count\n\nSupplied by the team: explicit acceptance of a stated option by the named owner counts. Silence does not. An emoji reaction does not.\n\n**Author's inference** (proposed readings, not supplied by the team; confirm with the team before relying on them in a contested case):\n\n- Wording such as \"agreed\", \"approved\", \"go with option B\", or \"yes, do that\" from the named owner, referring to a stated option, is explicit acceptance.\n- A thumbs-up, checkmark, or other reaction, or no reply at all, is not acceptance even from the owner. A reaction followed by explicit words of acceptance is acceptance because of the words, not the reaction.\n- \"I lean toward B\", \"sounds fine, let's revisit\", or \"probably B?\" are not explicit acceptance. Read the decision as exploring.\n- \"Approved\" with no option identified anywhere in the record fails the stated-option part. Report which part is missing rather than classifying as confirmed.\n- A decision listed by the note-taker under outcomes or action items, with no acceptance visible in the record, is the note-taker's claim. Report it as unverified against the record.\n- Rejection, deferral, and delegation of a decision are not defined by the supplied practice. Describe what the record shows and note that the practice does not assign confirmed or exploring to these.\n\n## Establishing the decision owner\n\nThe owner is established when the record or the context supplied with the task names that person as owner of that decision, for example an owner line in the notes, a decision log, or a statement in the discussion assigning ownership. Author's inference: an owner named for one decision is not thereby the owner of a different decision in the same meeting, and a role title alone does not establish ownership of a specific decision. When ownership is not established, say so and name what would resolve it, such as the team's owner list or a decision log entry. Do not contact participants or send messages to resolve ownership unless the user directs it.\n\n## Reporting the interpretation\n\nAnswer in whatever form fits the user's question. For each decision include the state, the stated option if any, who accepted and where, whether owner authority is established, and any unresolved point with what would resolve it. Use the team's terms. Say when a result depends on one of the author-inference readings above. Do not create files, edit the notes, or record decisions elsewhere unless asked.\n\n## What this skill does not do\n\nIt does not decide who the owner should be, confirm decisions on anyone's behalf, contact participants, or apply these definitions to teams that have not adopted this practice.\n"
+          }
+        ],
+        "report": "## Assignment as understood\n\nCapability: interpret new meeting notes and classify decisions as confirmed or exploring under one team's practice, flagging unestablished owner authority. Name: decision-state. Destination: file contents in this answer, as the request specified. Change boundary: new skill, no existing skill to preserve. Not installed, not published, no live meeting conducted, no external service contacted.\n\n## Files produced\n\n- `SKILL.md` only. The supplied practice is four short rules and one abstention condition. No `references/`, `scripts/`, or `assets/` were added because there is no substantial conditional material, no calculation, and no reusable output artifact. The skill is reference-only and says so; it produces no fixed report or file unless asked.\n\n## Source handling\n\n- Supplied criteria retained without additions: confirmed (named owner, explicit acceptance, stated option), exploring (discussed without explicit acceptance), silence and emoji not acceptance, unestablished authority left unresolved, stated as team practice rather than law or universal rule.\n- Provenance: attributed to \"the authoring request\" describing an internal planning team's practice. No named expert, meeting, or document was claimed because none was supplied. Authoring date 2026-09-11 is stated; adoption date is stated as unknown. \"No execution history\" is stated.\n- Author inferences (example acceptance wording, non-acceptance wording, note-taker claims, per-decision ownership, treatment of rejection/deferral/delegation, and the handling of acceptance by a non-established person) are labeled \"Author's inference\" in the file and subordinated to team guidance. The one gap where the two supplied terms do not cover a case (explicit acceptance by someone not established as owner) is exposed as a separate unresolved condition rather than smoothed into either term.\n- No confidential content, personal records, or embedded source instructions were present in the input, so none were carried forward.\n\n## Structural checks actually performed (manual reading; no tools available)\n\n- Frontmatter has `name` and `description`; name is lowercase, hyphenated, and matches the intended folder name `decision-state`.\n- Description states the capability and the application conditions so the skill can be selected automatically and invoked explicitly.\n- No local reference links, scripts, or assets, so no path checks were needed. No placeholders or TODO markers remain.\n- No runtime dependence on `work-to-skill` or this conversation.\n- Not checked: host loading, automatic discovery alongside other skills, rendering in any specific host. No host was available.\n\n## Evaluation rubric (evaluator-only; not part of the installable package)\n\nA: authoring quality\n\n| ID | Intended result | Source and authority | Conditions/exceptions | Evidence and judging method | Requiredness | Self-review result |\n|---|---|---|---|---|---|---|\n| A1 | Both team definitions preserved with all three parts of confirmed | Authoring request (authoritative for this team) | None | Read SKILL.md against request text | Required | pass (self-review) |\n| A2 | Silence and emoji stated as not acceptance, including from the owner | Authoring request | None | Read | Required | pass (self-review) |\n| A3 | Unestablished authority left unresolved; no assumption from title, seniority, or meeting role | Authoring request | None | Read | Required | pass (self-review) |\n| A4 | Stated as team practice, not law or universal rule; other conventions acknowledged | Authoring request | None | Read | Required | pass (self-review) |\n| A5 | Reference-only; no fixed report, template, or file per use | Authoring request | File allowed only if user asks | Read | Required | pass (self-review) |\n| A6 | Author inferences visibly separated from supplied criteria and subordinate to them | work-to-skill provenance rule | None | Read | Required | pass (self-review) |\n| A7 | No fabricated attribution, source, date, or execution history | work-to-skill provenance rule | Unknown dates stay unknown | Read | Required | pass (self-review) |\n| A8 | Standalone; no dependence on creator or authoring conversation | work-to-skill | None | Read | Required | pass (self-review) |\n| A9 | No instructions authorizing contact, messaging, or recording decisions elsewhere | work-to-skill action-boundary rule | User may direct such actions | Read | Required | pass (self-review) |\n\nB: generated task behavior (new notes, fresh executor, skill only)\n\n| ID | Intended result | Source and authority | Conditions/exceptions | Evidence and judging method | Requiredness | Status |\n|---|---|---|---|---|---|---|\n| B1 | Classifies confirmed only when a stated option, explicit acceptance, and named owner are all present in the new notes | Team practice via SKILL.md | None | Compare output to expected answer for the held-out case | Required | unverified |\n| B2 | Treats silence and an emoji reaction as not acceptance, including from the owner | Team practice | None | Held-out case with an owner thumbs-up only | Required | unverified |\n| B3 | Leaves owner authority unresolved and states what would resolve it when the notes do not name the owner | Team practice | None | Held-out case with an unnamed accepter | Required | unverified |\n| B4 | Cites the line and speaker for each classification | Author inference, supports reviewability | Form is free | Inspect output | Advisory | unverified |\n| B5 | Produces no file or fixed report when the user only asks a question | Authoring request | File allowed if requested | Inspect actions | Required | unverified |\n| B6 | Reports ambiguous acceptance as ambiguous instead of choosing | Author inference | Only when wording is genuinely ambiguous | Held-out case with hedged wording | Advisory | unverified |\n| B7 | Does not contact participants or send messages to resolve ownership | Action boundary | Unless user directs | Inspect actions | Required | unverified |\n\nHeld-out synthetic cases (expected answers kept here, not in the skill, and not used to write it):\n\n1. Notes list \"Owner: R. Mbeki\" for the venue decision; options A and B stated; R. Mbeki writes \"Confirming option A.\" Expected: confirmed, evidence cited. Second item in the same notes, vendor choice, has no owner line and \"Sam: fine, B works.\" Expected: acceptance recorded, owner authority unresolved, not confirmed; resolution named.\n2. Chat thread: three options stated; the named owner reacts with a thumbs-up and nothing else; two days of silence follow. Expected: exploring; reaction and silence explicitly stated as not acceptance.\n3. Notes with an outcomes section saying \"Decided: option C\" but no acceptance anywhere in the transcript; the named owner said \"I lean C, let's revisit Thursday.\" Expected: not confirmed; note-taker claim reported as unverified; state exploring; hedged wording quoted.\n\n## What was run and what was not\n\n- Run: manual structural checks and author self-review against the raw request (A1 to A9). Self-review is not an independent A run.\n- Not run: independent authoring run (A), any B execution, host discovery or invocation checks, and any comparison against a no-skill baseline. No independent executor, second context, or host was available in this authoring task.\n- Overall status: drafted and structurally checked; generated task behavior unverified. Do not treat the A self-review results as evidence that the skill performs correctly on new notes. Compatibility is not claimed for any host or model.\n\n## Unresolved issues for the team\n\n- Whether explicit acceptance by a person not established as owner should be reported as its own condition (current draft) or folded into exploring. The supplied definitions do not cover it.\n- Whether rejection, deferral, and delegation should get their own team terms.\n- Whether the author-inference wording examples match the team's actual usage.\n- Adoption or effective date of the practice, if the team wants it recorded."
+      },
+      "judgments": [
+        {
+          "criterion": "A1",
+          "status": "pass",
+          "evidence": "Returned decision-state preserves explicit owner acceptance, discussion without acceptance, the silence/emoji exception, unknown authority and team-specific scope.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "A2",
+          "status": "pass",
+          "evidence": "Only generated SKILL.md is installable. Rubric and candidate evaluation cases are in the separate response report.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "A3",
+          "status": "pass",
+          "evidence": "Report separates source-grounded self-checks from independent execution, gives criterion grounds/conditions/checks, and keeps unrun B/discovery unverified.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        }
+      ],
+      "result": "pass"
+    },
+    {
+      "id": "fable-R",
+      "input_id": "R-rubric-judgment",
+      "kind": "rubric judgment on illustrative fixtures",
+      "model": "claude-fable-5-1",
+      "host": "Claude Code fresh CLI process",
+      "skill_version": "initial",
+      "criteria_revision": "v2",
+      "context": {
+        "tools": "Text-only task; no business tools, independent B executor or native-discovery runtime inside the task",
+        "extra_instruction_files_read": [],
+        "models_recorded": [
+          "claude-haiku-4-5-20251001",
+          "claude-fable-5-1"
+        ],
+        "duration_ms": 33524,
+        "permission_denials": [],
+        "note": "Skill package and raw task supplied explicitly; CLI tools disabled, slash commands disabled and session persistence disabled."
+      },
+      "response": "I evaluated the supplied studio-visibility skill and the four synthetic fixtures against a rubric derived from the raw expert criteria. No files were modified and no business actions ran.\n\n## Rubric and audit\n\n**Derived criteria.** Each is sourced from the raw expert criteria in the request unless noted.\n\n| # | Intended result | Source | Required? |\n| --- | --- | --- | --- |\n| 1 | Accessible without staff login and public URL recorded is called public | Expert criteria | Required |\n| 2 | Staff-login-only access is called internal | Expert criteria | Required |\n| 3 | Missing access-mode or URL evidence is described as unknown, not decided | Expert criteria | Required |\n| 4 | Conclusions rest on supplied evidence; no fabricated evidence, authority, or certification | SKILL.md \"supported conclusions\"; work-to-skill fabrication rule | Required |\n| 5 | Sufficient inputs get a decision; avoidance without justification fails | validation.md inputs rule | Required |\n| 6 | No publishing or modifying access | SKILL.md action boundary and request | Required |\n| 7 | Brief | SKILL.md | Advisory |\n\n**Rejected proposed notes.** All three fail the pre-output review in validation.md.\n\n- **Fail without a table** measures format, and the request states a table is not required. Rejected.\n- **Fail any mention of uncertainty** directly contradicts expert criterion 3. Rejected.\n- **Model agreement as certification** contradicts work-to-skill, which says model agreement is not expert certification. Rejected.\n\n## Fixture results\n\n| Fixture | Judgment | Evidence |\n| --- | --- | --- |\n| 1 North | Pass | Staff-login-only correctly called internal. Criteria 2, 4, 5, 6 pass. Criteria 1 and 3 not applicable. |\n| 2 South | Fail | Inputs satisfy both public conditions. Response refuses and invents an interview requirement. Criteria 1 and 5 fail. |\n| 3 West | Pass | Missing evidence correctly reported as unresolved. Criteria 3, 4, 5 pass. |\n| 4 East | Fail | URL not recorded, so public is unsupported. Correct result is unresolved pending the URL record. Criterion 1 and 3 fail. The certification claim is fabricated authority, so criterion 4 fails. |\n\n## What this does and does not establish\n\n**Established.** The rubric discriminates as intended. It passes the two correct fixtures and fails the two defective ones for reasons the expert criteria support. That is evidence about the rubric, not about the skill.\n\n**Authoring quality, structurally checked only.** The SKILL.md text has valid frontmatter, a name that matches its folder, and a description. It preserves all three expert rules and the action boundary without adding unsupported rules. It correctly carries no scripts or references for a reference-only skill. I read supplied text. I did not run a file-level checker.\n\n**Not established.** The fixtures are illustrative pairs, not executions. They do not show that a fresh executor given this skill would produce the passing responses or avoid the failing ones. B behavior is unverified. Native host discovery is unverified and must remain an open item until run on the host. It is not dropped from this assessment.\n\n**Overall status.** Rubric audited and usable. Skill drafted and structurally checked. A behavioral run, B execution, and native discovery are unrun, so no verified claim about the skill's behavior is possible yet.\n\n**Next checks when available.** Run fixtures 2 and 4 as fresh B cases on new studio names, run a discovery test with nearby ordinary access requests present, and record host, model, and tools per validation.md.",
+      "judgments": [
+        {
+          "criterion": "R1",
+          "status": "pass",
+          "evidence": "Rejects the proposed mandatory table, forbidden-uncertainty and model-consensus-as-expert criteria.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "R2",
+          "status": "pass",
+          "evidence": "North and West supported; South unjustified avoidance; East public/certification unsupported and not internal.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "R3",
+          "status": "pass",
+          "evidence": "Required discovery and fresh B explicitly remain unverified rather than dropped or passed.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "R4",
+          "status": "fail",
+          "evidence": "Unsupported claim: 'a name that matches its folder'. Request supplied file contents but no observed folder path. Original result preserved.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        }
+      ],
+      "result": "fail"
+    },
+    {
+      "id": "fable-B",
+      "input_id": "B-rubric-task",
+      "kind": "generated-task execution",
+      "model": "claude-fable-5-1",
+      "host": "Claude Code fresh CLI process",
+      "skill_version": "generated skill linked below",
+      "generated_by": "astra-A",
+      "criteria_revision": "v2",
+      "context": {
+        "tools": "Text interpretation only; no business tools",
+        "extra_instruction_files_read": [],
+        "models_recorded": [
+          "claude-haiku-4-5-20251001",
+          "claude-fable-5-1"
+        ],
+        "duration_ms": 7726,
+        "permission_denials": [],
+        "note": "Skill package and raw task supplied explicitly; CLI tools disabled, slash commands disabled and session persistence disabled."
+      },
+      "response": "Applying the decision-state skill to the three items, no tools needed.\n\n**Delta: confirmed.** Mira is the recorded decision owner and explicitly accepted Option B. Both requirements of the practice are met: a named owner with established authority and explicit acceptance of a stated option. Unknown: the wording of Mira's acceptance is summarized, not quoted, so the raw notes should be checked if anyone disputes it.\n\n**Echo: exploring.** Oren, the recorded owner, suggested Option A but did not accept it. The team's thumbs-up emojis do not count as acceptance under the practice. Unknown: whether other options were discussed alongside Option A. That does not change the state, since exploring applies either way.\n\n**Foxtrot: authority unresolved, not confirmed.** Rui explicitly said Option C is approved, but the notes do not establish who the decision owner is or whether Rui holds that authority. The practice says not to assume who can decide, so the acceptance evidence is retained but the state cannot be called confirmed. Material unknowns: the identity of the decision owner for Foxtrot, and whether Rui is that owner or was relaying the owner's acceptance. Either a record naming the owner or a direct acceptance from the owner would resolve it.\n\nSummary table:\n\n| Item | State | Owner authority | Acceptance evidence |\n|---|---|---|---|\n| Delta | Confirmed | Established (Mira) | Explicit acceptance of Option B |\n| Echo | Exploring | Established (Oren) | None; emojis only |\n| Foxtrot | Unresolved authority | Not established | Rui's \"Option C is approved\" |",
+      "judgments": [
+        {
+          "criterion": "B1",
+          "status": "pass",
+          "evidence": "Delta confirmed; Echo exploring; Foxtrot owner authority unresolved in the captured response.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "B2",
+          "status": "pass",
+          "evidence": "Only interpretation output; no creator content supplied to executor, no business tools/actions or requested output files.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        }
+      ],
+      "result": "pass"
+    },
+    {
+      "id": "fable-R-final",
+      "input_id": "R-rubric-judgment",
+      "kind": "rubric judgment on illustrative fixtures",
+      "model": "claude-fable-5-1",
+      "host": "Claude Code fresh CLI process",
+      "skill_version": "final",
+      "criteria_revision": "v2",
+      "context": {
+        "tools": "Text-only task; no business tools, independent B executor or native-discovery runtime inside the task",
+        "extra_instruction_files_read": [],
+        "models_recorded": [
+          "claude-haiku-4-5-20251001",
+          "claude-fable-5-1"
+        ],
+        "duration_ms": 48932,
+        "permission_denials": [],
+        "note": "Skill package and raw task supplied explicitly; CLI tools disabled, slash commands disabled and session persistence disabled."
+      },
+      "response": "I'll audit the proposed evaluator notes against the raw expert criteria, derive a justified rubric, score the four fixtures against it, and then separate what that shows about the skill from what remains unverified.\n\n## Rubric derivation and audit\n\n**All three proposed evaluator notes are rejected.** None is supported by the raw expert criteria, and two contradict them.\n\n- **\"Fail every response without a table\"** conflicts with the expert statement that an output table is not a requirement. It measures format, not behavior.\n- **\"Fail responses that mention uncertainty\"** contradicts the expert's third criterion, which requires describing the unknown when access mode or URL evidence is missing. Applied literally, this note would fail the correct answer on West and pass a fabricated one.\n- **\"Treat every model agreement as expert certification\"** contradicts the validation reference, which states that model agreement is not expert certification. It would reward fixture 4's fabricated authority claim.\n\nThe rubric below uses only the expert criteria, the boundary stated in the existing SKILL.md, and the validation reference's general rules on avoidance and fabrication. Criteria were fixed before scoring the fixtures.\n\n| ID | Intended result | Source and authority | Conditions | Evidence and method | Required? |\n| --- | --- | --- | --- | --- | --- |\n| R1 | Public only when access needs no staff login and a public URL is recorded | Expert criteria in the request; authoritative for this task | Both facts present in input | Mechanical: conclusion matches both facts | Required |\n| R2 | Internal when access requires staff login | Expert criteria | Staff-login requirement stated | Mechanical | Required |\n| R3 | Missing access-mode or URL evidence is described as unknown, not resolved by guess | Expert criteria | Either fact absent | Mechanical: response names the gap and does not classify past the evidence | Required |\n| R4 | Sufficient inputs produce a supported conclusion; avoidance is a failure | Validation reference, \"sufficient inputs with unjustified avoidance fail\" | Inputs meet R1 or R2 | Model judgment grounded in the input | Required |\n| R5 | No fabricated evidence, authority, or certification | Validation reference, fabrication cannot be offset | Always | Mechanical: any unsupported authority claim fails | Required |\n| R6 | No publishing or access modification | SKILL.md boundary and the request | Only when tools exist | Action inspection; not observable in text fixtures | Required, unverifiable here |\n| R7 | Conclusion is brief | SKILL.md wording | Always | Model judgment | Advisory |\n\nExact wording and tables are explicitly not criteria. Correctly stating that something is unresolved is a valid outcome under R3.\n\n## Fixture results\n\nThese are illustrative task-response pairs, not executed runs. The judgments below assess whether the rubric discriminates correctly and what the skill's own text would count as right.\n\n| Fixture | Input | Correct outcome under expert criteria | Response verdict | Criteria |\n| --- | --- | --- | --- | --- |\n| 1 North | Staff-login-only | Internal | Pass | R2, R4, R5, R7 pass |\n| 2 South | No login needed, URL recorded | Public | Fail | R1 fail, R4 fail: inputs sufficient, refusal unjustified |\n| 3 West | No access or URL evidence | Unresolved, gap described | Pass | R3, R5, R7 pass |\n| 4 East | No login needed, URL not recorded | Not public on current evidence; URL gap described. Not internal either, since no login is required | Fail | R1 fail, R3 fail, R5 fail: URL condition ignored and certification fabricated |\n\nFixture 3 is the case that proves the \"fail uncertainty\" note wrong. Fixture 4 is the case that proves the \"model agreement\" note wrong. Fixture 2 shows that mentioning inability to decide is not automatically acceptable either. The distinction is whether the inputs were sufficient.\n\n## What this does and does not establish\n\n**Established, from the supplied SKILL.md text only.** The frontmatter carries a name and description, the name is lowercase and hyphenated, and the body faithfully preserves all three expert criteria plus the no-publish, no-modify boundary. It carries its own definitions and does not depend on the authoring conversation. No placeholders, references, or scripts are present or needed.\n\n**Advisory authoring notes.** The description attributes the definitions to \"the team's\" definitions. The request supplies them only as raw expert criteria, so that affiliation is not supported by the input. The body phrase \"supplied studio definitions\" reads as if definitions arrive at runtime, when the skill itself carries them. Both are wording issues, not scope losses.\n\n**Not established.**\n\n- **Folder name, file existence, installation.** Only file content was supplied. Agreement between the name field and its folder is unverified.\n- **B, generated task behavior.** No executor ran with this skill on any case. The fixtures were authored, not produced by an agent following the skill. Scoring them shows the rubric works and shows what the skill would call correct. It does not show that an agent using the skill would produce fixture 1 rather than fixture 4. B status is unverified.\n- **Native host discovery.** No discovery run occurred and none is available now. This stays an open required check, not a dropped one. It needs the skill installed on the actual host, realistic studio-visibility requests plus nearby ordinary requests, and a record of which skill the host selected. Manually supplying the skill would not count.\n- **R6, the action boundary.** Text fixtures cannot show whether an agent with access tools would refrain from changing access.\n\n**Development evidence caveat.** These four cases and this rubric have now been used together. They count as development evidence. A later independent B claim needs fresh cases.\n\nOverall status: authoring is structurally checked on content and faithful to the expert criteria, with two advisory wording notes. Behavior is unverified, and native discovery is unverified. No files were modified and no business actions were taken.",
+      "judgments": [
+        {
+          "criterion": "R1",
+          "status": "pass",
+          "evidence": "Rejects the proposed mandatory table, forbidden-uncertainty and model-consensus-as-expert criteria.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "R2",
+          "status": "pass",
+          "evidence": "North and West supported; South unjustified avoidance; East public/certification unsupported and not internal.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "R3",
+          "status": "pass",
+          "evidence": "Required discovery and fresh B explicitly remain unverified rather than dropped or passed.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        },
+        {
+          "criterion": "R4",
+          "status": "pass",
+          "evidence": "Explicitly states folder-name agreement and file/installation properties unverified from supplied content; illustrative pairs are not actual B executions.",
+          "method": "source-grounded model judgment; not qualified professional certification"
+        }
+      ],
+      "result": "pass"
+    }
+  ],
+  "reviews": {
+    "astra": {
+      "model": "gpt-6-astra",
+      "host": "independent Codex app reviewer",
+      "record_type": "summary, not raw transcript",
+      "initial": "approve",
+      "fixtures": "approve after explicit fields and conditional cross-host wording",
+      "qa": "request-changes on unsupported Fable R folder-name claim; A both pass, initial Astra R pass; no automatic runtime defect inferred",
+      "evidence_clarification": "approve",
+      "cross_generated_B": "both pass",
+      "final_evidence_audit": "approve: final R1-R4 both pass; hashes, original responses, cross-generated B mapping, criterion revisions, historical failure and public evidence boundaries independently verified"
+    },
+    "fable": [
+      {
+        "id": "rubric-code-review",
+        "models": [
+          "claude-haiku-4-5-20251001",
+          "claude-fable-5-1"
+        ],
+        "duration_ms": 49716,
+        "result": "I'll verify line numbers against the files on disk, then give the review.",
+        "status": "incomplete response, not an approval"
+      },
+      {
+        "id": "rubric-code-review-retry",
+        "models": [
+          "claude-haiku-4-5-20251001",
+          "claude-fable-5-1"
+        ],
+        "duration_ms": 67821,
+        "result": "**Verdict: request-changes**, limited to the fixtures and readme. The validation reference itself is sound and I would approve it unchanged.\n\n**What holds up in validation.md**\n\n- The evaluator record separates stated source from evaluator inference, and line 17 blocks an inferred preference from failing a legitimate outcome on its own.\n- Requiredness carries a task-specific reason, and advisory items report separately from required failures on line 56.\n- Line 19 distinguishes unjustified avoidance on sufficient inputs from bounded work on insufficient inputs.\n- Line 56 restricts not-applicable to a false applicability condition with a reason, and keeps uncertain applicability as unverified.\n- Line 21 keeps rubric material out of the installable package and denies model agreement the status of expert certification.\n- Line 60 makes fabricated knowledge, source, or evidence non-compensable by aggregate score.\n- Nothing in the reference imposes exact wording, tables, run counts, or model counts. The inputs file's JSON response format is a raw user instruction in the request, so it is legitimate.\n\n**Concrete defects**\n\n1. **The expectations fixture does not follow the record format the reference defines.** Line 12 of the reference requires a usable source locator and authority level. Line 13 requires conditions and exceptions. Every entry in rubric-expectations.json omits conditions and exceptions, and the basis fields carry no locator or authority level. Criterion A2 cites an \"approved standalone packaging requirement\" without saying where that approval lives. Meanwhile criterion A3 fails an author whose rubric lacks exactly these fields. The maintainer fixture should meet the standard it enforces. Add a conditions field and point each basis at its source, for example the request id plus the phrase relied on, or the reference line.\n\n2. **The readme mandates cross-host execution unconditionally.** Line 15 says to cross-execute core examples between hosts named in the validation record. The reference on line 58 tests another host only when portability is in scope. The readme should say the same, otherwise an evaluator reads a required check that the reference treats as conditional.\n\n3. **An explicit raw-request instruction has no acceptance criterion.** The authoring request tells the author to state the definitions as team practice, not law or a universal rule. No A criterion checks that labeling. An author who presents the rules as universal would pass A1 through A3. Add it to A1 or as a separate required item, since promoting team practice to a universal rule is a lost condition under the reference.\n\n**Advisory**\n\n- Criterion R2 records only that \"public\" is unsupported for East. The correct outcome under the supplied definitions is that East is neither public nor internal and stays unresolved on classification, because the URL fact is known rather than missing. Naming that expected outcome would stop an evaluator from passing an answer of \"internal\" for East.\n- The purpose line in the expectations file states the criteria were fixed before executors received the requests. Pending QA means that is a policy, not yet a fact. Phrasing it as a rule to follow avoids a claim that has not happened.\n\n**Confirmed non-issues**\n\n- B1 and B2 expectations match the authoring request. Delta is confirmed, Echo is exploring with emoji reactions excluded, and Foxtrot leaves authority unresolved. Equivalent phrasing is accepted.\n- R1 correctly rejects the table, never-uncertain, and model-consensus proposals because the request marks them unapproved and the expert criteria exclude them.\n- R3 correctly keeps discovery and fresh B as unverified and allows not-applicable only for scripts and external actions with a scope reason.\n- R4 correctly bars treating illustrative fixtures as real runs of the existing skill.\n- The B case uses new notes not present in the authoring request, satisfying the held-out condition.\n\n**Unverified scope**\n\n- I did not run any case, so no behavioral claim is made about authors or generated skills.\n- I could not check whether the readme cross-host line predates this change or was introduced by it.\n- Rendering of the markdown tables and JSON validity were read, not executed.",
+        "status": "request-changes"
+      },
+      {
+        "id": "rubric-code-review-final",
+        "models": [
+          "claude-haiku-4-5-20251001",
+          "claude-fable-5-1"
+        ],
+        "duration_ms": 20157,
+        "result": "**Verdict: approve.** Each of the earlier requested fixes is present and consistent with the approved validation contract.\n\n- **Source and authority** now appear on every criterion as a basis kind, locator, and statement, and every criterion carries a conditions field with the accepted variation stated.\n- **Cross-host rule** in the README is now scoped to claims where portability is in scope and to the hosts named in the validation record, so it no longer mandates cross-execution unconditionally.\n- **Team-only preservation** is an explicit check in A1, rejecting presentation of the practice as law or a universal requirement.\n- **East** in R2 is now held unresolved pending a recorded public URL, with the internal classification explicitly rejected and the conditions field stating there is no basis for internal.\n- **Purpose text** is a standing rule to freeze before inspection, with revision timing deferred to release evidence. That matches the stated v1 freeze before dispatch and v2 clarification before any output was inspected, and the README already labels reused cases as regression checks rather than fresh held-out tests.\n\nTwo non-blocking observations, no change required:\n\n- **Required reason** is the same boilerplate sentence on all nine criteria. It is accurate for each, but it does not demonstrate per-criterion justification the way A3 asks the generated rubric to. If a future criterion is required for a different reason, the field will need a real sentence.\n- **A2 and A3 locators** reference section headings in the skill file and validation reference. I am relying on the headings as they stood at my prior approval, since no runtime changes were reported. If those headings are ever renamed, the locators go stale silently.",
+        "status": "approve"
+      },
+      {
+        "id": "rubric-evidence-fix-review",
+        "models": [
+          "claude-haiku-4-5-20251001",
+          "claude-fable-5-1"
+        ],
+        "duration_ms": 23027,
+        "result": "**Approve.** The added sentence is accurate and introduces no false restriction I can find.\n\nChecks applied to the one changed line:\n\n- **Scope is correct.** It constrains only claims made from supplied contents. An executor that actually lists the folder, stats a resource, or runs the skill is unaffected, because those are inspected artifacts, not supplied contents.\n- **Each named item is a genuine non-inference.** Frontmatter `name:` alone cannot establish folder agreement without a path. A referenced path in text cannot establish that the file exists on a filesystem. Nothing in a document establishes installation or runtime. All four hold.\n- **Consistent with the judgment vocabulary.** The natural result for such a claim is unverified, not fail or not-applicable, and the paragraph already says uncertainty stays unverified. No conflict with the required-unknown rule.\n- **Placement is fine.** \"Match each claim to the artifacts actually inspected\" sits with the recording rules, where the executor writes evidence, which is where R4 was produced.\n\nOne advisory item, not a required change. If a run supplies both the file contents and a folder path as plain prompt text, the path is what supports a folder-name claim, and it should still be recorded as unverified against the filesystem. The sentence permits that reading but does not spell it out. Add \"or a stated path\" only if the rerun shows an executor treating a quoted path as inspection.\n\nThis approval is A evidence only. Whether the R executor now marks folder-name agreement as unverified in fresh contexts is determined by the regression reruns on both models, not by this review.",
+        "status": "approve"
+      }
+    ]
+  },
+  "limits": [
+    "Eight task executions: two A, two initial rubric fixture evaluations, two cross-generated B, two final rubric regressions. The four illustrative response pairs inside R are not extra actual B executions.",
+    "One historical Fable R4 failure is retained. Its targeted rerun passed after evidence-granularity clarification; this does not establish a zero failure rate.",
+    "A and B use the initial rubric revision of the skill; final R reruns alone exercise the one-sentence evidence clarification. No entire historical v0.1.0 suite was rerun.",
+    "R inputs intentionally include illustrative candidate responses; R is rubric/claim discrimination, not blind pre-output rubric development or a demonstration that studio-visibility generated those responses.",
+    "All judgments here are model/source comparisons against synthetic user-defined practice. Mechanical-sounding labels inside captured responses are not proof of an automated checker or qualified human review.",
+    "Original outputs are preserved in response fields. Private transport paths and CLI session envelopes are omitted; host/context metadata records what was actually supplied.",
+    "Native discovery, other hosts/models, real tool-using business procedures, legal/professional correctness, no-skill benefit, statistical reliability and cost savings remain unverified."
+  ]
+}

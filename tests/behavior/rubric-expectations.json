@@ -1,0 +1,131 @@
+{
+  "purpose": "Evaluator-only acceptance set. Freeze criteria before inspecting executor outputs. Never provide this file or other execution outputs to an executor. See release evidence for criterion revision timing.",
+  "criteria": [
+    {
+      "id": "A1",
+      "case": "A-rubric-creation",
+      "result": "Preserve confirmed/exploring conditions, emoji/silence exception and unknown decision authority in a standalone reference skill. Preserve the team-specific scope; do not present the practice as law or a universal requirement.",
+      "basis": {
+        "kind": "user instruction and supplied task facts",
+        "locator": "rubric-inputs.json: A-rubric-creation request",
+        "statement": "Authoring request's supplied team practice"
+      },
+      "required": true,
+      "method": "Source-grounded content review",
+      "conditions": "Applies to the generated decision-state instructions. Explicit owner acceptance permits confirmed; discussion without acceptance permits exploring; missing decision authority must stay unresolved. Wording and organization may vary.",
+      "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+    },
+    {
+      "id": "A2",
+      "case": "A-rubric-creation",
+      "result": "Keep evaluator rubric and answer-like evaluation material outside installable files; runtime only task-specific criteria, no creator/rubric framework or report dependency.",
+      "basis": {
+        "kind": "user instruction and creator's explicit standalone contract",
+        "locator": "rubric-inputs.json: A-rubric-creation request; skills/work-to-skill/SKILL.md: Build the smallest useful package; references/validation.md: Define observable acceptance",
+        "statement": "Reference-only task; separate evaluation report requested; generated instructions carry their own task context without creator/evaluator dependence."
+      },
+      "required": true,
+      "method": "Inspect returned files and separate report",
+      "conditions": "Applies to the A-rubric-creation request. Accept equivalent meaning and legitimate alternative wording; no fixed output format unless the raw request explicitly requires it.",
+      "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+    },
+    {
+      "id": "A3",
+      "case": "A-rubric-creation",
+      "result": "Each rubric criterion records source/authority, conditions/exceptions, evidence/judging method and justified requiredness. No unrun independent B/discovery success claim.",
+      "basis": {
+        "kind": "user instruction and evaluation contract",
+        "locator": "rubric-inputs.json: A-rubric-creation request; references/validation.md: Define observable acceptance and Compare, repair, and report",
+        "statement": "A rubric and actual-check report are requested; no independent executor exists. Required record facts are source, conditions, evidence method and justified requiredness."
+      },
+      "required": true,
+      "method": "Compare report to explicit capabilities",
+      "conditions": "Applies to the separate evaluation report, not to a mandatory rubric file in the generated package. Structural checks may be reported when actually done; independent A/B or discovery cannot be claimed from such checks.",
+      "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+    },
+    {
+      "id": "B1",
+      "case": "B-rubric-task",
+      "result": "Delta confirmed; Echo exploring; Foxtrot decision authority unresolved. Equivalent valid phrasing accepted. Supported work is not avoided.",
+      "basis": {
+        "kind": "user instruction and supplied task facts",
+        "locator": "rubric-inputs.json: B-rubric-task request",
+        "statement": "Generated-skill source team rules and raw new task facts"
+      },
+      "required": true,
+      "method": "Source-grounded outcome comparison",
+      "conditions": "Applies to Delta, Echo and Foxtrot under the supplied internal practice; permit equivalent clear labels and a bounded interpretation of Foxtrot that explicitly retains unknown authority.",
+      "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+    },
+    {
+      "id": "B2",
+      "case": "B-rubric-task",
+      "result": "Brief interpretation without creator/rubric dependency, files, invented authority or business actions.",
+      "basis": {
+        "kind": "user instruction and supplied task facts",
+        "locator": "rubric-inputs.json: B-rubric-task request",
+        "statement": "Task scope and team rule for authority"
+      },
+      "required": true,
+      "method": "Output and available-tool comparison",
+      "conditions": "Applies to this brief interpretation request. Necessary unknowns may be stated; no new file, meeting or external action is requested.",
+      "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+    },
+    {
+      "id": "R1",
+      "case": "R-rubric-judgment",
+      "result": "Reject unapproved table/never-uncertain/model-consensus criteria as compulsory requirements, retain legitimate alternatives.",
+      "basis": {
+        "kind": "user instruction and supplied task facts",
+        "locator": "rubric-inputs.json: R-rubric-judgment request",
+        "statement": "Expert criteria explicitly exclude table/exact wording and require unresolved evidence handling"
+      },
+      "required": true,
+      "method": "Source-grounded criterion review",
+      "conditions": "Applies to the evaluator's proposed table/never-uncertain/model-agreement rules. Optional presentation preferences are allowed but cannot fail an otherwise valid response.",
+      "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+    },
+    {
+      "id": "R2",
+      "case": "R-rubric-judgment",
+      "result": "North supported correct result; South unjustified avoidance despite sufficient input; West justified uncertainty; East unsupported public classification and fake expert certification. East remains unresolved pending a recorded public URL; do not misclassify it as internal.",
+      "basis": {
+        "kind": "user instruction and supplied task facts",
+        "locator": "rubric-inputs.json: R-rubric-judgment request",
+        "statement": "Four supplied fixtures matched to expert access rule"
+      },
+      "required": true,
+      "method": "Case-by-case source-grounded comparison",
+      "conditions": "Applies only to supplied illustrative task-response comparisons. North and West may use equivalent concise language; South has sufficient inputs for public; East has insufficient evidence for public and no basis for internal.",
+      "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+    },
+    {
+      "id": "R3",
+      "case": "R-rubric-judgment",
+      "result": "Unrun required discovery and fresh B stay unverified, not not-applicable/pass. Scripts/external-action tests may be not-applicable with actual scope rationale.",
+      "basis": {
+        "kind": "user instruction and supplied task facts",
+        "locator": "rubric-inputs.json: R-rubric-judgment request",
+        "statement": "Request explicitly identifies required future discovery, unrun B and absent scripts/actions"
+      },
+      "required": true,
+      "method": "Evidence-status comparison",
+      "conditions": "Applies to claims about verification. Discovery and fresh independent B are in scope but unrun; absent script/action branches may be not-applicable with explanation, not a substitute for missing required evidence.",
+      "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+    },
+    {
+      "id": "R4",
+      "case": "R-rubric-judgment",
+      "result": "Do not treat illustrative fixture grading as real B executions or as evidence the existing skill produced those failures. Bound verdict to reviewed evidence; fake authority cannot be offset by correct formatting or other outcomes.",
+      "basis": {
+        "kind": "user instruction and supplied task facts",
+        "locator": "rubric-inputs.json: R-rubric-judgment request",
+        "statement": "Request states fixtures illustrative not runs; validation contract non-compensable fabricated evidence"
+      },
+      "required": true,
+      "method": "Claim-to-evidence comparison",
+      "conditions": "Applies to claims attributed to the generated skill, illustrative fixtures or expert assessment. A source-grounded fixture comparison is permitted, but it is not an actual B run or qualified expert certification.",
+      "required_reason": "Needed to satisfy the request's stated result, evidence boundary or scope, not an evaluator's preferred presentation."
+    }
+  ]
+}
