@@ -1,8 +1,8 @@
 class WorkToSkill < Formula
   desc "Turn professional knowledge and workflows into reusable agent skills"
   homepage "https://github.com/chonamdoo/work-skills"
-  url "https://github.com/chonamdoo/work-skills/releases/download/v0.1.0/work-to-skill-v0.1.0.tar.gz"
-  sha256 "3fa3d4f77565863fe2e4ee047eb5da833c2e8b6504fa21209df99ee2f85b374f"
+  url "https://github.com/chonamdoo/work-skills/releases/download/v0.1.1/work-to-skill-v0.1.1.tar.gz"
+  sha256 "6c70b0a029aea8bf324370e101b12a63930ca13651124582d06507ca71cae0c2"
 
   def install
     pkgshare.install "SKILL.md", "references"
