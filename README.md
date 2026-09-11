@@ -47,29 +47,50 @@ uses `~/.claude/skills`. Both support symlinked skill folders.
 First check for an existing `work-to-skill` in your personal, project, and plugin
 skill locations, including a legacy `~/.codex/skills` installation. Keep one
 installation route per host; this example does not scan or remove those copies.
-If you want both local hosts to use the Homebrew-managed copy, run:
+After Homebrew installation, run this to register the skill for both local hosts.
+The shared entry is `~/.agents/skills/work-to-skill`; Claude Code links to that
+entry. The actual files remain managed by Homebrew.
 
 ```sh
-skill_source="$(brew --prefix chonamdoo/work-skills/work-to-skill)/share/work-to-skill"
-if [ -f "$skill_source/SKILL.md" ]; then
-  for skill_target in "$HOME/.agents/skills/work-to-skill" "$HOME/.claude/skills/work-to-skill"; do
+(
+  skill_prefix="$(brew --prefix chonamdoo/work-skills/work-to-skill)" || exit 1
+  skill_source="$skill_prefix/share/work-to-skill"
+  skill_shared="$HOME/.agents/skills/work-to-skill"
+  skill_claude="$HOME/.claude/skills/work-to-skill"
+  if [ ! -f "$skill_source/SKILL.md" ]; then
+    printf 'Skill files not found; finish Homebrew installation first.\n'
+    exit 1
+  fi
+  for skill_target in "$skill_shared" "$skill_claude"; do
     if [ -e "$skill_target" ] || [ -L "$skill_target" ]; then
-      printf 'Unchanged; inspect existing skill: %s\n' "$skill_target"
-    else
-      mkdir -p "$(dirname "$skill_target")" && ln -s "$skill_source" "$skill_target"
+      if [ ! "$skill_target" -ef "$skill_source" ]; then
+        printf 'Stopped; inspect existing skill: %s\n' "$skill_target"
+        exit 1
+      fi
     fi
   done
-else
-  printf 'Skill files not found; finish Homebrew installation first.\n'
-fi
+  mkdir -p "$(dirname "$skill_shared")" "$(dirname "$skill_claude")" || exit 1
+  if [ ! -e "$skill_shared" ]; then
+    ln -s "$skill_source" "$skill_shared" || exit 1
+  fi
+  if [ ! -e "$skill_claude" ]; then
+    ln -s "$skill_shared" "$skill_claude" || exit 1
+  fi
+)
 ```
 
-This creates links to one package, not two maintained copies. Existing files,
-directories, and even broken links are left untouched. To use only one host,
-include only its target in the loop. Restart the host if the skill does not appear;
+This creates links to one package, not two maintained copies. Rerunning it keeps
+links that already resolve to the package, including the previous direct
+Homebrew links. Any conflicting file, directory, or broken link stops registration
+before either skill entry is created; existing entries are left untouched.
+Restart the host if the skill does not appear;
 check its skill list and try an explicit `work-to-skill` request. Automatic
 selection and task correctness still need checking in your actual environment.
 These are local-host instructions, not cloud/Cowork installation instructions.
+For another local agent, check its documented discovery path. If it reads
+`~/.agents/skills`, the shared entry is enough. Otherwise, link only its supported
+skill path to that entry after checking for existing installations; there is no
+universal discovery path for every agent.
 
 To update the Homebrew package, run `brew update` and
 `brew upgrade chonamdoo/work-skills/work-to-skill`. Links use Homebrew's stable
