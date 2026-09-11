@@ -18,7 +18,45 @@ this repository does not automatically collect user outputs.
 
 ## Use
 
-### Install with Homebrew
+### Install with npx (recommended)
+
+Requires Node.js, npm (which provides `npx`), and Git. The
+[skills CLI](https://github.com/vercel-labs/skills) installs directly from this
+repository; `work-skills` does not need a separate npm package or Homebrew.
+
+Choose **one** installation scope:
+
+**Project** — run from the project root to make the skill available in that project:
+
+```sh
+npx skills@latest add chonamdoo/work-skills --skill work-to-skill
+```
+
+**Global** — make the skill available across your projects:
+
+```sh
+npx skills@latest add chonamdoo/work-skills --skill work-to-skill -g
+```
+
+Select the agents you use, such as Codex and Claude Code, and choose **Symlink**
+when prompted. The installer keeps a shared copy and connects supported agents
+to it. Agent-specific discovery paths are handled by the installer; not every
+agent reads `.agents/skills` directly. Homebrew's manual linking step below is
+not part of the npx installation.
+
+Before confirming, inspect existing project, global, and plugin installations,
+including any legacy `~/.codex/skills` copy or Homebrew links. Keep one installation
+route and scope for this skill per project/agent; do not layer npx over a Homebrew
+installation or install the same skill both globally and in a project. Review
+any overwrite prompt instead of replacing a customized skill automatically.
+
+These commands fetch the repository's default branch, not a pinned release.
+For npx-managed installations, use `npx skills@latest update work-to-skill` and
+select the intended scope when prompted. Restart the agent if needed, check its
+skill list, and try an explicit `work-to-skill` request. Installation does not
+verify automatic selection or task correctness in every host.
+
+### Alternative: Homebrew
 
 This repository also serves as a Homebrew tap. Use its explicit URL because its
 name is `work-skills`, not `homebrew-work-skills`:
@@ -37,6 +75,8 @@ Homebrew verifies the pinned release checksum and installs the skill files under
 It does not install an AI CLI, register a skill, or overwrite existing skills.
 
 ### Connect to Codex and Claude Code
+
+This manual connection step is only for the Homebrew alternative above.
 
 The documented personal skill directories differ:
 [Codex](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills)
