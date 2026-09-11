@@ -18,6 +18,68 @@ this repository does not automatically collect user outputs.
 
 ## Use
 
+### Install with Homebrew
+
+This repository also serves as a Homebrew tap. Use its explicit URL because its
+name is `work-skills`, not `homebrew-work-skills`:
+
+```sh
+brew tap chonamdoo/work-skills https://github.com/chonamdoo/work-skills.git
+brew install chonamdoo/work-skills/work-to-skill
+```
+
+If Homebrew requests trust, review `Formula/work-to-skill.rb` and trust only this
+formula with `brew trust --formula chonamdoo/work-skills/work-to-skill` on versions
+that support that command, then retry installation.
+
+Homebrew verifies the pinned release checksum and installs the skill files under
+`$(brew --prefix chonamdoo/work-skills/work-to-skill)/share/work-to-skill`.
+It does not install an AI CLI, register a skill, or overwrite existing skills.
+
+### Connect to Codex and Claude Code
+
+The documented personal skill directories differ:
+[Codex](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills)
+uses `~/.agents/skills`, while
+[Claude Code](https://code.claude.com/docs/en/skills#choose-where-skills-load)
+uses `~/.claude/skills`. Both support symlinked skill folders.
+
+First check for an existing `work-to-skill` in your personal, project, and plugin
+skill locations, including a legacy `~/.codex/skills` installation. Keep one
+installation route per host; this example does not scan or remove those copies.
+If you want both local hosts to use the Homebrew-managed copy, run:
+
+```sh
+skill_source="$(brew --prefix chonamdoo/work-skills/work-to-skill)/share/work-to-skill"
+if [ -f "$skill_source/SKILL.md" ]; then
+  for skill_target in "$HOME/.agents/skills/work-to-skill" "$HOME/.claude/skills/work-to-skill"; do
+    if [ -e "$skill_target" ] || [ -L "$skill_target" ]; then
+      printf 'Unchanged; inspect existing skill: %s\n' "$skill_target"
+    else
+      mkdir -p "$(dirname "$skill_target")" && ln -s "$skill_source" "$skill_target"
+    fi
+  done
+else
+  printf 'Skill files not found; finish Homebrew installation first.\n'
+fi
+```
+
+This creates links to one package, not two maintained copies. Existing files,
+directories, and even broken links are left untouched. To use only one host,
+include only its target in the loop. Restart the host if the skill does not appear;
+check its skill list and try an explicit `work-to-skill` request. Automatic
+selection and task correctness still need checking in your actual environment.
+These are local-host instructions, not cloud/Cowork installation instructions.
+
+To update the Homebrew package, run `brew update` and
+`brew upgrade chonamdoo/work-skills/work-to-skill`. Links use Homebrew's stable
+package path, so they follow an upgrade. Do not edit the Homebrew-managed files;
+keep custom skill drafts in your own workspace. Uninstalling the formula leaves
+any personal links you created in place; inspect and remove only those links
+separately if you no longer want them.
+
+### Manual installation
+
 Download the skill archive from [Releases](https://github.com/chonamdoo/work-skills/releases),
 check its checksum against SHA256SUMS, and extract it.
 The archive contains a work-to-skill directory with instructions and references.
@@ -53,6 +115,12 @@ then push a version tag such as `v0.1.0` at the reviewed main commit.
 The Release workflow checks the tagged code and publishes a skill-only archive
 and SHA256SUMS to GitHub Releases. It does not publish to npm.
 Do not move existing release tags.
+
+After a new release is published, update the URL and SHA-256 in
+`Formula/work-to-skill.rb` through a reviewed PR. The formula intentionally tracks
+an already published asset; tagging alone does not update Homebrew users.
+Homebrew CI installs that asset and runs the formula's package test in a disposable
+runner. These checks do not certify AI-host discovery or model behavior.
 
 Updating work-to-skill does not rewrite previously generated skills.
 Recheck affected outputs separately when a consequential creator defect is fixed.

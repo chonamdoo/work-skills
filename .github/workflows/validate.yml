@@ -22,3 +22,23 @@ jobs:
       - run: python -m unittest discover -s tests -v
       - name: Check committed whitespace
         run: git diff --check "$(git hash-object -t tree /dev/null)" HEAD
+  homebrew:
+    runs-on: macos-latest
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+      HOMEBREW_NO_ANALYTICS: 1
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install and test reviewed formula
+        shell: bash
+        run: |
+          set -euo pipefail
+          brew tap chonamdoo/work-skills "file://$GITHUB_WORKSPACE"
+          if brew command trust >/dev/null 2>&1; then
+            brew trust --formula chonamdoo/work-skills/work-to-skill
+          fi
+          brew install --build-from-source chonamdoo/work-skills/work-to-skill
+          brew test chonamdoo/work-skills/work-to-skill
