@@ -1,0 +1,42 @@
+[
+  {
+    "id": "B1-development",
+    "source": "A1-development",
+    "request": "Use the supplied skill to review these two save handlers. A allows users to edit throughout: async function saveA(){const sent=draft; const saved=await api.save(sent); draft=saved;} B disables every draft-editing control and other draft mutation for the entire request: async function saveB(){editingDisabled=true; try{const saved=await api.save(draft); draft=saved;} finally{editingDisabled=false;}} Identify problems and permitted cases with code evidence. Do not rewrite code or generalize to architecture.",
+    "acceptance": [
+      "A late response can overwrite a newer draft.",
+      "B is allowed under the explicitly stated complete editing lock.",
+      "No requirement to add a revision counter to already safe B."
+    ]
+  },
+  {
+    "id": "B2-planning",
+    "source": "A2-planning",
+    "request": "Use the supplied skill to draft a brief from these new notes only: Three internal support staff manually copy order rows into a spreadsheet once a week. One proposed a CSV export. No external customers were interviewed. No effort estimate, usage measurement, or launch date exists. A manager wants to explore it, not commit to a launch.",
+    "acceptance": [
+      "Internal staff observations not external demand.",
+      "Small proposal and unknowns distinguished from facts.",
+      "No invented metrics, estimates or commitment."
+    ]
+  },
+  {
+    "id": "B3-intake",
+    "source": "A3-intake",
+    "request": "Use the supplied skill to review this synthetic intake, without filing or calculating tax. Jurisdiction label: JX-SYNTHETIC. Reporting period: 2026-Q2. Checklist owner is unavailable. Checklist v1 requests invoice register and bank statement; an undated v2 also requests receipts and its authority is unconfirmed. Supplied: invoice register for 2026-Q2; bank statement for 2026-Q1; no receipts. State what is supported, mismatched, missing or unresolved, and whether intake can be called complete.",
+    "acceptance": [
+      "Bank statement period mismatch identified.",
+      "Checklist conflict/receipts requirement unresolved rather than invented legal obligation.",
+      "Not complete; no tax/legal certification or transfers."
+    ]
+  },
+  {
+    "id": "B4-reference",
+    "source": "A4-reference",
+    "request": "Using the supplied team vocabulary, classify these new situations briefly. Alpha has an owner and an agreed target slot; only a private preview URL exists. Beta is proposed with no owner. Gamma is publicly available and its publication URL is recorded. No files or workflow are requested.",
+    "acceptance": [
+      "Alpha queued, not shipped.",
+      "Beta planned; Gamma shipped.",
+      "Brief application, no unnecessary procedure or generated file."
+    ]
+  }
+]
