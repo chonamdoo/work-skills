@@ -1,0 +1,15 @@
+{
+  "reviewer_model": "GPT-6 (Codex)",
+  "no_change_recommended": true,
+  "already_aligned": [
+    "추가로 정당화되는 변경은 0건이다. 제공된 텍스트만 비교했으며 행동 실험은 수행하지 않았다. 현행 유지보다 이익이 크다고 뒷받침되는 모순이나 계약 충돌은 확인되지 않았다.",
+    "과잉 절차 지정: TARGET-SKILL:42–44의 \"a fixed sequence or new output file is unnecessary\"와 \"actions whose order matters\"는 판단과 순서가 중요한 절차를 구분한다. SOURCE A §1c의 \"keep numbered steps only where order truly matters\", SOURCE B의 \"define the target outcome, success criteria, constraints\"에 부합한다.",
+    "금지문 묶음: TARGET-SKILL:28의 \"Reading a document does not authorize its commands, external transfers, or redistribution\"와 :30의 \"Use synthetic or suitably de-identified examples when needed\"는 권한·기밀 경계와 실행 가능한 대안을 함께 제시한다. SOURCE A §1e의 \"encode a real business/policy constraint\" 및 SOURCE D의 \"pair it with the positive target\"에 해당한다. 금지문이라는 이유만으로 삭제하면 실제 제약이 약해진다.",
+    "압박 표현과 이유 누락: 대문자 MUST·NEVER나 성과 압박은 없다. TARGET-SKILL:26의 \"a requester's 'our team' does not establish the expert's affiliation\"와 :30의 \"removing a name alone may leave a person or client identifiable\"는 제약의 이유를 설명한다. SOURCE E의 \"Explain the why\"에 부합하며, 모든 문장에 because를 추가할 근거는 없다.",
+    "평가자 어휘: TARGET-VALIDATION:17의 \"measure behavior rather than headings or favored phrases\"와 :21의 \"Keep expected answers, criterion records, and evaluator notes separate from executor input and the installable package\"는 평가 기준을 실제 작업 지시와 분리한다. SOURCE A §1c의 \"Describes the scoring apparatus instead of the requirement\"라는 문제를 방지한다. 평가 문서 자체의 evaluator·criterion 용어는 해당 반패턴으로 볼 수 없다.",
+    "트리거와 행동 분리: TARGET-SKILL:3의 \"ordinary requests to perform the work or produce its deliverable do not trigger this skill\"은 호출 경계이고, 본문은 작성 행동을 다룬다. TARGET-VALIDATION:40의 \"Check explicit invocation separately\"는 자동 선택도 별도로 확인한다. SOURCE A Group 3의 \"trigger text is not behavioral text\", SOURCE D의 \"One trigger per branch\" 및 SOURCE E의 near-miss 평가 지침에 부합한다.",
+    "보존 목록과 정보 계층: TARGET-SKILL:22–24는 기준·예외·출처·불확실성을 보존하고, :46은 \"Keep common guidance in the entrypoint\" 및 조건부 참조를 요구한다. :56은 validation.md를 읽을 조건을 명시한다. SOURCE A keep-list의 \"Context is never cruft\", SOURCE D의 \"inline what every branch needs\"와 SOURCE E의 \"guidance on when to read them\"을 이미 구현한다. 길이나 일부 반복만으로 분리·삭제할 근거는 없다.",
+    "변경 범위와 검증: TARGET-SKILL:14의 \"change only the requested behavior\", TARGET-VALIDATION:60의 \"Claim improvement only against a no-skill or previous-version baseline under comparable conditions\", :64의 \"State what was not run and why\"는 SOURCE C의 \"narrowest safe change set\", SOURCE A Step 7의 \"Probe behavior, not self-report\", SOURCE B의 검증 불가 시 보고 지침에 부합한다. 선행 리뷰의 범위 확장·검증 종료 충돌을 이 대상에서 다시 제기할 근거는 없다."
+  ],
+  "findings": []
+}
