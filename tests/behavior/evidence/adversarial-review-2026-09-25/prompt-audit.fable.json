@@ -1,0 +1,84 @@
+{
+  "reviewer_model": "claude-fable-5-1",
+  "no_change_recommended": false,
+  "findings": [
+    {
+      "title": "Section 1e's prohibition test contradicts the keep list and row 1c on whether reproduction on the target model matters",
+      "lines": "121, 95, 181",
+      "quote": "not \"does the target model still need this guardrail?\" (the latter question keeps everything, because nothing is *harmful* to say) ... The discriminator is whether the failure reproduces on the target model in this context",
+      "evidence_type": "text_contradiction",
+      "problem": "Line 121 tells the auditor to judge prohibition clusters by provenance and explicitly rejects asking whether the target model still needs the line. Line 181 (keep list #5, declared 'as binding as the pattern tables' at line 12) and line 95 (row 1c) say the discriminator is exactly whether the failure reproduces on the target model. A prohibition with no stated reason and no business constraint but whose failure demonstrably reproduces is cruft under 1e and a keeper under #5 and 1c. Line 121 also asserts 'nothing is harmful to say', which line 95 directly denies ('a prohibition against a failure the model wasn't going to make can anchor it toward that failure').",
+      "proposed_change": "Rewrite the 1e test as a disjunction consistent with the rest of the file: a prohibition stays if it carries a stated reason or encodes a business/policy constraint, OR if its failure is shown to reproduce on the target model; unsupported 'might still need it' claims do not count as reproduction. Delete the parenthetical 'because nothing is harmful to say'.",
+      "impact_scope": "Section 1e only; changes how every prohibition line is classified during Step 4, which is one of the highest-volume decisions in the audit.",
+      "benefits_vs_current": "Removes a direct conflict that lets two auditors reach opposite verdicts on the same line while both following the document. Restores consistency with the anchoring claim at line 95.",
+      "drawbacks_vs_current": "1e appears written to close a loophole where auditors keep everything 'just in case'; adding reproduction as a keeper criterion partially reopens it unless the reproduction bar is stated strictly.",
+      "when_not_to_change": "If the author intends 1e to govern only style-prohibitions (banned phrases, tic lists) and #5 to govern behavioral prohibitions, then narrow 1e's scope statement instead of adding the disjunction.",
+      "confidence": 0.8
+    },
+    {
+      "title": "Confidence rubric is self-contradictory about whether a row match alone is medium confidence",
+      "lines": "12, 39, 102, 201, 204, 206",
+      "quote": "A finding that matches a documented row in the groups above *is* a high- or medium-confidence finding ... Idiom-dating alone is a flag-only signal (low confidence in the Step 5 rubric) ... `do not hallucinate` (re-test whether you still need it - removal here is low confidence, not a documented harm)",
+      "evidence_type": "text_contradiction",
+      "problem": "Line 206 says a documented-row match is automatically high or medium and that 'flag' is reserved for idiom-dating 'that no row documents'. But every idiom line 39 calls flag-only (scratchpad tags, 'think step by step', prefills) is documented by a row in 1b, and line 102 labels a signal under a documented 1c row as low confidence. Rows 95, 108, and 111 also condition their own fix on reproduction or retirement, so 'matches a row' is undefined when the row's condition is unverified. Separately, line 12 says an untied finding 'is not a finding' while line 204 allows it as a bottom-of-report flag item.",
+      "proposed_change": "Replace the first sentence of line 206 with a rule that composes with 201: row match plus the row's stated target-model reason = medium; row match plus current docs or an error on the target model = high; row match where the row conditions on reproduction/retirement and that condition is unverified, or where the signal text itself says low (line 102), = low/flag. Align line 204 with line 12 by stating that untied items may appear only as flag items.",
+      "impact_scope": "Step 5 report confidence assignment and therefore Step 6 diff inclusion (line 210 gates on high/medium).",
+      "benefits_vs_current": "Makes diff inclusion deterministic; prevents an auditor from citing line 206 to promote a bare idiom match into the diff, or line 39 to withhold a well-supported one.",
+      "drawbacks_vs_current": "Line 206 is clearly meant to stop under-proposing; a more conditional rule gives cautious auditors more room to downgrade. Slightly longer rubric text.",
+      "when_not_to_change": "If the author's intent is that the tables' 'Why it's cruft now' columns already supply the target-model reason for every row, then instead delete the 'low confidence' remark at line 102 and the parenthetical at line 39 so the file agrees with line 206.",
+      "confidence": 0.6
+    },
+    {
+      "title": "Step 0 forbids reading files but its target-model resolution order requires reading the repository",
+      "lines": "18, 21",
+      "quote": "Before reading any file, establish two things - from the request and the repository, not by asking. ... else the destination of an in-progress migration the repository documents (vendor notes, migration docs, TODOs); else the newest model the repository's own code or docs point at",
+      "evidence_type": "text_contradiction",
+      "problem": "The instruction to establish scope and target 'before reading any file' cannot be satisfied when the request names no model, because steps two and three of the resolution order require reading migration docs, code, and TODOs. A literal executor either violates line 18 or skips to the provider-flagship fallback at step four, producing the wrong target.",
+      "proposed_change": "Change 'Before reading any file' to 'Before auditing any file' (or 'Before classifying any line'), and note that resolving the target may require a quick read of migration docs and model-ID pins.",
+      "impact_scope": "One sentence in Step 0; affects target selection on every run where the request does not name a model.",
+      "benefits_vs_current": "Removes an impossible precondition and makes the fallback order reachable as written.",
+      "drawbacks_vs_current": "None substantive; the sentence loses its emphasis on doing scoping first, which the reworded version still conveys.",
+      "when_not_to_change": "If 'file' was meant narrowly as 'prompt file in the inventory', add that qualifier instead.",
+      "confidence": 0.7
+    },
+    {
+      "title": "Step 7 instructs the auditor to run behavioral probes after Step 6 has told it to stop",
+      "lines": "3, 215, 219, 222",
+      "quote": "produce both in full and stop there ... For each contested change, run a small behavioral check before and after on a scratch copy ... Check out-of-band dependencies before deleting. Grep the wider system for the exact prompt text first",
+      "evidence_type": "text_contradiction",
+      "problem": "Line 3 says execution finishes with Steps 5 and 6, and line 215 says to produce the diff and stop. Step 7 then issues imperatives to run before/after probes and to grep before deleting, with no statement of who runs them or when. The grep at line 222 belongs before the diff is finalized and partly duplicates line 213. As written, an executor following 'in order' either stops at Step 6 and never reads Step 7, or continues and contradicts 'stop there'. Also, line 18 positions the audit for CI/batch runs where executing the user's app to probe behavior is not generally possible.",
+      "proposed_change": "Move the out-of-band grep (line 222) into the Step 6 checklist alongside line 213. Retitle Step 7 as post-audit guidance addressed to the user (e.g. 'After applying hunks: verify') and open it with one sentence saying the auditor includes this as a section of the report rather than executing it, unless the request explicitly asked for edits to be applied and an eval suite exists.",
+      "impact_scope": "Steps 6 and 7; clarifies the end of the execution path without changing any classification rule.",
+      "benefits_vs_current": "Unambiguous stopping point; the pre-deletion grep is guaranteed to happen before the diff rather than being described after it.",
+      "drawbacks_vs_current": "If the author intended the auditor to run probes whenever an eval suite exists, the relabel loses that; the alternative is to keep Step 7 as an auditor step and amend lines 3 and 215 instead.",
+      "when_not_to_change": "If the harness that invokes this file always renders every step to the user as a report rather than executing them, the ambiguity is harmless.",
+      "confidence": 0.6
+    },
+    {
+      "title": "Section 1f overrides the binding keep list for numeric limits that encode environment constraints",
+      "lines": "125, 83, 177, 45",
+      "quote": "a stated operational reason (\"queue throughput\", \"supervisors skim\") does not convert a numeric clamp into a keeper ... keep any genuinely format-sensitive requirement as a format instruction, not a word count ... Context is never cruft. Audience, product, environment facts, quality bar, constraints, and the *reasons* for them",
+      "evidence_type": "text_contradiction",
+      "problem": "Keep list #1 (binding per line 12) and line 45 say constraints plus their reasons are context and never cruft. Line 125 says a numeric ceiling is removed even when it carries a stated reason, and line 83 says to delete hard word caps outright. A limit imposed by something outside the model (an SMS or UI field length, a downstream parser, a contractual cap) is an environment fact only the author knows, and it is numeric by nature, so the 'format instruction, not a word count' carve-out does not cover it. An auditor following 1f literally will delete a hard external constraint.",
+      "proposed_change": "Add one sentence to 1f: 'A numeric limit enforced outside the model (a channel or field limit, a downstream parser, a contractual cap) is an environment fact and stays, stated with its source; the limits removed here are those tuned against an older model's verbosity.' Optionally cross-reference line 111 to prefer enforcing such limits in code where possible.",
+      "impact_scope": "Sections 1b (line 83) and 1f; affects classification of every numeric length instruction.",
+      "benefits_vs_current": "Aligns 1f with the keep list it is currently overriding and prevents deletion of hard external constraints.",
+      "drawbacks_vs_current": "Opens a relabeling escape hatch: auditors may keep verbosity clamps by asserting an external source. The sentence should require the source to be named.",
+      "when_not_to_change": "If the author's position is that all such limits must live in code validation rather than prompt text, state that explicitly in 1f rather than adding a keeper carve-out.",
+      "confidence": 0.5
+    },
+    {
+      "title": "The examples of 'explicit' apply consent are ambiguous phrases that also describe an audit request",
+      "lines": "10, 215, 18",
+      "quote": "Propose - never apply edits without the user's consent. ... Apply edits to files only when the request itself explicitly asked for the changes to be applied (e.g. \"clean it up\", \"remove the cruft\")",
+      "evidence_type": "text_contradiction",
+      "problem": "Line 10 requires consent before applying edits. Line 215 treats 'clean it up' and 'remove the cruft' as explicit apply requests, but 'remove the cruft' is a natural way to ask for this audit's proposed diff, and line 18 makes the run non-interactive so the auditor cannot disambiguate. The examples therefore authorize file modification on phrasing that does not clearly express consent, in a flow the document elsewhere designs to be propose-only.",
+      "proposed_change": "Replace the examples with unambiguous ones ('apply the diff', 'edit the files directly', 'make the changes') and add: 'Phrasing that could describe either the audit or its application defaults to propose-only.'",
+      "impact_scope": "One parenthetical in Step 6; governs whether the audit writes to the user's files.",
+      "benefits_vs_current": "Reduces unintended in-place edits from a non-interactive run; consistent with line 10 and the propose-only framing at lines 3 and 7-10.",
+      "drawbacks_vs_current": "Users who say 'clean it up' expecting edits get a diff and must re-run or apply hunks themselves; one extra round trip.",
+      "when_not_to_change": "If this file is only ever invoked through a harness where the user has already opted into edits, the ambiguity has no practical cost.",
+      "confidence": 0.55
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "reviewer_model": "GPT-6",
+  "no_change_recommended": false,
+  "findings": [
+    {
+      "title": "패턴 일치만으로 근거 수준을 높이도록 요구함",
+      "lines": "12, 201, 206",
+      "quote": "12: \"with a reason grounded in the target model's documented behavior\"\n201: \"Low - heuristic or idiom-dating; flag, don't edit.\"\n206: \"A finding that matches a documented row in the groups above is a high- or medium-confidence finding\"",
+      "evidence_type": "text_contradiction",
+      "problem": "12행과 201행은 대상 모델의 근거로 판정하도록 하지만, 206행은 문서의 패턴 표에 해당한다는 사실만으로 중간 이상의 신뢰도와 수정안을 요구합니다. 패턴 후보와 검증된 문제를 구분할 수 없습니다.",
+      "proposed_change": "206행에서 패턴 일치에 따른 자동 신뢰도 부여를 삭제합니다. 패턴은 후보를 찾는 기준으로 쓰고, 신뢰도와 수정 여부는 대상 모델의 문서 또는 관찰된 근거로 정하도록 명시합니다.",
+      "impact_scope": "모든 발견사항의 신뢰도, 수정안 포함 여부.",
+      "benefits_vs_current": "현재보다 근거 없는 수정 제안을 줄이고, 저신뢰도 항목은 수정하지 않는다는 규칙을 일관되게 적용합니다.",
+      "drawbacks_vs_current": "확인 가능한 근거가 부족하면 구체적인 수정안 수가 줄어듭니다.",
+      "when_not_to_change": "표에 해당하는 모든 항목을 근거와 무관하게 수정 제안하려는 정책이라면 유지할 수 있습니다. 다만 12행과 201행도 그 정책에 맞춰 바꿔야 합니다.",
+      "confidence": 0.99
+    },
+    {
+      "title": "Step 6의 종료 지시가 Step 7 검증을 막음",
+      "lines": "215, 217, 219",
+      "quote": "215: \"produce both in full and stop there.\"\n217: \"Step 7: Verify - removal is a hypothesis, not a conclusion\"\n219: \"For each contested change, run a small behavioral check before and after on a scratch copy\"",
+      "evidence_type": "text_contradiction",
+      "problem": "Step 6은 산출물을 제출하고 중단하라고 하지만, 다음 단계는 변경 전후 검증을 요구합니다. 순서대로 수행하면 검증 단계에 도달할 수 없습니다.",
+      "proposed_change": "검증을 최종 산출물 제출 앞으로 옮깁니다. 검증하지 못한 항목은 미검증으로 표시하고, 검증 상태까지 반영한 보고서와 diff를 제출한 뒤 종료하도록 정리합니다.",
+      "impact_scope": "감사 종료 시점과 변경 제안의 검증 상태.",
+      "benefits_vs_current": "검증이 실제 절차에 포함되고, 제출된 수정안이 검증됐는지 명확해집니다.",
+      "drawbacks_vs_current": "검증을 수행하는 감사는 현재의 Step 6 종료 방식보다 시간과 실행 비용이 늘어납니다.",
+      "when_not_to_change": "Step 7이 별도 후속 작업을 위한 참고 지침이라면 위치를 유지할 수 있습니다. 이 경우 현재 감사의 필수 단계가 아님을 명시해야 합니다.",
+      "confidence": 1.0
+    },
+    {
+      "title": "국소 감사에서도 모든 코드 경로의 기능 제거를 요구함",
+      "lines": "20, 213–214",
+      "quote": "20: \"If the user's request names a file, directory, or file list, that is the scope.\"\n213: \"A removal is complete only when everything referencing it goes too\"\n214: \"the diff must eliminate the capability on every code path\"",
+      "evidence_type": "text_contradiction",
+      "problem": "20행은 사용자가 지정한 파일을 범위로 삼지만, 213–214행은 모든 참조와 코드 경로까지 수정안에 포함하도록 요구합니다. 범위 밖의 호출부나 다른 모델에서도 쓰는 공용 기능을 어떻게 다룰지 예외가 없습니다.",
+      "proposed_change": "제거의 완결성 기준을 지정된 범위와 대상 모델 경로로 한정합니다. 범위 밖 의존성은 보고서에 명시하고, 수정하려면 범위 확장이 필요하다고 표시합니다. 다른 지원 대상에 필요한 공용 기능은 보존합니다.",
+      "impact_scope": "공용 request builder, 호출부, 테스트 및 범위 밖 문서에 대한 수정 제안.",
+      "benefits_vs_current": "현재보다 사용자 지정 범위를 지키며, 특정 모델의 마이그레이션이 다른 지원 경로의 기능 제거로 확대되는 것을 방지합니다.",
+      "drawbacks_vs_current": "좁은 범위의 감사에서는 전체 제거를 완결하는 diff를 제공하지 못할 수 있습니다.",
+      "when_not_to_change": "사용자가 전체 저장소에서 해당 기능과 관련 지원 대상을 완전히 폐기하도록 명시한 경우에는 전역 제거 기준을 유지할 수 있습니다.",
+      "confidence": 0.98
+    },
+    {
+      "title": "숫자 제한의 일괄 제거가 제약 보존 규칙과 충돌함",
+      "lines": "125, 175, 177",
+      "quote": "125: \"They are removed together: a stated operational reason ('queue throughput', 'supervisors skim') does not convert a numeric clamp into a keeper\"\n175: \"These stay, even when a grep matches\"\n177: \"Audience, product, environment facts, quality bar, constraints, and the reasons for them\"",
+      "evidence_type": "text_contradiction",
+      "problem": "보존 목록은 제품 제약과 그 이유를 유지하라고 하지만, 125행은 운영상 이유가 있는 숫자 제한도 제거하도록 합니다. '짧고 읽기 쉽게' 같은 표현은 기존의 측정 가능한 상한을 보존하지 않습니다.",
+      "proposed_change": "외부 요구사항이나 명시적 제품 기준인 숫자 제한은 유지합니다. 이전 모델의 장황함을 줄이기 위해 임시로 넣은 제한만 제거 후보로 삼고, 출처가 불명확하면 확인이 필요한 항목으로 표시합니다.",
+      "impact_scope": "단어 수, bullet 수, 중간 보고 주기 등 측정 가능한 출력 요구사항.",
+      "benefits_vs_current": "현재보다 실제 제품 요구사항을 보존하면서, 오래된 모델 대응용 제한만 골라 수정할 수 있습니다.",
+      "drawbacks_vs_current": "제한의 출처를 확인해야 하며, 불필요한 제한도 근거가 부족하면 남을 수 있습니다.",
+      "when_not_to_change": "해당 숫자가 제품 요구사항이 아니며 이전 모델 대응용 임시값이었다는 점이 확인된 경우에는 기존 제거 방향을 유지할 수 있습니다.",
+      "confidence": 0.98
+    }
+  ]
+}

@@ -159,8 +159,9 @@ Example request:
 Files use the [Agent Skills format](https://agentskills.io/specification).
 Shared instructions do not guarantee identical outputs, automatic discovery,
 tools, or approval behavior across hosts.
-See [current validation evidence](docs/validation-v0.1.1.md) and the
-[initial validation record](docs/validation-v0.1.0.md) for tested scope and limitations.
+See [current validation evidence](docs/validation-v0.1.1.md), the
+[initial validation record](docs/validation-v0.1.0.md), and the
+[2026-09-25 adversarial review](docs/adversarial-review-2026-09-25.md) for tested scope and limitations.
 There is no mandatory creator, agent-flow, CLI, or model dependency at runtime.
 
 ## Maintain and release
