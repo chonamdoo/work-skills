@@ -7,10 +7,15 @@ archived, only the final message). Each review asked for zero findings when
 nothing is justified and required, for every finding, a quoted line, an
 evidence type, and a direct comparison of impact scope, benefits, and drawbacks
 against leaving the text unchanged. The same yardstick was applied to both
-rounds. Raw outputs and prompts are under
-[tests/behavior/evidence/adversarial-review-2026-09-25](../tests/behavior/evidence/adversarial-review-2026-09-25);
-trailing whitespace on the archived prompts' blank numbered lines was stripped
-for the repository whitespace check.
+rounds. Raw outputs are under
+[tests/behavior/evidence/adversarial-review-2026-09-25](../tests/behavior/evidence/adversarial-review-2026-09-25).
+The round 1 prompt is archived in full (trailing whitespace on its blank
+numbered lines was stripped for the repository whitespace check). The round 2
+prompt embeds five third-party files verbatim and is not archived; its header,
+section order, per-section origins, and SHA-256 digests are in
+`work-to-skill.prompt-manifest.md`, so identical input to both reviewers is
+verifiable by digest but the prompt is not reproducible from this repository
+alone.
 
 | | Codex Astra | Claude Fable |
 | --- | --- | --- |
