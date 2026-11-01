@@ -159,10 +159,18 @@ Example request:
 Files use the [Agent Skills format](https://agentskills.io/specification).
 Shared instructions do not guarantee identical outputs, automatic discovery,
 tools, or approval behavior across hosts.
-See [current validation evidence](docs/validation-v0.1.1.md), the
+See the [2026-11-01 comparative evaluation](docs/evaluation-2026-11-01.md),
+[current validation evidence](docs/validation-v0.1.1.md), the
 [initial validation record](docs/validation-v0.1.0.md), the
 [2026-09-25 adversarial review](docs/adversarial-review-2026-09-25.md), and the
 [2026-11-01 review and probes](docs/adversarial-review-2026-11-01.md) for tested scope and limitations.
+
+The evaluation used three synthetic rule sets and one model. Generated skills did
+not do the work more correctly than the same notes supplied directly. A skill's
+likely benefits are reuse and automatic selection, which were not measured. For a
+one-off task, giving the agent the notes is as good. Claude Code 2.1.316 selected
+`work-to-skill` for 4 of 5 skill-authoring requests and for none of 8 ordinary or
+adjacent requests. The other hosts' selection is untested.
 There is no mandatory creator, agent-flow, CLI, or model dependency at runtime.
 
 ## Maintain and release

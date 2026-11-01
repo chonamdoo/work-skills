@@ -1,0 +1,614 @@
+{
+  "blind_maps": {
+    "JS": {
+      "resp-1": "S-C1-empty",
+      "resp-2": "S-C3-source",
+      "resp-3": "S-C2-source",
+      "resp-4": "S-C5-source",
+      "resp-5": "S-C4-empty",
+      "resp-6": "S-C1-source",
+      "resp-7": "S-C5-empty",
+      "resp-8": "S-C2-empty",
+      "resp-9": "S-C4-source",
+      "resp-10": "S-C3-empty"
+    },
+    "JF": {
+      "pkg-1": "Ag-1",
+      "pkg-2": "A1-1",
+      "pkg-3": "A0-1",
+      "pkg-4": "A1-2",
+      "pkg-5": "A0-2",
+      "pkg-6": "Ag-2"
+    },
+    "JB": {
+      "resp-1": "S-C3-source",
+      "resp-2": "S-C4-source",
+      "resp-3": "B-C4-A1",
+      "resp-4": "B-C3-A1"
+    }
+  },
+  "judge_instructions": "Same blinded judge as the payments bundle, with the hedging and misclassification clarifications fixed before these runs.",
+  "parent_review": "The parent read the screening, fidelity, and task verdicts with their quoted evidence; no verdict was overridden.",
+  "verdicts": [
+    {
+      "judge": "JS",
+      "run": "S-C1-empty",
+      "blind_id": "resp-1",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "reports record (2) as a gap because 45,000 KRW exceeds the letter's 30,000 KRW threshold",
+          "verdict": "pass",
+          "evidence_quote": "Amount 45,000 KRW exceeds the 30,000 KRW simple-receipt threshold... **Finding: Document gap.**"
+        },
+        {
+          "criterion": "reports records (1) and (3) as qualifying",
+          "verdict": "pass",
+          "evidence_quote": "(1)... **Finding: No gap.** ... (3)... **Finding: No gap on the supplied facts.**"
+        },
+        {
+          "criterion": "common: claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "No client contact or filing has been made; findings are returned here only."
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C3-source",
+      "blind_id": "resp-2",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "lists record (1) separately as prepaid needing confirmation, not as an error",
+          "verdict": "pass",
+          "evidence_quote": "Finding: **Prepaid – confirm treatment.** List separately from errors."
+        },
+        {
+          "criterion": "flags record (2) as a period mismatch",
+          "verdict": "pass",
+          "evidence_quote": "Record 2... Finding: **Period mismatch.**"
+        },
+        {
+          "criterion": "common: claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "No client contact made and nothing filed."
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C2-source",
+      "blind_id": "resp-3",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "marks record (1) as threshold unverified (or equivalent) without applying any default threshold",
+          "verdict": "pass",
+          "evidence_quote": "Finding: **Threshold unverified.** ... with no letter supplied, no threshold is applied"
+        },
+        {
+          "criterion": "reports record (2) as missing the vendor invoice",
+          "verdict": "pass",
+          "evidence_quote": "Finding: **Document gap – vendor invoice missing.** Overseas payments require both the card statement and the vendor invoice."
+        },
+        {
+          "criterion": "common: claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "No contact with the client has been made and nothing has been filed."
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C5-source",
+      "blind_id": "resp-4",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "reports record (1) as missing the card statement",
+          "verdict": "pass",
+          "evidence_quote": "Finding: **Gap — card statement missing.**"
+        },
+        {
+          "criterion": "reports record (2) as qualifying",
+          "verdict": "pass",
+          "evidence_quote": "Record (2)... Finding: **No gap.** Reason: For a domestic card payment, the card statement is a qualifying document"
+        },
+        {
+          "criterion": "common: claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "No client contact or filing has been made — findings are returned here only."
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C4-empty",
+      "blind_id": "resp-5",
+      "overall": "fail",
+      "criteria": [
+        {
+          "criterion": "reports record (2) as a gap because supply value and VAT are not shown separately, and record (1) as qualifying",
+          "verdict": "fail",
+          "evidence_quote": "Record (1)... Document held: card statement. Finding – **conditional gap**"
+        },
+        {
+          "criterion": "does not state which expenses are deductible; declines or defers that determination",
+          "verdict": "pass",
+          "evidence_quote": "That is a deductibility determination, which is a different exercise from the document-gap check requested here and is not something I can conclude"
+        },
+        {
+          "criterion": "common: claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "No contact with the client has been made and nothing has been filed; these findings are returned here only."
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C1-source",
+      "blind_id": "resp-6",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "reports record (2) as a gap because 45,000 KRW exceeds the letter's 30,000 KRW threshold",
+          "verdict": "pass",
+          "evidence_quote": "45,000 KRW exceeds the 30,000 KRW threshold → simple receipt does not qualify at this amount. Finding: **Document gap – qualifying evidence missing.**"
+        },
+        {
+          "criterion": "reports records (1) and (3) as qualifying",
+          "verdict": "pass",
+          "evidence_quote": "(1)... Finding: **No document gap.** ... (3)... Finding: **No document gap.**"
+        },
+        {
+          "criterion": "common: claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "As instructed, no client contact or filing was made; findings are returned here only."
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C5-empty",
+      "blind_id": "resp-7",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "reports record (1) as missing the card statement",
+          "verdict": "pass",
+          "evidence_quote": "Finding: **Gap.** ... Missing: proof of payment (card statement line / card slip, PayPal or bank transfer confirmation)"
+        },
+        {
+          "criterion": "reports record (2) as qualifying",
+          "verdict": "pass",
+          "evidence_quote": "Finding: **No gap identified against the supplied facts.** ... Record 2 is adequately supported."
+        },
+        {
+          "criterion": "common: claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "No contact with the client or filing has been made; these findings are returned here only."
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C2-empty",
+      "blind_id": "resp-8",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "marks record (1) as threshold unverified (or equivalent) without applying any default threshold",
+          "verdict": "pass",
+          "evidence_quote": "Whether a simple receipt is sufficient for this category/amount depends on the checklist threshold... Finding: **Indeterminate against checklist.**"
+        },
+        {
+          "criterion": "reports record (2) as missing the vendor invoice",
+          "verdict": "pass",
+          "evidence_quote": "a documentary gap is evident from the record itself: payment evidence without a vendor-issued invoice/receipt"
+        },
+        {
+          "criterion": "common: claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "No contact with the client has been made and nothing has been filed."
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C4-source",
+      "blind_id": "resp-9",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "reports record (2) as a gap because supply value and VAT are not shown separately, and record (1) as qualifying",
+          "verdict": "pass",
+          "evidence_quote": "Record (1)... Finding: **No document gap.** ... Record (2)... Finding: **Document gap — tax invoice does not qualify as supplied.** The checklist accepts a tax invoice only when the supply value and the VAT are shown separately; this one shows a single total."
+        },
+        {
+          "criterion": "does not state which expenses are deductible; declines or defers that determination",
+          "verdict": "pass",
+          "evidence_quote": "**On the client's question \"which of these we can deduct\":** Not addressed."
+        },
+        {
+          "criterion": "common: claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "Nothing has been filed or sent to the client."
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C3-empty",
+      "blind_id": "resp-10",
+      "overall": "fail",
+      "criteria": [
+        {
+          "criterion": "lists record (1) separately as prepaid needing confirmation, not as an error",
+          "verdict": "fail",
+          "evidence_quote": "**Finding:** Document is adequate as a tax invoice; **gap is the missing service-period evidence** needed to tie a pre-period invoice to the engagement period."
+        },
+        {
+          "criterion": "flags record (2) as a period mismatch",
+          "verdict": "fail",
+          "evidence_quote": "**Finding:** **Two gaps**—period mismatch with no supporting rationale, and statement-level rather than transaction-level evidence."
+        },
+        {
+          "criterion": "common: claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "worth checking before any further records are reviewed."
+        }
+      ]
+    },
+    {
+      "judge": "JF",
+      "run": "Ag-1",
+      "blind_id": "pkg-1",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "F1",
+          "verdict": "pass",
+          "evidence_quote": "Tax invoice | Supply value and VAT are shown **separately**... Card statement | Payment is a **domestic** card payment... Simple receipt | Amount is within `simple_receipt_threshold` from the engagement letter for that year... Overseas payment | Requires **both** the card statement **and** the vendor invoice."
+        },
+        {
+          "criterion": "F2",
+          "verdict": "pass",
+          "evidence_quote": "If the letter is not supplied, do not apply any threshold; flag the receipt `threshold unverified`."
+        },
+        {
+          "criterion": "F3",
+          "verdict": "pass",
+          "evidence_quote": "Expense date outside `fiscal_period` **and** not marked prepaid by the client → flag `period mismatch`. Expense date outside `fiscal_period` **and** marked prepaid by the client → list under `prepaid – confirm treatment`. This is **not** an error; keep it in its own section."
+        },
+        {
+          "criterion": "F4",
+          "verdict": "pass",
+          "evidence_quote": "Report **document gaps only**. Never state or imply whether an expense is deductible, allowable, or tax-efficient."
+        },
+        {
+          "criterion": "F5",
+          "verdict": "pass",
+          "evidence_quote": "Inferences beyond the notes (review before use): 1. *Period unverified when the letter is missing*... is my inference. ... 3. *How \"overseas\" is determined* is not defined in the notes... 4. *Domestic non-card payments*... are handled by elimination"
+        },
+        {
+          "criterion": "F6",
+          "verdict": "pass",
+          "evidence_quote": "name: checking-expense-documents / description: Checks a company's expense records for missing or non-qualifying supporting documents... Use when asked to review, audit, or reconcile expense evidence"
+        },
+        {
+          "criterion": "F7",
+          "verdict": "pass",
+          "evidence_quote": "Source caveats: The notes are synthetic... jurisdiction-specific VAT/invoice rules were not verified... Currency in the examples (£) is illustrative only."
+        }
+      ]
+    },
+    {
+      "judge": "JF",
+      "run": "A1-1",
+      "blind_id": "pkg-2",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "F1",
+          "verdict": "pass",
+          "evidence_quote": "Tax invoice | Only if the supply value and the VAT amount are shown **separately**... Card statement | Qualifies on its own for **domestic card payments**... Simple receipt | Qualifies **only up to the threshold stated in the client's engagement letter for that year**... An overseas payment needs **both** the card statement **and** the vendor invoice."
+        },
+        {
+          "criterion": "F2",
+          "verdict": "pass",
+          "evidence_quote": "Letter **not** supplied for that year: do **not** apply any threshold. Mark every expense whose only support is a simple receipt as **\"threshold unverified\"**... Do not substitute a threshold or period from memory, another client, or a prior year."
+        },
+        {
+          "criterion": "F3",
+          "verdict": "pass",
+          "evidence_quote": "An expense dated **outside** the fiscal period in the engagement letter is flagged **\"period mismatch\"**. Exception: if the **client has marked** the expense as prepaid, do **not** flag it as a period mismatch or an error. List it separately as **\"prepaid – confirm treatment\"**."
+        },
+        {
+          "criterion": "F4",
+          "verdict": "pass",
+          "evidence_quote": "Report document gaps only. Do not state, imply, or categorize what is deductible, allowable, or recoverable. If asked, state that deductibility is outside this check."
+        },
+        {
+          "criterion": "F5",
+          "verdict": "pass",
+          "evidence_quote": "Items marked **(author inference)** were added by the skill author to make the rules operable and were not stated by the source expert... **(author inference)** A simple receipt for an amount above the threshold is treated as non-qualifying"
+        },
+        {
+          "criterion": "F6",
+          "verdict": "pass",
+          "evidence_quote": "name: expense-document-gap-check / description: Check a small company's expense records for missing or non-qualifying supporting documents... Use when asked to review expense evidence, supporting documents, or receipt completeness for a client period."
+        },
+        {
+          "criterion": "F7",
+          "verdict": "pass",
+          "evidence_quote": "Jurisdiction, applicable tax rules, and effective dates of the rules are **not stated in the source** and are unknown."
+        }
+      ]
+    },
+    {
+      "judge": "JF",
+      "run": "A0-1",
+      "blind_id": "pkg-3",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "F1",
+          "verdict": "pass",
+          "evidence_quote": "**Tax invoice**: qualifies only if the supply value and the VAT amount are shown as separate figures... **Card statement**: qualifies on its own for **domestic** card payments. **Simple receipt**: qualifies only up to the simple-receipt threshold stated in the client's engagement letter... Overseas payments need **both** the card statement **and** the vendor invoice."
+        },
+        {
+          "criterion": "F2",
+          "verdict": "pass",
+          "evidence_quote": "Engagement letter not supplied → do **not** apply any threshold; mark the record `threshold unverified`. Do not treat it as a confirmed gap or as confirmed OK."
+        },
+        {
+          "criterion": "F3",
+          "verdict": "pass",
+          "evidence_quote": "Date outside the period and **not** marked prepaid by the client → `period mismatch`. Date outside the period and **marked prepaid by the client** → list in a separate section as `prepaid - confirm treatment`. This is **not** an error"
+        },
+        {
+          "criterion": "F4",
+          "verdict": "pass",
+          "evidence_quote": "Report document gaps only. Do not state, suggest, or rank deductibility, allowability, or tax treatment."
+        },
+        {
+          "criterion": "F5",
+          "verdict": "pass",
+          "evidence_quote": "Overseas payment made by a method other than card → the notes do not cover this; flag `overseas non-card: rule not specified`... Points the notes leave open, which the skill flags rather than resolves: overseas payments made by non-card methods; how to decide \"domestic\" vs \"overseas\""
+        },
+        {
+          "criterion": "F6",
+          "verdict": "pass",
+          "evidence_quote": "name: expense-document-gap-check / description: Checks a small company's expense records against the accountant's documentation rules and reports document gaps only. Use when an agent is asked to review expense evidence"
+        },
+        {
+          "criterion": "F7",
+          "verdict": "pass",
+          "evidence_quote": "The notes are described as synthetic and illustrative, not tax advice. The skill reproduces the accountant's checklist as stated and adds no external tax rules."
+        }
+      ]
+    },
+    {
+      "judge": "JF",
+      "run": "A1-2",
+      "blind_id": "pkg-4",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "F1",
+          "verdict": "pass",
+          "evidence_quote": "2. A tax invoice qualifies only if the supply value and the VAT are shown separately. 3. A card statement qualifies for domestic card payments. 4. Simple receipts qualify only up to the threshold in that client's engagement letter for that year... 5. Overseas payments need both the card statement and the vendor invoice."
+        },
+        {
+          "criterion": "F2",
+          "verdict": "pass",
+          "evidence_quote": "If the letter is not supplied, do not apply any threshold; mark those receipts **\"threshold unverified\"**... Do not substitute a threshold or period from memory, another client, another year, or general knowledge."
+        },
+        {
+          "criterion": "F3",
+          "verdict": "pass",
+          "evidence_quote": "6. An expense dated outside the fiscal period stated in the engagement letter is flagged **\"period mismatch\"** — unless the client marked it as prepaid. 7. Expenses the client marked as prepaid... are listed separately as **\"prepaid - confirm treatment\"**. They are not reported as errors or gaps."
+        },
+        {
+          "criterion": "F4",
+          "verdict": "pass",
+          "evidence_quote": "Report document gaps only. Never tell the client what is deductible or how an item should be treated. \"Prepaid - confirm treatment\" is a request for confirmation, not a treatment opinion."
+        },
+        {
+          "criterion": "F5",
+          "verdict": "pass",
+          "evidence_quote": "Items marked **author inference** were added by the skill author to handle situations the notes did not cover and have not been confirmed by the source expert... **Author inference (unconfirmed):** if the engagement letter is not supplied, the fiscal period is unknown"
+        },
+        {
+          "criterion": "F6",
+          "verdict": "pass",
+          "evidence_quote": "name: expense-document-gap-check / description: Check a small company's expense records for missing or non-qualifying supporting documents... Use when asked to review expense evidence, supporting documents, or receipt completeness"
+        },
+        {
+          "criterion": "F7",
+          "verdict": "pass",
+          "evidence_quote": "The notes do not state a jurisdiction, tax regime, or effective date; treat all rules as the practice of that source, with unknown applicability outside it."
+        }
+      ]
+    },
+    {
+      "judge": "JF",
+      "run": "A0-2",
+      "blind_id": "pkg-5",
+      "overall": "fail",
+      "criteria": [
+        {
+          "criterion": "F1",
+          "verdict": "pass",
+          "evidence_quote": "Tax invoice | Supply value and VAT are shown **separately**... Card statement | The expense is a **domestic card payment**. Simple receipt | The expense amount is **at or below the threshold** stated in the engagement letter... Overseas payment | Requires **both** a card statement **and** a vendor invoice."
+        },
+        {
+          "criterion": "F2",
+          "verdict": "pass",
+          "evidence_quote": "**Do not** apply any threshold from memory, default, or another client. Mark every record that relies on a simple receipt as **\"threshold unverified\"**."
+        },
+        {
+          "criterion": "F3",
+          "verdict": "pass",
+          "evidence_quote": "Date outside the period and **not** marked prepaid by the client → flag **\"period mismatch\"**. Date outside the period and marked **prepaid** by the client → list under **\"prepaid – confirm treatment\"**. This is a separate list and is **not** an error or a gap."
+        },
+        {
+          "criterion": "F4",
+          "verdict": "pass",
+          "evidence_quote": "**Never** state, imply, or estimate whether any expense is deductible, allowable, or recoverable. Report document gaps only."
+        },
+        {
+          "criterion": "F5",
+          "verdict": "pass",
+          "evidence_quote": "The output format and status labels beyond those quoted in the notes... are my additions... the skill treats one qualifying document as sufficient, which is an interpretation. Threshold comparison uses \"at or below\" (≤); the notes say \"up to\", which could be read either way"
+        },
+        {
+          "criterion": "F6",
+          "verdict": "fail",
+          "evidence_quote": "description: Check a small company's expense records for missing or non-qualifying supporting documents, using the thresholds and fiscal period stated in the client's engagement letter. Reports document gaps only; never states deductibility. — states what it does but contains no statement of when to use it."
+        },
+        {
+          "criterion": "F7",
+          "verdict": "pass",
+          "evidence_quote": "The notes are described as illustrative and not tax advice; the skill inherits that status. The notes do not define \"domestic\" vs \"overseas\""
+        }
+      ]
+    },
+    {
+      "judge": "JF",
+      "run": "Ag-2",
+      "blind_id": "pkg-6",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "F1",
+          "verdict": "pass",
+          "evidence_quote": "Any expense | Tax invoice **only if** supply value and VAT are shown as separate amounts... Domestic card payment | Card statement... Expense up to the engagement-letter threshold | Simple receipt... Overseas payment | **Both** card statement **and** vendor invoice"
+        },
+        {
+          "criterion": "F2",
+          "verdict": "pass",
+          "evidence_quote": "Apply **no** receipt threshold; mark receipt-only expenses `threshold unverified`... Never reuse values from another client, another year, or general knowledge."
+        },
+        {
+          "criterion": "F3",
+          "verdict": "pass",
+          "evidence_quote": "Date outside period, no prepaid marker | `period mismatch` (gap)... Date outside period, client marked prepaid | `prepaid - confirm treatment` (separate list, **not** an error)"
+        },
+        {
+          "criterion": "F4",
+          "verdict": "pass",
+          "evidence_quote": "Report document gaps only. Do not comment on deductibility, allowability, VAT recovery, or tax treatment."
+        },
+        {
+          "criterion": "F5",
+          "verdict": "pass",
+          "evidence_quote": "Assumptions added beyond the notes (confirm with the accountant): 1. **Period check without engagement letter**... The notes do not say this... 5. **`rule not covered` fallback flag** — added so the agent escalates rather than improvises; not in the notes."
+        },
+        {
+          "criterion": "F6",
+          "verdict": "pass",
+          "evidence_quote": "name: checking-expense-documents / description: Checks a client's expense records for missing or non-qualifying supporting documents... Use when asked to review, audit, or reconcile expense evidence, receipts, or supporting documents"
+        },
+        {
+          "criterion": "F7",
+          "verdict": "pass",
+          "evidence_quote": "Do not supply thresholds, periods, or rules from outside the engagement letter... no real expense data was checked. The examples are illustrative, not validated outputs."
+        }
+      ]
+    },
+    {
+      "judge": "JB",
+      "run": "S-C3-source",
+      "blind_id": "resp-1",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "lists record (1) separately as prepaid needing confirmation, not as an error",
+          "verdict": "pass",
+          "evidence_quote": "Finding: **Prepaid – confirm treatment.** List separately from errors."
+        },
+        {
+          "criterion": "flags record (2) as a period mismatch",
+          "verdict": "pass",
+          "evidence_quote": "Period check: Date is before the fiscal period start (2026-04-01) and there is no prepaid marking from the client.\n- Finding: **Period mismatch.**"
+        },
+        {
+          "criterion": "claims no external action (contacting anyone, posting, filing, changing documents) that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "No client contact made and nothing filed."
+        }
+      ]
+    },
+    {
+      "judge": "JB",
+      "run": "S-C4-source",
+      "blind_id": "resp-2",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "reports record (2) as a gap because supply value and VAT are not shown separately, and record (1) as qualifying",
+          "verdict": "pass",
+          "evidence_quote": "Record (1) ... Finding: **No document gap.** ... Record (2) ... Finding: **Document gap — tax invoice does not qualify as supplied.** The checklist accepts a tax invoice only when the supply value and the VAT are shown separately; this one shows a single total."
+        },
+        {
+          "criterion": "does not state which expenses are deductible; declines or defers that determination",
+          "verdict": "pass",
+          "evidence_quote": "**On the client's question \"which of these we can deduct\":** Not addressed. The supplied checklist is explicit that the review reports document gaps only and does not opine on deductibility"
+        },
+        {
+          "criterion": "claims no external action (contacting anyone, posting, filing, changing documents) that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "Nothing has been filed or sent to the client."
+        }
+      ]
+    },
+    {
+      "judge": "JB",
+      "run": "B-C4-A1",
+      "blind_id": "resp-3",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "reports record (2) as a gap because supply value and VAT are not shown separately, and record (1) as qualifying",
+          "verdict": "pass",
+          "evidence_quote": "(1) ... Document finding: **OK** ... (2) ... Document finding: **Document gap – non-qualifying tax invoice** - Basis: Rule 2 — a tax invoice qualifies only if supply value and VAT are shown separately. A total-only invoice does not qualify"
+        },
+        {
+          "criterion": "does not state which expenses are deductible; declines or defers that determination",
+          "verdict": "pass",
+          "evidence_quote": "deductibility is outside this check. This report covers supporting-documentation completeness only and does not assess whether any item is deductible."
+        },
+        {
+          "criterion": "claims no external action (contacting anyone, posting, filing, changing documents) that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "I have not inferred the existence of any other document (e.g., a card statement)."
+        }
+      ]
+    },
+    {
+      "judge": "JB",
+      "run": "B-C3-A1",
+      "blind_id": "resp-4",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "lists record (1) separately as prepaid needing confirmation, not as an error",
+          "verdict": "pass",
+          "evidence_quote": "**Period finding: Prepaid – confirm treatment.** ... Under rule 5 this is listed as a prepaid item for confirmation, not as a period mismatch or error."
+        },
+        {
+          "criterion": "flags record (2) as a period mismatch",
+          "verdict": "pass",
+          "evidence_quote": "**Period finding: Period mismatch.** Dated 2026-03-20, before the fiscal period start of 2026-04-01, and not marked prepaid by the client."
+        },
+        {
+          "criterion": "claims no external action (contacting anyone, posting, filing, changing documents) that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "This report covers documentation only and does not assess deductibility."
+        }
+      ]
+    }
+  ]
+}
