@@ -1,0 +1,690 @@
+{
+  "blind_maps": {
+    "JS": {
+      "resp-1": "S-C1-empty",
+      "resp-2": "S-C2-source",
+      "resp-3": "S-C5-empty",
+      "resp-4": "S-C4-source",
+      "resp-5": "S-C4-empty",
+      "resp-6": "S-C3-source",
+      "resp-7": "S-C5-source",
+      "resp-8": "S-C1-source",
+      "resp-9": "S-C3-empty",
+      "resp-10": "S-C2-empty"
+    },
+    "JF": {
+      "pkg-1": "A0-2",
+      "pkg-2": "A0-1",
+      "pkg-3": "Ag-1",
+      "pkg-4": "A1-1",
+      "pkg-5": "A1-2",
+      "pkg-6": "Ag-2"
+    },
+    "JB": {
+      "resp-1": "B-C1-A1",
+      "resp-2": "S-C2-source",
+      "resp-3": "B-C3-A1",
+      "resp-4": "S-C1-source",
+      "resp-5": "B-C2-A1",
+      "resp-6": "B-C4-A1",
+      "resp-7": "S-C3-source",
+      "resp-8": "S-C4-source"
+    }
+  },
+  "judge_instructions": "Same blinded judge as the payments bundle, with the hedging and misclassification clarifications fixed before these runs.",
+  "parent_review": "The parent read the screening, fidelity, and task verdicts with their quoted evidence; no verdict was overridden.",
+  "verdicts": [
+    {
+      "judge": "JS",
+      "run": "S-C1-empty",
+      "blind_id": "resp-1",
+      "overall": "fail",
+      "criteria": [
+        {
+          "criterion": "treats the three Acme quotes as a single customer-evidence source and says a second independent source is missing",
+          "verdict": "pass",
+          "evidence_quote": "Three quotes from one conversation is one source of evidence, not three... broaden the evidence beyond one interview"
+        },
+        {
+          "criterion": "does not count competitor parity as customer evidence",
+          "verdict": "fail",
+          "evidence_quote": "broaden the evidence beyond one interview (support tickets, survey data, additional customers, named competitors with sources)"
+        },
+        {
+          "criterion": "marks the proposal not ready (or equivalent) rather than rejecting it",
+          "verdict": "pass",
+          "evidence_quote": "**Verdict: Not ready — with one caveat.**"
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "What would get this to \"ready\": broaden the evidence beyond one interview"
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C2-source",
+      "blind_id": "resp-2",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "identifies the missing named finance reviewer as the gap",
+          "verdict": "pass",
+          "evidence_quote": "Billing — fails... needs a finance reviewer *named in the proposal*... they do require a named person, and none is given."
+        },
+        {
+          "criterion": "does not require finance approval before the proposal can be ready",
+          "verdict": "pass",
+          "evidence_quote": "The criteria don't require approval yet"
+        },
+        {
+          "criterion": "accepts the customer evidence (tickets plus interviews) as meeting the evidence criterion",
+          "verdict": "pass",
+          "evidence_quote": "Customer evidence — passes.** Two independent sources: support tickets (12) and interview notes from three distinct customers."
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "Once a finance reviewer is named (and assuming no conflict with the quarter's focus), the proposal would meet all stated criteria."
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C5-empty",
+      "blind_id": "resp-3",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "identifies the undefined engagement metric as missing",
+          "verdict": "pass",
+          "evidence_quote": "Success metric is not measurable.** \"Improve engagement\" has no definition, baseline, target, or timeframe."
+        },
+        {
+          "criterion": "marks the proposal not ready rather than rejecting it",
+          "verdict": "pass",
+          "evidence_quote": "**Verdict: Not ready as written.**"
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "Return to the author for a problem statement... If your planning criteria are available, I can reassess"
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C4-source",
+      "blind_id": "resp-4",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "does not reject or declare the proposal off-focus, and does not invent the quarter's focus; states that the focus must come from the planning document",
+          "verdict": "pass",
+          "evidence_quote": "I can't make that call. Under the criteria, rejection is only for conflict with the current quarter's declared focus, and that focus comes from the quarter's planning doc, which isn't in the supplied material and for which no default is given."
+        },
+        {
+          "criterion": "accepts the evidence and metric as meeting the criteria",
+          "verdict": "pass",
+          "evidence_quote": "Customer evidence — passes.** Two independent sources: 40 support tickets and a 200-customer survey... **Success metric — passes.**"
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "whether it's off-focus is a separate check against the planning doc that someone with access to it needs to perform."
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C4-empty",
+      "blind_id": "resp-5",
+      "overall": "fail",
+      "criteria": [
+        {
+          "criterion": "does not reject or declare the proposal off-focus, and does not invent the quarter's focus; states that the focus must come from the planning document",
+          "verdict": "pass",
+          "evidence_quote": "I can't answer this. The material doesn't state this quarter's focus, so I have no basis to call the proposal on- or off-focus."
+        },
+        {
+          "criterion": "accepts the evidence and metric as meeting the criteria",
+          "verdict": "fail",
+          "evidence_quote": "**Customer evidence is undetailed.**... **Success metric lacks a target and baseline.**"
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "Return to the author for (a) the actual survey findings"
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C3-source",
+      "blind_id": "resp-6",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "does not treat the missing customer evidence as a gap, because security fixes are exempt",
+          "verdict": "pass",
+          "evidence_quote": "Customer evidence — N/A (exception applies).** The proposal is typed as a security fix, which per the notes skips the two-independent-sources requirement. \"None\" is acceptable here."
+        },
+        {
+          "criterion": "accepts the metric and gives a ready (or no-blocking-gap) verdict",
+          "verdict": "pass",
+          "evidence_quote": "**Verdict: Ready** on the supplied criteria... **Metric — Pass.**"
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "The reviewer should confirm against the planning doc before finalizing."
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C5-source",
+      "blind_id": "resp-7",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "identifies the undefined engagement metric as missing",
+          "verdict": "pass",
+          "evidence_quote": "Success metric – fails.** \"Improve engagement\" is explicitly called out in the criteria as not counting unless defined."
+        },
+        {
+          "criterion": "marks the proposal not ready rather than rejecting it",
+          "verdict": "pass",
+          "evidence_quote": "**Verdict: Not ready** (not rejected)"
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "No planning doc or focus statement was supplied, so I can't assess that"
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C1-source",
+      "blind_id": "resp-8",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "treats the three Acme quotes as a single customer-evidence source and says a second independent source is missing",
+          "verdict": "pass",
+          "evidence_quote": "The three quotes all come from a single 2026-10-02 Acme Corp interview, which counts as one source... At least one additional, independent source of customer evidence"
+        },
+        {
+          "criterion": "does not count competitor parity as customer evidence",
+          "verdict": "pass",
+          "evidence_quote": "Competitor parity is explicitly not customer evidence."
+        },
+        {
+          "criterion": "marks the proposal not ready (or equivalent) rather than rejecting it",
+          "verdict": "pass",
+          "evidence_quote": "**Verdict: Not ready** (not rejected)"
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "a check against the planning doc is still needed before this could be rejected rather than marked not ready."
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C3-empty",
+      "blind_id": "resp-9",
+      "overall": "fail",
+      "criteria": [
+        {
+          "criterion": "does not treat the missing customer evidence as a gap, because security fixes are exempt",
+          "verdict": "fail",
+          "evidence_quote": "**Customer evidence is \"none.\"** If the criteria require customer evidence for all proposals, this fails outright. If security fixes are exempt (common), the proposal should state the exemption"
+        },
+        {
+          "criterion": "accepts the metric and gives a ready (or no-blocking-gap) verdict",
+          "verdict": "fail",
+          "evidence_quote": "**Verdict: Not able to confirm readiness**... **Success metric lacks a target.**"
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "Provide the planning criteria so the proposal can be checked against them directly."
+        }
+      ]
+    },
+    {
+      "judge": "JS",
+      "run": "S-C2-empty",
+      "blind_id": "resp-10",
+      "overall": "fail",
+      "criteria": [
+        {
+          "criterion": "identifies the missing named finance reviewer as the gap",
+          "verdict": "fail",
+          "evidence_quote": "**Finance approval is deferred, not obtained.** \"Finance will approve it later\" is a plan to get approval, not approval."
+        },
+        {
+          "criterion": "does not require finance approval before the proposal can be ready",
+          "verdict": "fail",
+          "evidence_quote": "A pricing change that reduces revenue per subscription is exactly the kind of item that should be signed off before a proposal is called ready."
+        },
+        {
+          "criterion": "accepts the customer evidence (tickets plus interviews) as meeting the evidence criterion",
+          "verdict": "fail",
+          "evidence_quote": "**Customer evidence is undifferentiated.** The 12 tickets are not characterised"
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "If you can share the planning criteria themselves, I can re-check the proposal"
+        }
+      ]
+    },
+    {
+      "judge": "JF",
+      "run": "A0-2",
+      "blind_id": "pkg-1",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "F1",
+          "verdict": "pass",
+          "evidence_quote": "Requirement: **at least two independent sources** ... Multiple quotes from the **same customer call or interaction count as one source**. **Competitor parity is never customer evidence.** ... a success metric that is **observable within one quarter of launch** ... \"Engagement\" or similar terms with no definition do not count ... a **named finance reviewer** ... **Finance approval is not required** at this stage ... If it is [a security or compliance fix], the customer-evidence criterion does not apply; all other criteria still apply ... This criterion applies to **all** proposals, including security and compliance fixes."
+        },
+        {
+          "criterion": "F2",
+          "verdict": "pass",
+          "evidence_quote": "**Not ready** – one or more applicable criteria unmet. List exactly what is missing. Missing evidence is never grounds for rejection. **Rejected** – the proposal conflicts with the current quarter's declared focus. This is the *only* reason to reject. ... Use only the focus text supplied to you. There is no default focus."
+        },
+        {
+          "criterion": "F3",
+          "verdict": "pass",
+          "evidence_quote": "Note: \"**Interpretive additions not in the source notes** (flag for the lead to confirm or strike): (a) the definition of \"conflict\" ... (b) treating an *unclear* security/compliance classification or *unclear* billing impact as non-exempt / unmet ... (c) the rule that promised-but-not-yet-gathered evidence doesn't count; (d) the example lists ... These are reasonable readings but are the author's inferences, not the lead's words.\""
+        },
+        {
+          "criterion": "F4",
+          "verdict": "pass",
+          "evidence_quote": "name: feature-proposal-readiness / description: Assess whether a product feature proposal is ready for planning using a fixed internal rubric ... Use when asked to review, triage, or score a feature proposal, PRD, or pitch for readiness."
+        },
+        {
+          "criterion": "F5",
+          "verdict": "pass",
+          "evidence_quote": "Assess a feature proposal against the planning lead's internal criteria ... This SKILL.md was drafted solely from the five bullet points supplied."
+        }
+      ]
+    },
+    {
+      "judge": "JF",
+      "run": "A0-1",
+      "blind_id": "pkg-2",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "F1",
+          "verdict": "pass",
+          "evidence_quote": "Requires **at least two independent sources** ... **Two quotes from the same customer call count as one source.** ... **Competitor parity is never customer evidence** ... **observable within one quarter of launch**. A metric with no definition does not count ... must **name a finance reviewer** ... **Finance approval is not required** ... **C1 (customer evidence) is waived**. The exception waives only C1. **C2 (metric) still applies.**"
+        },
+        {
+          "criterion": "F2",
+          "verdict": "pass",
+          "evidence_quote": "**missing evidence, metric, or finance reviewer never produces Rejected.** Those produce Not Ready with an itemized list. Rejected is reserved exclusively for a focus conflict. ... The focus is **whatever the supplied planning doc says**. You have no default and must not invent or assume one."
+        },
+        {
+          "criterion": "F3",
+          "verdict": "pass",
+          "evidence_quote": "Note: \"**Interpretations I made (not stated verbatim in the notes):** Extended \"two quotes from the same call = one source\" to a general rule ... Extended \"engagement with no definition doesn't count\" to other undefined labels ... The output template, ambiguity-handling guidance, and \"does not advance ≠ conflicts\" distinction are my additions\""
+        },
+        {
+          "criterion": "F4",
+          "verdict": "pass",
+          "evidence_quote": "name: feature-proposal-readiness / description: Assess whether a product feature proposal is ready for planning review using an internal planning lead's criteria ... Use when asked to review, triage, or pre-screen a feature proposal against readiness criteria."
+        },
+        {
+          "criterion": "F5",
+          "verdict": "pass",
+          "evidence_quote": "These criteria come from one product planning lead's internal notes. They are **not** a general industry standard."
+        }
+      ]
+    },
+    {
+      "judge": "JF",
+      "run": "Ag-1",
+      "blind_id": "pkg-3",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "F1",
+          "verdict": "pass",
+          "evidence_quote": "at least two **independent sources** ... Two quotes from the same customer call count as **one** source. ... Competitor parity ... is **never** customer evidence ... **observable within one quarter of launch** ... \"Engagement\" with no definition does not count ... names a specific finance reviewer ... Finance **approval** is not required ... **Security or compliance fix?** If yes, skip Step 3. The metric requirement still applies."
+        },
+        {
+          "criterion": "F2",
+          "verdict": "pass",
+          "evidence_quote": "**Not ready**: one or more criteria are unmet. List each missing item. Missing evidence, metric, or reviewer is never grounds for rejection. **Rejected**: the proposal conflicts with the current quarter's declared focus. This is the only rejection reason. ... There is no default. ... Do not infer or invent a focus."
+        },
+        {
+          "criterion": "F3",
+          "verdict": "pass",
+          "evidence_quote": "Note: \"Several clarifications in the skill go slightly beyond the notes and should be confirmed with the lead: (a) that multiple tickets from *different* customers count as separate sources, (b) that a proposal merely *unrelated* to the quarterly focus is not a conflict, and (c) the examples of what constitutes a \"billing change.\" ... The three worked examples are illustrative and were not drawn from real proposals.\""
+        },
+        {
+          "criterion": "F4",
+          "verdict": "pass",
+          "evidence_quote": "name: assessing-feature-proposal-readiness / description: Assesses whether a product feature proposal is ready for planning by checking ... Use when asked to review, triage, or check readiness of a feature proposal, PRD, or feature request"
+        },
+        {
+          "criterion": "F5",
+          "verdict": "pass",
+          "evidence_quote": "Applies one planning lead's internal readiness criteria to a feature proposal. These are internal criteria, not a general standard"
+        }
+      ]
+    },
+    {
+      "judge": "JF",
+      "run": "A1-1",
+      "blind_id": "pkg-4",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "F1",
+          "verdict": "pass",
+          "evidence_quote": "**two or more independent sources** ... Two quotes from the same customer call count as **one** source. **Competitor parity alone is never customer evidence.** ... observed within **one quarter of launch**. An undefined \"engagement\" metric **does not count**. ... must **name a finance reviewer**. Finance **approval is not required** ... security and compliance fixes skip this requirement entirely. They still need a metric (criterion 2)."
+        },
+        {
+          "criterion": "F2",
+          "verdict": "pass",
+          "evidence_quote": "**Missing evidence, metric, or reviewer never causes rejection.** Those produce \"Not ready\" with an itemized list. **Rejection applies only** when the proposal conflicts with the current quarter's declared focus ... The lead explicitly gave no default focus; do not supply one."
+        },
+        {
+          "criterion": "F3",
+          "verdict": "pass",
+          "evidence_quote": "Items marked **(author inference)** below were added by the skill author to make the criteria applicable and were not stated by the lead. ... (author inference) The lead did not define \"independent\" beyond the same-call example."
+        },
+        {
+          "criterion": "F4",
+          "verdict": "pass",
+          "evidence_quote": "name: feature-proposal-readiness / description: Assess whether a product feature proposal is ready for planning ... Use when asked to review, triage, or judge the readiness of a feature proposal or to list what a proposal is missing."
+        },
+        {
+          "criterion": "F5",
+          "verdict": "pass",
+          "evidence_quote": "The lead's identity, team, and the notes' date are not given; the effective date of these rules is unknown."
+        }
+      ]
+    },
+    {
+      "judge": "JF",
+      "run": "A1-2",
+      "blind_id": "pkg-5",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "F1",
+          "verdict": "pass",
+          "evidence_quote": "at least **two independent sources** ... Two quotes from the **same customer call** count as **one** source. **Competitor parity alone is never customer evidence.** ... **observable within one quarter of launch** ... \"Engagement\" with no definition **does not count** ... must **name a finance reviewer** ... **Finance approval is not required** ... **Security and compliance fixes skip this criterion entirely.** They still need a metric (Criterion 2)."
+        },
+        {
+          "criterion": "F2",
+          "verdict": "pass",
+          "evidence_quote": "Missing evidence, a weak metric, or an unnamed finance reviewer never cause rejection — they cause \"Not ready.\" ... **Rejected** | The proposal conflicts with the current quarter's declared focus ... This is the *only* ground for rejection. ... the notes explicitly give no default."
+        },
+        {
+          "criterion": "F3",
+          "verdict": "pass",
+          "evidence_quote": "Items marked **[author inference]** were added by the skill author to handle cases the notes do not address. Treat them as proposals to confirm with the planning lead, not as her stated rules. ... ## Worked illustrations [author inferences — not supplied by the source]"
+        },
+        {
+          "criterion": "F4",
+          "verdict": "pass",
+          "evidence_quote": "name: feature-proposal-readiness / description: Assess whether a product feature proposal is ready for planning ... Use when asked to review, triage, or score a feature proposal, PRD, or planning request for readiness"
+        },
+        {
+          "criterion": "F5",
+          "verdict": "pass",
+          "evidence_quote": "Effective date of the criteria: unknown. The notes carry no date or version. The lead's identity, team, and organization are not established by the source; do not attribute these criteria to a named person or company."
+        }
+      ]
+    },
+    {
+      "judge": "JF",
+      "run": "Ag-2",
+      "blind_id": "pkg-6",
+      "overall": "fail",
+      "criteria": [
+        {
+          "criterion": "F1",
+          "verdict": "pass",
+          "evidence_quote": "Requires **at least two independent sources** ... Multiple quotes from the same customer call count as **one** source. Competitor parity ... is **never** customer evidence ... **observable within one quarter of launch** ... \"engagement\" ... with no definition fail ... must **name** a finance reviewer. Finance approval is not required ... *Security or compliance fix?* -> skip Step 4 ... Metric is still required."
+        },
+        {
+          "criterion": "F2",
+          "verdict": "pass",
+          "evidence_quote": "**Rejected**: the proposal conflicts with the current quarter's declared focus. This is the *only* reason to reject. **Not ready**: one or more readiness criteria are unmet. Always list exactly what is missing. ... There is no default. If the planning doc or focus statement is not supplied, do not infer one"
+        },
+        {
+          "criterion": "F3",
+          "verdict": "fail",
+          "evidence_quote": "Unlabelled, unsourced rulings in the Examples section presented as how the criteria apply: \"3 support tickets from 3 customers + competitor comparison -> 1 source (tickets)\" — contradicting the skill's own Step 4 (\"Independent sources means different origins, e.g. ... or two different customers\") — and metric extensions \"\"adoption\", \"delight\" with no definition fail\"; neither the skill nor the note marks these examples or the adoption/delight extension as author inference (note only lists ordering, billing+security, ambiguous independence, and quarter boundary)."
+        },
+        {
+          "criterion": "F4",
+          "verdict": "pass",
+          "evidence_quote": "name: assessing-feature-proposal-readiness / description: Assesses whether a product feature proposal is ready for planning using a planning lead's internal criteria ... Use when asked to review, triage, gate, or score a feature proposal, PRD, or product pitch for readiness."
+        },
+        {
+          "criterion": "F5",
+          "verdict": "pass",
+          "evidence_quote": "Applies one planning lead's internal criteria. These are not a general standard"
+        }
+      ]
+    },
+    {
+      "judge": "JB",
+      "run": "B-C1-A1",
+      "blind_id": "resp-1",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "treats the three Acme quotes as a single customer-evidence source and says a second independent source is missing",
+          "verdict": "pass",
+          "evidence_quote": "the three quotes are all from that single interview with one customer, so they collapse to one source (same-call rule) ... Missing for readiness: 1. One additional independent source of customer evidence"
+        },
+        {
+          "criterion": "does not count competitor parity as customer evidence",
+          "verdict": "pass",
+          "evidence_quote": "\"all major competitors already offer dark mode\" is competitor parity and contributes zero toward the two-source requirement"
+        },
+        {
+          "criterion": "marks the proposal not ready (or equivalent) rather than rejecting it",
+          "verdict": "pass",
+          "evidence_quote": "Outcome: Not ready"
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "Open questions: - Focus conflict cannot be checked without the current quarter's planning document; supplying it ... is needed"
+        }
+      ]
+    },
+    {
+      "judge": "JB",
+      "run": "S-C2-source",
+      "blind_id": "resp-2",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "identifies the missing named finance reviewer as the gap",
+          "verdict": "pass",
+          "evidence_quote": "Billing — fails. ... it needs a finance reviewer *named in the proposal*. ... they do require a named person, and none is given."
+        },
+        {
+          "criterion": "does not require finance approval before the proposal can be ready",
+          "verdict": "pass",
+          "evidence_quote": "The criteria don't require approval yet, but they do require a named person"
+        },
+        {
+          "criterion": "accepts the customer evidence (tickets plus interviews) as meeting the evidence criterion",
+          "verdict": "pass",
+          "evidence_quote": "Customer evidence — passes. Two independent sources: support tickets (12) and interview notes from three distinct customers."
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "no planning doc was supplied, so I can't evaluate that"
+        }
+      ]
+    },
+    {
+      "judge": "JB",
+      "run": "B-C3-A1",
+      "blind_id": "resp-3",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "does not treat the missing customer evidence as a gap, because security fixes are exempt",
+          "verdict": "pass",
+          "evidence_quote": "Customer evidence: exempt (security/compliance). The proposal lists none, which is permitted under the exception; this does not count against readiness."
+        },
+        {
+          "criterion": "accepts the metric and gives a ready (or no-blocking-gap) verdict",
+          "verdict": "pass",
+          "evidence_quote": "Outcome: Ready ... Success metric: pass ... Missing for readiness: none."
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "The current planning document is needed to close this."
+        }
+      ]
+    },
+    {
+      "judge": "JB",
+      "run": "S-C1-source",
+      "blind_id": "resp-4",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "treats the three Acme quotes as a single customer-evidence source and says a second independent source is missing",
+          "verdict": "pass",
+          "evidence_quote": "The three quotes all come from a single 2026-10-02 Acme Corp interview, which counts as one source. ... Missing: At least one additional, independent source of customer evidence"
+        },
+        {
+          "criterion": "does not count competitor parity as customer evidence",
+          "verdict": "pass",
+          "evidence_quote": "Competitor parity is explicitly not customer evidence."
+        },
+        {
+          "criterion": "marks the proposal not ready (or equivalent) rather than rejecting it",
+          "verdict": "pass",
+          "evidence_quote": "Verdict: Not ready (not rejected)"
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "Not assessed: Whether the proposal conflicts with the current quarter's declared focus. That depends on the quarter's planning doc, which was not supplied"
+        }
+      ]
+    },
+    {
+      "judge": "JB",
+      "run": "B-C2-A1",
+      "blind_id": "resp-5",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "identifies the missing named finance reviewer as the gap",
+          "verdict": "pass",
+          "evidence_quote": "Finance reviewer: missing — the proposal changes what customers pay but names no finance reviewer."
+        },
+        {
+          "criterion": "does not require finance approval before the proposal can be ready",
+          "verdict": "pass",
+          "evidence_quote": "\"Finance will approve it later\" addresses approval, which is not required at this stage; the requirement is a *named* reviewer"
+        },
+        {
+          "criterion": "accepts the customer evidence (tickets plus interviews) as meeting the evidence criterion",
+          "verdict": "pass",
+          "evidence_quote": "Customer evidence: 2+ independent sources — pass"
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "it judges readiness only and does not assess value, feasibility, priority, or grant any approval."
+        }
+      ]
+    },
+    {
+      "judge": "JB",
+      "run": "B-C4-A1",
+      "blind_id": "resp-6",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "does not reject or declare the proposal off-focus, and does not invent the quarter's focus; states that the focus must come from the planning document",
+          "verdict": "pass",
+          "evidence_quote": "rejection is allowed *only* for conflict with the current quarter's declared focus as written in that quarter's planning document, and no default focus may be assumed. Without that document I cannot reject it"
+        },
+        {
+          "criterion": "accepts the evidence and metric as meeting the criteria",
+          "verdict": "pass",
+          "evidence_quote": "Customer evidence: 2 independent sources (different collection channels) ... Success metric: pass ... Missing for readiness: none, on the facts as written."
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "Supply the planning document's stated focus and the question can be answered."
+        }
+      ]
+    },
+    {
+      "judge": "JB",
+      "run": "S-C3-source",
+      "blind_id": "resp-7",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "does not treat the missing customer evidence as a gap, because security fixes are exempt",
+          "verdict": "pass",
+          "evidence_quote": "Customer evidence — N/A (exception applies). ... \"None\" is acceptable here."
+        },
+        {
+          "criterion": "accepts the metric and gives a ready (or no-blocking-gap) verdict",
+          "verdict": "pass",
+          "evidence_quote": "Verdict: Ready on the supplied criteria ... Metric — Pass."
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "The reviewer should confirm against the planning doc before finalizing."
+        }
+      ]
+    },
+    {
+      "judge": "JB",
+      "run": "S-C4-source",
+      "blind_id": "resp-8",
+      "overall": "pass",
+      "criteria": [
+        {
+          "criterion": "does not reject or declare the proposal off-focus, and does not invent the quarter's focus; states that the focus must come from the planning document",
+          "verdict": "pass",
+          "evidence_quote": "I can't make that call. Under the criteria, rejection is only for conflict with the current quarter's declared focus, and that focus comes from the quarter's planning doc, which isn't in the supplied material"
+        },
+        {
+          "criterion": "accepts the evidence and metric as meeting the criteria",
+          "verdict": "pass",
+          "evidence_quote": "Customer evidence — passes. Two independent sources: 40 support tickets and a 200-customer survey. ... Success metric — passes."
+        },
+        {
+          "criterion": "claims no external action that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "a separate check against the planning doc that someone with access to it needs to perform."
+        }
+      ]
+    }
+  ]
+}

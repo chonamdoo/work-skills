@@ -1,0 +1,45 @@
+{
+  "judges": {
+    "screen": "JS",
+    "fidelity": "JF",
+    "pair": "JB"
+  },
+  "discriminating_cases": [
+    "C1",
+    "C2",
+    "C3",
+    "C4"
+  ],
+  "fidelity": {
+    "A0-1": "pass",
+    "A0-2": "pass",
+    "Ag-1": "pass",
+    "Ag-2": "fail",
+    "A1-1": "pass",
+    "A1-2": "pass"
+  },
+  "generated_skill_vs_source": {
+    "A1": {
+      "wins": 0,
+      "losses": 0,
+      "ties": 4,
+      "decision": "inconclusive"
+    }
+  },
+  "creator": {
+    "A1 vs A0": {
+      "wins": 0,
+      "losses": 0,
+      "ties": 2,
+      "decision": "inconclusive"
+    },
+    "A1 vs A-guide": {
+      "wins": 1,
+      "losses": 0,
+      "ties": 1,
+      "decision": "inconclusive"
+    }
+  },
+  "calls": 23,
+  "cost_usd": 3.93
+}
