@@ -1,4 +1,6 @@
 {
+  "contract_sha256": "689139afa200a71b8ec8b2d9f75cda4f07654a410622261a27aa9539593b4036",
+  "runs_sha256": "469b9f51e917c7bf284117d350c69f6b9641fe707ff1918c8b9a910f37a973a9",
   "judges": {
     "screen": "JS",
     "fidelity": "JF",

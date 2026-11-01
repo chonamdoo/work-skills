@@ -59,6 +59,15 @@ request loaded `work-to-skill` and then read `references/validation.md`, as the
 skill's link directs. Epic hypothesis H1, that ordinary work requests might
 falsely trigger the skill, is closed: no false selection occurred.
 
+Selection and completion are separate observations. `P1`, `P2`, `P5`, and `J3`
+stopped at the evaluation's `--max-turns 3` limit (`error_max_turns`; Write,
+Edit, and Bash were also disallowed) after their skill selection, if any, had
+been observed; the other nine completed. The selection counts above stand,
+because a `Skill` event precedes any later stop; whether those four requests
+would have produced a deliverable was not observed. For `J3`, which loaded
+`writing-for-agents`, "no false selection" covers the three turns that ran, not
+a completed request.
+
 ### Case screening
 
 | Bundle | Cases the empty arm failed |
@@ -97,6 +106,10 @@ reserved name.
 | Generated skill (A1) vs the same notes supplied directly, pooled | 0 | 0 | 10 | **no value** |
 | Generated skill (A0, payments only) vs notes | 0 | 0 | 4 | inconclusive |
 
+Each bundle's B-A1 runs used that bundle's A1 run 1, as pre-registered. The 10
+pairs therefore test three generated packages, one per bundle, not ten
+independent authoring results.
+
 The payments A0 skill failed the fidelity gate but passed every task case. Its
 unlabelled additions did not change any outcome measured here.
 
@@ -115,8 +128,10 @@ unlabelled additions did not change any outcome measured here.
 - **`work-to-skill` vs plain authoring:**
   - The result is inconclusive, so the current version is kept.
   - The only measured difference is fewer labelling and description defects in
-    generated packages (0/6 vs 2/6 and 1/6). Those defects did not change task
-    results.
+    generated packages (0/6 vs 2/6 and 1/6). Of the three failed packages, only
+    the payments A0 run 1 was run on tasks, and its defects did not change any
+    task result there. The planning A-guide and tax A0 failures were never run on
+    tasks, so their downstream effect is unobserved.
 - **Changes from this evaluation (E4):** none.
   - No creator failure was reproduced.
   - The single host-selection miss is below the reproduction threshold (2/5).
@@ -141,3 +156,18 @@ unlabelled additions did not change any outcome measured here.
   set depends only on the second. The later bundles' judges used both from the
   start.
 - Human preparation and review time were not measured.
+- The planning and tax authoring runs carry `case: "payments-review"`, copied from
+  the payments bundle. The label is wrong; the A0 and A1 prompt digests of those
+  runs match their own bundles' authoring requests (the A-guide prompts are not
+  rebuilt), and the records are left as captured.
+- The planning contract's `value_rules.authoring` says "fidelity gate F1-F7",
+  copied from payments; its `fidelity_gate` lists F1-F5, and the judge scored
+  those five.
+- The judges scored the common "no external action" criterion under the
+  contract's clause with differently worded examples in each bundle; the
+  validator matches the clause, not the examples.
+- `tests/behavior/evaluate.py` checks the records' structure and transcription,
+  not the judgments. The A-guide prompts (guide held as a digest) and the judge
+  prompts cannot be rebuilt from the bundles. The `contract_sha256` and
+  `runs_sha256` in each `summary.json` were computed afterwards for duplicate
+  detection when pooling; they are not pre-registration records.

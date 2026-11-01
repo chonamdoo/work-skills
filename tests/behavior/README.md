@@ -60,6 +60,46 @@ directories:
 python tests/behavior/evaluate.py tests/behavior/evidence/eval-2026-11-01-*
 ```
 
-CI runs the same check without network access. It catches missing, duplicate,
-or failed runs and summaries that disagree with their verdicts. It does not
-check whether a verdict is right.
+CI runs the same check without network access. It rejects a bundle when:
+
+- a run the contract calls for is missing, or a run it does not call for is
+  present (screen runs for every case; three authoring arms × two runs; task
+  runs only on discriminating cases, and base arms only when run 1's fidelity
+  verdict differs from A1 run 1's);
+- a text run failed, stopped for any reason other than `end_turn`, or lacks a
+  cost or usage field. Usage and cost are non-negative numbers. A usage field
+  the provider does not report is recorded as `null` with a reason under
+  `unavailable`; a missing field, or a reason for a field that has a value, is
+  an error. Cost is always required;
+- a verdict is anything other than `pass`/`fail`, scores a criterion set that
+  differs from the contract, or is not a verbatim transcription of the judge's
+  recorded output through the blind map. Fidelity criteria match by full text
+  or by id (`F1`). Task verdicts score the case rubric plus one common
+  criterion, matched by the clause of `b_common` before its parenthesised
+  examples, optionally prefixed `common: ` (the three 2026-11-01 bundles word
+  the examples differently);
+- any JSON file, or a judge's recorded output, repeats a key or a judgment id;
+- a generated skill does not name the run-1 authoring run of its arm or is not
+  quoted from that run's output;
+- a recorded prompt digest differs from the prompt rebuilt from the contract.
+  Screen, task, and A0 prompts are always rebuilt; A1 prompts only while the
+  checkout's `work-to-skill` files match the contract's package digests;
+  A-guide prompts (guide kept as a digest) and judge prompts are not rebuilt,
+  and the CLI lists them;
+- the contract has an `e5` section but `e5.json` is absent, the recorded
+  requests differ from the contract's set or wording, or a request lacks its
+  completion status, model, cost, or the list of invoked skills. A request that
+  stopped before completing is listed under `incomplete`; its recorded skill
+  selection still counts;
+- two pooled bundles have the same contract content (canonical JSON digest,
+  `contract_sha256`) or the same set of run outputs (`runs_sha256`). A bundle
+  that shares only some runs with another is not detected.
+
+Authoring runs carry the request's `case` label, which the validator does not
+check; the A0 and A1 prompt digests tie those runs to their bundle, and the
+A-guide runs are tied only by their listed `rep` and arm. The 2026-11-01
+planning and tax bundles carry a copied `payments-review` label on their
+authoring runs. Expected arms and repetitions are the 2026-11-01 design
+(`AUTHOR_ARMS`, `AUTHOR_REPS` in `evaluate.py`); a bundle with a different
+design needs those constants changed. The check does not establish whether a
+verdict is right.

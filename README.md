@@ -167,10 +167,13 @@ See the [2026-11-01 comparative evaluation](docs/evaluation-2026-11-01.md),
 
 The evaluation used three synthetic rule sets and one model. Generated skills did
 not do the work more correctly than the same notes supplied directly. A skill's
-likely benefits are reuse and automatic selection, which were not measured. For a
-one-off task, giving the agent the notes is as good. Claude Code 2.1.316 selected
-`work-to-skill` for 4 of 5 skill-authoring requests and for none of 8 ordinary or
-adjacent requests. The other hosts' selection is untested.
+likely benefits are reuse and automatic selection, which were not measured;
+cost and time per run were recorded but not compared. For a one-off task, give
+the agent the notes; no accuracy gain from a skill was observed. Claude Code
+2.1.316 selected `work-to-skill` for 4 of 5 skill-authoring requests and for
+none of 8 ordinary or adjacent requests; 4 of the 13 requests stopped at the
+evaluation's 3-turn limit after any selection had been observed. The other
+hosts' selection is untested.
 There is no mandatory creator, agent-flow, CLI, or model dependency at runtime.
 
 ## Maintain and release

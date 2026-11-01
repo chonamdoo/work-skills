@@ -1,4 +1,6 @@
 {
+  "contract_sha256": "617d83cf95d723f8951d761b168d9fb43a168ce80453a09f583617388f839c47",
+  "runs_sha256": "bb2f6a2e7e1ec4b711139ceeca2d049a2f66b62bf94a8275bde33d375446b95d",
   "judges": {
     "screen": "JS",
     "fidelity": "JF",
@@ -53,6 +55,12 @@
     "adjacent_false": 0,
     "missed": [
       "P3"
+    ],
+    "incomplete": [
+      "P1",
+      "P2",
+      "P5",
+      "J3"
     ],
     "pass": true
   },
