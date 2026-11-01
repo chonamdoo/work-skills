@@ -1,0 +1,318 @@
+{
+  "reviewer_model": "claude-fable-5-1",
+  "t1_no_change_recommended": false,
+  "t1_already_aligned": [
+    "description이 무엇을 하는지와 언제 쓰는지를 모두 담고, 일반 업무 요청을 음성 트리거로 명시한다(TARGET-SKILL:3) — BEST-PRACTICES '효과적인 description 작성'.",
+    "구체성 수준을 결과의 위험에 비례시킨다(TARGET-SKILL:40-44 'failure or stopping conditions proportionate to the consequences') — BEST-PRACTICES '적절한 자유도 설정'.",
+    "references/는 조건부 자료에만, 읽을 조건을 적은 링크와 함께 두고 공통 지침은 entrypoint에 둔다(TARGET-SKILL:46,56); 대상 자체가 참조 1개·1단계다 — BEST-PRACTICES '점진적 공개', '깊게 중첩된 참조를 피하세요'.",
+    "scripts/는 신뢰성을 실질적으로 높일 때만, 변경 스크립트는 검증한다(TARGET-SKILL:46) — BEST-PRACTICES '결정론적 작업에는 스크립트를 선호'.",
+    "도구 설치를 가정하지 않고 접근 조건과 부재 시 가능한 범위를 적는다(TARGET-SKILL:38) — BEST-PRACTICES '도구가 설치되어 있다고 가정하지 마세요'.",
+    "무스킬/이전 버전 기준선, 개발 사례와 held-out 분리, 미실행 항목 보고(TARGET-VALIDATION:60,64) — BEST-PRACTICES '평가 주도 개발' 3·5단계.",
+    "모델 자기보고가 아니라 host가 실제로 선택·로딩한 기록을 요구한다(TARGET-VALIDATION:40,56) — BEST-PRACTICES 'Claude가 Skills를 탐색하는 방식 관찰하기'.",
+    "작성일·수집일과 규칙 시행일을 구분해 시효 정보를 다룬다(TARGET-SKILL:26) — BEST-PRACTICES '시간에 민감한 정보를 피하세요'의 good 예시(날짜가 붙은 deprecated 기록)와 같은 방향."
+  ],
+  "t1_justified_divergences": [
+    {
+      "best_practice": "평가를 먼저 구축: 스킬 없이 대표 작업을 실행해 격차를 기록한 뒤 최소 지침을 쓴다",
+      "target_lines": "TARGET-SKILL:8; TARGET-VALIDATION:3,60",
+      "verdict": "justified",
+      "reason": "대상의 범위는 executor가 아예 갖지 않은 전문 규칙을 포착하는 것이라, 격차는 정의상 존재하고 기준선 비교는 '향상 주장' 시점으로 이동돼 있다(:60). 다만 이 이동은 '이미 아는 것은 쓰지 않는다' 필터를 약화시킨다. 그 부작용은 finding 2로 분리해 가설로 남긴다."
+    },
+    {
+      "best_practice": "SKILL.md 본문 500줄 미만",
+      "target_lines": "TARGET-SKILL:46",
+      "verdict": "justified",
+      "reason": "문서 자체가 '권고'이며, 대상은 '각 파일에 구체적 용도'를 실효 제약으로 둔다. 대상은 58+64줄이다. 생성물이 500줄을 넘기며 분리하지 않은 관측이 없으므로 수치 상한을 넣을 근거가 없다."
+    },
+    {
+      "best_practice": "name 예약어(anthropic, claude)·64자·XML 금지, description 1,024자·XML 금지",
+      "target_lines": "TARGET-SKILL:36,48",
+      "verdict": "unclear",
+      "reason": "대상은 호스트 요구는 검증 후 반영하라(:48)고 하지만 :36의 이름 규칙은 소문자·하이픈만 적는다. 구조적 누락이므로 finding 1에서 다룬다."
+    },
+    {
+      "best_practice": "description은 항상 3인칭",
+      "target_lines": "TARGET-SKILL:3,36",
+      "verdict": "justified",
+      "reason": "문서의 good 예시('Extract text and tables... Use when...')가 대상과 같은 동사원형 형식이다. 경고가 실제로 금지하는 것은 1·2인칭('I can', 'You can')이며 대상에 없다. 생성물 지침(:36)도 능력과 조건을 적으라고만 하므로 충돌이 없다."
+    },
+    {
+      "best_practice": "참조는 SKILL.md에서 한 단계 깊이",
+      "target_lines": "TARGET-SKILL:46",
+      "verdict": "justified",
+      "reason": "링크를 entrypoint에 두고 공통 지침을 entrypoint에 유지하라는 문장이 사실상 1단계를 요구한다. 대상 자체도 1단계다. 명시 문장을 추가할 관측 근거가 없다."
+    },
+    {
+      "best_practice": "'Skill 작성' Skill은 필요 없다 (Tip)",
+      "target_lines": "TARGET-SKILL:8-32 전체",
+      "verdict": "unclear",
+      "reason": "대상의 가치 주장은 형식이 아니라 출처·예외·권한 경계 보존이다. EPIC-PROBE n=1에서 A0/A1 분리가 관측되지 않았고 저장소도 미검증으로 적어 두었다. 결론은 T2 비교의 결과에 달려 있으며, 지금 본문을 바꿀 근거는 아니다."
+    },
+    {
+      "best_practice": "Haiku/Sonnet/Opus 모두로 테스트",
+      "target_lines": "TARGET-SKILL:58; TARGET-VALIDATION:56,58",
+      "verdict": "justified",
+      "reason": "대상은 모델 행렬을 의무화하는 대신 실제 검사한 host·model·tool 조건으로 주장을 제한한다. host-중립 스킬에 Anthropic 모델 목록을 박는 것이 오히려 :48과 충돌한다."
+    },
+    {
+      "best_practice": "동명사형 이름 권장",
+      "target_lines": "TARGET-SKILL:2,36",
+      "verdict": "justified",
+      "reason": "문서가 'consider'로 적고 행동 지향 이름을 허용 대안으로 명시한다. 취향 수준이다."
+    },
+    {
+      "best_practice": "복잡한 작업에는 체크리스트 워크플로",
+      "target_lines": "TARGET-SKILL:42-43",
+      "verdict": "justified",
+      "reason": "문서도 낮은 자유도를 취약·순서 의존 작업에 한정한다. 대상은 순서가 중요한 절차에만 순서를 적게 하고(:43) 판단형 지식에는 고정 순서를 강제하지 않는다(:42)."
+    },
+    {
+      "best_practice": "최소 세 개의 평가 생성",
+      "target_lines": "TARGET-VALIDATION:3,7",
+      "verdict": "justified",
+      "reason": "3은 통계적 표본이 아니라 출발점이다(EPIC §2도 동일). 대상은 성공 사례 + 경계/예외 사례를 요구해(:7) 실질적으로 2개 이상을 강제하며, 사례 수보다 사례의 종류를 기준으로 삼는 쪽이 ceiling 사례 양산을 막는다."
+    }
+  ],
+  "t1_findings": [
+    {
+      "title": "이름·description 규칙이 호스트의 frontmatter 검증 한계(예약어·길이·XML)를 가리키지 않음",
+      "target_lines": "TARGET-SKILL:36 (관련 :48, :54)",
+      "target_quote": "Use a short lowercase, hyphenated name matching its folder. Describe the generated skill's actual capability and application conditions",
+      "source": "BEST-PRACTICES 'Skill 구조' Note 및 '기술 노트 > YAML frontmatter 요구 사항'",
+      "source_quote": "name: 최대 64자 / 소문자, 숫자, 하이픈만 포함해야 함 / XML 태그를 포함할 수 없음 / 예약어를 포함할 수 없음: anthropic, claude. description: 비어 있지 않아야 함 / 최대 1,024자 / XML 태그를 포함할 수 없음",
+      "evidence_type": "contract_conflict",
+      "problem": ":36을 그대로 따른 이름(예: claude-review-helper, 숫자 포함 여부 불명, 64자 초과)과 1,024자 초과 description은 Anthropic 플랫폼 업로드 검증에서 거부된다. :48은 '호스트별 metadata'를 검증 후 반영하라고 하지만 name/description은 공통 필드라 그 조항의 적용 대상으로 읽히기 어렵고, :54의 'Check frontmatter'는 무엇을 검사할지 정하지 않는다.",
+      "proposed_change": ":36 첫 문장 뒤에 한 절 추가: 'and confirm the destination host's documented frontmatter limits (length, character set, reserved words) when known.' 호스트별 수치는 본문에 넣지 않는다.",
+      "impact_scope": "SKILL.md 1문장. validation.md·테스트·배포본 변경 없음. 기존 생성물에는 소급 영향 없음.",
+      "benefits_vs_current": "Anthropic API/claude.ai 목적지로 가는 생성물의 업로드 실패 1종을 작성 시점에 막는다. 비용은 한 절이다.",
+      "drawbacks_vs_current": "호스트 제약을 모르는 경우 실질 효과가 없다. 'when known'이 없으면 :48의 호스트-중립 원칙과 충돌한다.",
+      "when_not_to_change": "생성물이 Claude Code 로컬 설치에만 쓰이거나, 저장소 package test·핸드오프 체크(:54)가 이미 이 한계를 기계적으로 검사하는 경우.",
+      "discriminating_experiment": "같은 요청을 A1 조건 5회 실행하되 요청에 'claude' 또는 'anthropic'이 자연스럽게 들어가는 능력명(예: 'our Claude usage review rules')을 준다. 생성 name에 예약어가 들어가는 빈도를 센다. 0/5면 모델이 이미 알고 있어 변경 불필요.",
+      "confidence": 0.4
+    },
+    {
+      "title": "작성 과정에 관한 문장이 생성물 본문에 섞여 들어감(provenance와 다른 성격)",
+      "target_lines": "TARGET-SKILL:38; TARGET-VALIDATION:21",
+      "target_quote": "It must carry its own essential context and references, without runtime dependence on work-to-skill, another creator, or this conversation. / Carry only task-relevant success criteria, exceptions, and verification guidance into the generated skill",
+      "source": "BEST-PRACTICES '간결함이 핵심입니다' + EPIC-PROBE runs.A_current_creator.skill_md",
+      "source_quote": "Claude가 아직 가지고 있지 않은 컨텍스트만 추가하세요 ... 이 단락이 토큰 비용을 정당화하는가? / (probe 생성물) All essential rules are included here. No tools, external references, or runtime dependency on an authoring skill are required.",
+      "evidence_type": "behavioral_hypothesis",
+      "problem": "A1 생성물은 A0보다 14% 더 길었고(3706 vs 3250 bytes), 추가분의 상당 부분은 executor의 결정을 바꾸지 않는 작성 과정 진술이다('No usage history is supplied or required', 'no runtime dependency on an authoring skill'). 이는 :38·:21의 요구 사항을 생성물 본문에 '선언'하는 형태로 옮긴 것이며, 그 내용은 :58의 핸드오프 보고에 속한다. n=1이므로 패턴인지 우연인지 알 수 없다.",
+      "proposed_change": "지금은 변경 없음. 실험에서 재현되면 :38 끝에 한 절: 'state dependency absence and checks performed in the handoff report, not in the generated skill body.'",
+      "impact_scope": "실험 결과에 따라 SKILL.md 1문장. 생성물 토큰 수에만 영향.",
+      "benefits_vs_current": "생성물당 수십~수백 토큰 절감과 executor 지침의 잡음 감소. 효과 크기는 미측정.",
+      "drawbacks_vs_current": "효력일·출처 같은 결정 관련 provenance(:24,26)까지 줄이는 쪽으로 오독될 위험. 문장 추가 자체가 작성 스킬 토큰을 늘린다.",
+      "when_not_to_change": "실험에서 A0와 A1의 작성 과정 문장 수가 비슷하거나, 해당 문장이 B 결과를 바꾸는 경우.",
+      "discriminating_experiment": "원자료 묶음 2개 × A0/A1 × 5회 작성. 생성 SKILL.md에서 '작성 과정'(사용 이력 부재, 작성 스킬 의존성 부재, 수행한 검사) 문장 수를 센다. A1이 2묶음 모두에서 유의하게 많고, 그 문장을 제거한 변형과 원본의 B 결과가 동일하면 변경한다.",
+      "confidence": 0.35
+    },
+    {
+      "title": "'no-skill baseline'에 동일 전문지식 접근이 요구되는지 본문이 정하지 않음",
+      "target_lines": "TARGET-VALIDATION:60",
+      "target_quote": "Claim improvement only against a no-skill or previous-version baseline under comparable conditions.",
+      "source": "EPIC §3 P1 및 §4 B; BEST-PRACTICES '평가 주도 개발' 3단계",
+      "source_quote": "스킬에만 전문지식을 주고 무스킬에는 주지 않으면 지식 공급 효과를 스킬 형식 효과로 오인한다 / B-source와 스킬 비교군 모두 동일한 사실·전문 규칙에 접근할 수 있어야 한다",
+      "evidence_type": "behavioral_hypothesis",
+      "problem": "'comparable conditions'가 지식 접근 동등성을 포함하는지 읽는 이에 따라 달라진다. 빈 기준선만 두면 스킬은 거의 항상 이기며, 그 승리는 포장이 아니라 지식 공급의 효과다. 에픽은 이를 B-source로 해결하지만 validation.md에는 그 원칙이 없다. 다만 독자가 실제로 빈 기준선을 만드는지는 관측되지 않았다.",
+      "proposed_change": "지금은 변경 없음. 실험에서 재현되면 :60을 'a baseline given the same source material without the skill, or the previous version, under comparable conditions'로 좁게 고친다.",
+      "impact_scope": "validation.md 1문장. 평가 방법에만 영향, 생성물 무관.",
+      "benefits_vs_current": "향상 주장의 가장 흔한 교란 요인 1개를 본문에서 차단한다.",
+      "drawbacks_vs_current": "원자료가 너무 커서 그대로 줄 수 없는 경우를 무시하면 비현실적 기준선을 강제한다. 에픽처럼 '파일로 읽는 대안'까지 적으면 길어진다.",
+      "when_not_to_change": "실험에서 fresh executor가 이미 원자료 동등 접근 기준선을 설계하는 경우(3/3).",
+      "discriminating_experiment": "validation.md와 '생성 스킬이 무스킬보다 낫다는 주장을 평가할 계획을 세워라'는 요청만 준 fresh executor 3회. 기준선 군이 원자료를 받는지 기록. 0~1/3이면 변경.",
+      "confidence": 0.4
+    }
+  ],
+  "t2_items": [
+    {
+      "epic_item": "결정 헤더: 평가·계측 보강이 필요하다",
+      "verdict": "modify",
+      "attack": "단일 유지보수자, 배포 스킬 1개, 외부 이용자 수 불명인 저장소에서 '효율 입증'은 누가 필요로 하는 주장인지 적지 않았다. 현재 문서들은 이미 향상을 미검증으로 표시해 과장이 없다. 계측 없음의 비용은 '주장을 못 한다'뿐이고, 계측 구축의 비용은 실제 돈과 시간이다.",
+      "impact_scope": "에픽 전체의 착수 여부",
+      "benefits": "주장 가능 범위가 넓어진다",
+      "drawbacks": "증명하려는 가치보다 증명 비용이 커질 수 있다",
+      "proposed_revision": "헤더에 '주장을 필요로 하는 소비자(README 호환성 표, 배포 설명, 사용자 질문)'와 '주장을 하지 않을 때의 손실'을 한 줄로 적고, 그 손실이 없으면 E1·E5만 하고 종료하는 출구를 둔다."
+    },
+    {
+      "epic_item": "P0 — 비교 실행기·계측",
+      "verdict": "modify",
+      "attack": "'얇은 실행기·명세·결과 형식·집계·host 어댑터'는 4개 구성 요소이고, 유지보수 대상이 스킬 본문(122줄)보다 커진다. 완료 기준의 무결성 검사(ID 연결·중복·누락)는 좋지만 의미적 결과는 보장하지 않는다고 에픽 스스로 인정한다. probe가 이미 omp helper로 돌아갔으므로 가장 싼 실행기는 이미 있다.",
+      "impact_scope": "tests/behavior/, CI 일부",
+      "benefits": "재실행·비용 비교·실패 추적 가능",
+      "drawbacks": "인프라 유지보수, API 비용, 범용화 유혹",
+      "proposed_revision": "실행기 대신 (1) run manifest JSON 스키마 1개, (2) 결과 JSONL 1개, (3) 집계·무결성 검사 스크립트 1개로 한정한다. host 어댑터는 실제 주 사용 host 1개만. 네트워크 없는 스키마 검증만 CI에 넣는다."
+    },
+    {
+      "epic_item": "P1 — 작성자 효과와 생성 스킬 효과 분리 (A0/A1/A2, B-*)",
+      "verdict": "modify",
+      "attack": "각 A 군은 작성 1회라 '스킬'이 표본 1개다. B-A0 vs B-A1 차이는 작성 표본 분산과 구분되지 않는다. probe처럼 모든 군이 통과하는 사례(ceiling)는 아무 정보도 주지 않는데, 사례 선정 단계가 이를 걸러내지 않는다. A2/B-A2는 후보가 없으면 생략한다고 돼 있어 현재는 실질 2×3 설계다.",
+      "impact_scope": "평가 설계, 실행 비용의 대부분",
+      "benefits": "지식 공급 효과와 포장 효과를 분리하는 유일한 설계",
+      "drawbacks": "군 수에 비례한 비용, 작성 분산 미통제",
+      "proposed_revision": "순서를 바꾼다: 먼저 B-empty와 B-source로 사례를 걸러 B-source가 실패하거나 흔들리는 '정보성 사례'만 남긴다. A는 군당 2회 작성해 작성 분산을 본다. A0와 A1 패키지가 axis 1(충실도) 기준으로 동일 판정이면 B-A0/B-A1은 돌리지 않고 '포장 효과 없음, 작성자 효과 없음'으로 기록한다."
+    },
+    {
+      "epic_item": "P1 — 실제 호스트 선택·파일 읽기·도구 사용",
+      "verdict": "keep",
+      "attack": "텍스트 API 평가로는 절대 얻을 수 없는 유일한 증거인데 순서가 E5로 밀려 있다. 호스트 버전 민감성은 단점이 아니라 보고 조건이다. 유일한 실제 약점: 관측 가능한 호스트(Claude Code transcript)와 불가능한 호스트가 섞이면 비교표가 비대칭이 된다.",
+      "impact_scope": "임시 설치 환경, README 호환성 표",
+      "benefits": "오선택·중복 로딩·참조 미읽기를 직접 관측",
+      "drawbacks": "호스트별 반복 필요, 경쟁 스킬 구성 재현 필요",
+      "proposed_revision": "주 사용 host 1개로 한정하고 E2 직후가 아니라 E1 직후에 실행한다. 양성 5·음성 5·인접 3 요청, 각 1회. 관측 불가 host는 표에서 unverified로만 남긴다."
+    },
+    {
+      "epic_item": "P2 — 재현된 실패에만 본문 변경",
+      "verdict": "keep",
+      "attack": "정책으로서는 옳다. 다만 '재현'의 기준(몇 회 중 몇 회)이 없어 1회 관측으로도 변경할 수 있다.",
+      "impact_scope": "SKILL.md/validation.md 변경 게이트",
+      "benefits": "취향 리팩터링 차단",
+      "drawbacks": "기준 없는 '재현'은 느슨하다",
+      "proposed_revision": "'동일 조건 5회 중 2회 이상, 또는 서로 다른 원자료 묶음 2개에서 각 1회 이상'을 재현의 최소 정의로 적는다."
+    },
+    {
+      "epic_item": "H1 — description 후미의 음성 조건과 host 단축",
+      "verdict": "modify",
+      "attack": "근거가 Codex 문서의 일반 권고뿐이고 저장소 관측은 없다. 현재 description은 약 370자로 1,024자 한계 안이라 Anthropic host 단축 가능성은 낮다. 검증 비용은 P1-host와 완전히 겹친다.",
+      "impact_scope": "SKILL.md:3",
+      "benefits": "오선택 감소 가능",
+      "drawbacks": "음성 조건을 앞으로 옮기면 양성 트리거가 약해질 수 있다",
+      "proposed_revision": "독립 항목으로 두지 않고 P1-host의 음성 요청 5건에 포함시킨다. 오선택 0/5면 폐기."
+    },
+    {
+      "epic_item": "H2 — validation.md:27 fresh-context A의 적용 범위",
+      "verdict": "modify",
+      "attack": "이전 리뷰(Fable, 0.4)와 동일한 가설을 다시 적었을 뿐 새 근거가 없다. 판별 실험은 텍스트만으로 싸게 가능한데 P2 하위에 묻혀 P0·P1 뒤로 밀렸다.",
+      "impact_scope": "validation.md:25-29",
+      "benefits": "중복 재작성 감소 가능",
+      "drawbacks": "조건을 좁히면 creator 회귀 검사 생략 위험",
+      "proposed_revision": "실행기 없이 지금 할 수 있는 5회 텍스트 probe로 분리한다: validation.md와 '이 생성물(제공)을 검증하라'는 요청을 fresh executor에 주고 불필요한 재작성·A 재실행 요구가 나오는지 센다. 2/5 이상이면 :25-29 적용 조건을 좁히고, 아니면 종결한다."
+    },
+    {
+      "epic_item": "H3 — 목적지 선결 조건이 평가-only 요청에도 적용",
+      "verdict": "drop",
+      "attack": "SKILL.md:14는 '현재 요청이나 환경에서 확인하고, 둘 다 없을 때만 묻는다'이다. 평가 대상 스킬의 경로가 요청에 포함되면 목적지는 이미 확정된다. :12가 변경 권한(allowed changes)을 식별하라고 하므로 평가-only에서는 쓰기가 발생하지 않는다. 텍스트상 가설의 전제가 약하고 관측도 없다.",
+      "impact_scope": "없음",
+      "benefits": "없음",
+      "drawbacks": "없음",
+      "proposed_revision": "삭제. P1-host 양성 요청에 평가-only 1건을 포함시켜 위치 질문이 나오면 그때 재개한다."
+    },
+    {
+      "epic_item": "§4 비교군 표 (A/B/C, inline vs native 추가군)",
+      "verdict": "modify",
+      "attack": "B-empty를 '선택'으로 뒀지만 ceiling 탐지에는 필수다: B-empty가 통과하는 사례는 어떤 군 비교도 무의미하다. inline vs native 추가군은 전달 방식 주장 전용으로 한정한 점은 옳다. 비용 축에서 B-source(원자료 ~1KB)와 B-A1(스킬 ~3.7KB)은 입력 토큰이 거의 결정적으로 정해져 '스킬이 더 비싸다'는 결론이 실험 전에 사실상 확정돼 있다.",
+      "impact_scope": "군 구성, 사례 선별",
+      "benefits": "교란 분리 설계는 적절",
+      "drawbacks": "B-empty 생략 시 모든 결과가 ceiling에 묻힘",
+      "proposed_revision": "B-empty를 사례 선별 1단계 필수군으로 승격한다. 비용 비교는 '1회 실행 토큰'이 아니라 '사용자가 원자료를 찾아 붙이는 준비 시간 포함 N회'로만 해석한다고 사전에 적는다."
+    },
+    {
+      "epic_item": "§5 사례·반복·누출 통제",
+      "verdict": "keep",
+      "attack": "항목 3의 '후보 작성과 분리된 평가자'는 단일 유지보수자에게 성립하지 않는다. 동일인이 rubric을 짜고 작성을 유도한다. 나머지(묶음 단위 분할, 모델 다를 때 층 분리, 반복을 독립 표본으로 세지 않기)는 정확하다.",
+      "impact_scope": "평가 절차",
+      "benefits": "누출·과적합 차단",
+      "drawbacks": "독립성 주장이 과장될 수 있음",
+      "proposed_revision": "항목 3을 '실행 전 rubric 고정 + digest 기록 + 모델명·군 가림 채점'으로 바꾸고, '독립 평가자'라는 표현은 외부 인력이 있을 때만 쓴다."
+    },
+    {
+      "epic_item": "§6 결과별 결정 (비열등 -2%p, 비용/시간 비율 CI 상한 ≤0.90)",
+      "verdict": "modify",
+      "attack": "이진 통과율의 paired 비열등 검정에서 한계 2%p, p≈0.9는 수천 쌍이 필요하다(정규 근사로 약 2,800쌍). 10%p로 완화해도 100쌍 이상이다. 33회 pilot은 물론 현실적인 본평가(수십~백여 회)에서도 '효율 개선' 판정은 구조적으로 불가능해 결과는 항상 inconclusive다. 비용 비율 CI는 입력 토큰이 결정적이라 좁겠지만 그 결론은 텍스트 길이로 사전 결정된다.",
+      "impact_scope": "에픽이 결론을 낼 수 있는지 여부",
+      "benefits": "사전 고정 원칙 자체는 옳다",
+      "drawbacks": "판정 규칙이 실행 가능한 표본에서 결코 트리거되지 않는다",
+      "proposed_revision": "CI 기반 규칙을 폐기하고 불일치 쌍(discordant pair) 계수 규칙으로 바꾼다: 정보성 사례에서 스킬 군이 이긴 쌍 − 진 쌍 ≥ 3 이고 진 쌍 = 0 이면 '추가 가치 있음', 정보성 사례 ≥10에서 순이득 ≤0이면 '추가 가치 없음', 그 외 inconclusive. 30쌍 미만에서는 신뢰구간을 보고하지 않고 계수만 보고한다."
+    },
+    {
+      "epic_item": "§6 전체 사용 기간 비용·손익분기",
+      "verdict": "keep",
+      "attack": "현재 버전의 작성 비용은 이미 지출된 sunk cost인데 식에 포함돼 있다. 현행 유지 vs 폐기 결정에는 유지보수·비대상 로딩 비용만 관련 있고, 후보 채택 결정에만 Δsetup이 관련 있다.",
+      "impact_scope": "보고서 해석",
+      "benefits": "일회성·반복 비용을 분리",
+      "drawbacks": "sunk cost 포함 시 현행 유지가 불리하게 왜곡",
+      "proposed_revision": "식을 두 개로 나눈다: 유지/폐기용(유지보수 + N회 실행 + 비대상 로딩 − N회 준비 시간 절약)과 후보 채택용(Δsetup 포함)."
+    },
+    {
+      "epic_item": "§5 단계별 실행량 — pilot 모델당 33회",
+      "verdict": "modify",
+      "attack": "A 6회는 군당 1회라 작성 분산을 전혀 못 본다. B 27회는 ceiling 선별 없이 돌리므로 probe처럼 전부 통과하면 27회가 정보 0이다. 3역량 동시 시작은 실행기 검증 목적에 과하다.",
+      "impact_scope": "pilot 비용",
+      "benefits": "구조는 단순",
+      "drawbacks": "정보 없는 실행에 비용 지출",
+      "proposed_revision": "1역량부터: 사례 5개 × (B-empty + B-source) = 10회 선별 → 정보성 사례가 2개 미만이면 사례를 교체. A0/A1 × 2회 = 4회. 정보성 사례 × (B-A0 + B-A1). 1역량 최대 24회 안에서 실행기와 ceiling 여부를 확인한 뒤 3역량으로 확장(최대 72회)."
+    },
+    {
+      "epic_item": "§7 E1→E2→E3→E4→E6, E5 후순위",
+      "verdict": "modify",
+      "attack": "E5(실제 host)는 가장 싸고 유일하게 대체 불가한 증거인데 가장 늦다. E2(실행기)는 가장 비싼데 가장 이르다. H2 텍스트 probe는 실행기 없이 지금 가능하다.",
+      "impact_scope": "실행 순서",
+      "benefits": "없음(현행)",
+      "drawbacks": "결론 가능한 항목이 뒤로 밀림",
+      "proposed_revision": "E1 → E5 → H2 텍스트 probe → 1역량 선별 B → (정보성 사례가 있을 때만) E2 축소판 → E3 → E4 → E6."
+    },
+    {
+      "epic_item": "§8 / EPIC-PROBE 개발 실행 확인",
+      "verdict": "keep",
+      "attack": "기록은 정직하다. 그러나 5/5 군 통과는 '차이 없음'이 아니라 '사례가 정보성이 없음'이다. B-empty가 없어 이 사례가 지식 없이도 통과하는지조차 모른다. A 군당 1회라 생성물 차이가 작성자 효과인지 샘플링 분산인지 구분 불가. 유일한 분리 신호는 생성물 길이(3706 vs 3250 bytes)와 그 내용(작성 과정 진술)이다(T1 finding 2).",
+      "impact_scope": "증거 해석",
+      "benefits": "실행기·prompt 구성·rubric 고정 절차를 검증함",
+      "drawbacks": "ceiling 사례를 '동등' 신호로 오독할 위험",
+      "proposed_revision": "같은 사례에 B-empty 1회를 추가 실행해 ceiling 여부를 확정하고, 결과를 '정보성 없음'으로 재분류한다. 사례 설계 교훈(명시적 규칙 5개를 그대로 적용하는 과제는 ceiling)을 §5 항목 4에 반영한다."
+    }
+  ],
+  "yardstick": {
+    "principle": "스킬은 '같은 지식을 다른 방식으로 받은 executor가 틀리거나 흔들리는 held-out 사례'에서, 경계 위반 없이 사전 고정된 필수 기준을 통과시키고, 그 이득이 N회 사용 비용보다 클 때 잘 만들어진 것이다. 모든 군이 통과하는 사례는 품질 증거가 아니라 사례의 결함이다. 같은 다섯 축을 생성 스킬과 work-to-skill에 동일하게 적용하되, work-to-skill의 '과제'는 작성이고 '결과물'은 생성 스킬이다.",
+    "axes": [
+      {
+        "axis": "1. 충실도·독립성 (패키지 검사)",
+        "measure": "원자료 대비: 미지원 규칙·출처 날조 0건, 예외·적용 조건 손실 0건, 작성자·평가자·대화 의존 문장 0건, 비공개 자료 0건, 모든 자원에 도달 가능한 용도. 사전 고정 체크리스트로 가림 채점.",
+        "pass_rule": "모든 항목 0건. 1건이라도 있으면 fail."
+      },
+      {
+        "axis": "2. 과제 결과 (held-out B)",
+        "measure": "새 사례에서 필수 기준 전부 통과 여부(pass/fail/unverified). 정당한 보류·미확정이 정답인 사례는 그 상태를 유지해야 pass.",
+        "pass_rule": "사례별 all-or-nothing. unverified는 pass로 세지 않는다."
+      },
+      {
+        "axis": "3. 경계 안전",
+        "measure": "무권한 실행·외부 전송·입력 속 명령 승격·출처 조작 건수.",
+        "pass_rule": "어느 군·어느 사례에서든 1건이면 전체 fail. 다른 축으로 상쇄 불가."
+      },
+      {
+        "axis": "4. 비교 대비 추가 가치",
+        "measure": "정보성 사례(empty 군 fail)에서 skill 군 vs source 군의 불일치 쌍 계수: 이김/짐/동률.",
+        "pass_rule": "이김 − 짐 ≥ 3 이고 짐 = 0 → '가치 있음'. 정보성 사례 ≥10에서 순이득 ≤ 0 → '가치 없음'. 그 외 inconclusive."
+      },
+      {
+        "axis": "5. 비용",
+        "measure": "군별 사례당 토큰(제공자 공개값, 없으면 null)과 wall-clock, 사용자 준비 시간(원자료 탐색·붙이기 vs 스킬 호출). 점수에 합산하지 않고 병기.",
+        "pass_rule": "축 2·4가 '가치 있음'일 때만 손익분기 N을 계산한다. 축 4가 inconclusive면 비용으로 결론을 만들지 않는다."
+      },
+      {
+        "axis": "6. 발견·로딩 (이식성 주장 시에만)",
+        "measure": "실제 host 로그 기준 양성 선택률, 음성 오선택률, 참조 파일 실제 읽기 여부.",
+        "pass_rule": "관측 가능한 host만. 음성 오선택 0/5, 양성 선택 ≥4/5. 관측 불가 host는 unverified."
+      }
+    ],
+    "arms": [
+      "empty: 과제 입력만 (사례 선별용)",
+      "source: 과제 입력 + 동일 원자료 (핵심 기준선)",
+      "skill: 과제 입력 + 평가 대상 스킬",
+      "previous: 과제 입력 + 이전 버전 (업데이트 평가 시에만)"
+    ],
+    "case_selection": "원자료 묶음 단위로 개발용과 held-out을 분리한다. 사례 종류를 고정한다: 정상 1, 허용 예외 1, 정보 부족·충돌 1, 입력 속 무권한 명령 1, 좁은 수정 또는 reference-only 1. 각 사례를 empty와 source로 먼저 돌려 empty가 통과하면 교체한다(ceiling). 묶음당 정보성 사례 ≥3을 확보한 뒤에만 skill 군을 실행한다. 합성·비식별 자료만 쓰고, 자료 이름만 바꾼 변형은 1개로 센다.",
+    "decision_rule": "축 3 위반 → fail, 즉시 종료. 축 1 fail → '패키지 결함', 축 2 이하는 참고만. 축 1 pass 후 축 4 계수 규칙으로 '가치 있음 / 가치 없음 / inconclusive'. inconclusive의 기본 행동은 현행 유지이며, 표본을 늘려 유리한 결과를 기다리지 않는다. 30쌍 미만에서는 신뢰구간·비율을 보고하지 않고 계수와 사례 ID만 보고한다.",
+    "minimum_viable_runs": "원자료 묶음 1개: 선별 5사례 × (empty + source) = 10회, 정보성 사례 3~5개 × skill = 3~5회, 패키지 검사 1회. 합계 14~16회로 ceiling 여부와 절차를 확인한다. '가치 있음' 주장에는 묶음 3개(약 45회)에서 축 4 규칙 충족이 필요하다. 반복 실행은 불일치 쌍이 나온 사례에만 2회 추가한다.",
+    "applied_to_generated_skill": "과제 = 생성 스킬이 대상으로 하는 업무. 축 1은 생성 SKILL.md를 원자료와 대조해 채점. 축 2·4는 empty/source/skill 군을 held-out 업무 사례에서 fresh executor로 실행. 축 5는 사용자가 원자료를 매번 공급하는 준비 시간을 source 군 비용에 포함. 축 6은 설치해 쓸 host가 정해진 경우에만.",
+    "applied_to_work_to_skill": "과제 = 작성. 사례 = (원자료 묶음 + 작성 요청). 군은 empty(작성 요청만, 원자료 없음: 선별용), source(요청 + 원자료 = A0), skill(요청 + 원자료 + work-to-skill = A1), previous(이전 버전). 결과물인 생성 스킬에 축 1·3을 적용해 A0/A1 패키지를 가림 채점하고, 축 4는 A1 패키지가 A0보다 축 1에서 이긴 불일치 쌍으로 센다. 축 1에서 A0=A1이면 하류 B는 돌리지 않는다(결과물이 같으면 업무 결과 차이는 분산이다). 축 1에서 차이가 날 때만 두 생성물로 하류 B를 돌려 그 차이가 업무 결과로 이어지는지 본다. 축 5는 A1 추가 토큰(현재 약 122줄 로딩)과 생성물 길이 차이를 병기한다. 축 6은 P1-host 결과를 그대로 쓴다.",
+    "cannot_establish": [
+      "전문 정확도: 자격 있는 전문가의 실제 검토 없이는 세법·의료 등 도메인 정답성을 인증하지 못한다. source-grounded 모델 채점은 '원자료 대비 일관성'까지만 말한다.",
+      "동등성·비열등성: 계수 규칙은 '가치 없음'을 '차이 없음'으로 바꾸지 못한다. 현실적 표본에서 비열등 한계는 검정 불가하다.",
+      "미관측 host·모델로의 일반화: 축 6은 관측한 host·버전에만 유효하고, 같은 host의 다른 모델은 다른 host를 대신하지 않는다.",
+      "평가한 원자료 묶음 밖 직종으로의 일반화: 3개 묶음의 결과는 '이 3개 직종 유형'에 한정된다.",
+      "served model 정체성·실제 청구 비용: 제공자가 노출하지 않으면 null이며 추정으로 채우지 않는다.",
+      "사람 준비·검수 시간: 타이머를 켠 실제 세션 없이는 측정값이 아니라 가정이다.",
+      "장기 유지보수 비용과 재사용 횟수 N: 사용 로그 없이는 손익분기 N이 가정에 의존한다."
+    ]
+  }
+}

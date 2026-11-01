@@ -33,7 +33,7 @@ Extraction is sufficient when the supported criteria, their conditions, and unre
 
 ## Build the smallest useful package
 
-Start with `SKILL.md` and YAML frontmatter containing `name` and `description`. Use a short lowercase, hyphenated name matching its folder. Describe the generated skill's actual capability and application conditions, so it can be considered automatically as well as requested explicitly. Preserve automatic discovery unless the user requests a different invocation policy; sensitive operations need appropriate authorization at execution time, not an assumed change to discovery.
+Start with `SKILL.md` and YAML frontmatter containing `name` and `description`. Use a short lowercase, hyphenated name matching its folder. Respect the documented frontmatter limits of hosts where the skill may be used; for example, Anthropic's skill documentation disallows `anthropic` and `claude` in names. Describe the generated skill's actual capability and application conditions, so it can be considered automatically as well as requested explicitly. Preserve automatic discovery unless the user requests a different invocation policy; sensitive operations need appropriate authorization at execution time, not an assumed change to discovery.
 
 Write the generated skill for its eventual user. It must carry its own essential context and references, without runtime dependence on `work-to-skill`, another creator, or this conversation. Actual domain tools or external sources may be dependencies: identify their required capabilities, access conditions, and what remains possible when they are unavailable. A missing tool is not evidence that an action ran.
 

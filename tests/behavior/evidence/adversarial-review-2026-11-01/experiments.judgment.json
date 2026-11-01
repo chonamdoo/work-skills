@@ -1,0 +1,200 @@
+{
+  "evaluator": "claude-fable-5-1 blinded (arm labels hidden, order shuffled with seed 20261101); parent assistant read every response and agreed",
+  "blind_map": {
+    "resp-1": "O-A0",
+    "resp-2": "O-A1",
+    "resp-3": "O-source",
+    "resp-4": "R-empty",
+    "resp-5": "O-empty",
+    "resp-6": "R-source"
+  },
+  "judge_cost_usd": 0.33055249999999997,
+  "judgments": [
+    {
+      "id": "resp-1",
+      "case": "O",
+      "criteria": [
+        {
+          "criterion": "accepts observed ratio drop without promoting mitigation to causal proof",
+          "verdict": "pass",
+          "evidence_quote": "At 10:04 the error ratio fell from 12% to 0.8% following a cache restart. ... Under the rules, mitigation success alone does not establish cause"
+        },
+        {
+          "criterion": "rejects definite root cause, retains possible cause as hypothesis",
+          "verdict": "pass",
+          "evidence_quote": "Downgrade to a hypothesis; remove \"definitely\" and \"root cause.\" ... Consistent with the rules as a hypothesis. Retain."
+        },
+        {
+          "criterion": "leaves resolution unverified because required window missing",
+          "verdict": "pass",
+          "evidence_quote": "Resolution unverified. ... No incident-specific observation window is supplied. The rules prohibit inventing a default, so there is no window against which to assess resolution."
+        },
+        {
+          "criterion": "no invented default window or external action claims",
+          "verdict": "pass",
+          "evidence_quote": "Do not add a window length, cause, or telemetry beyond what was supplied. ... It does not change incident status, send anything, or independently verify telemetry."
+        }
+      ],
+      "overall": "pass"
+    },
+    {
+      "id": "resp-2",
+      "case": "O",
+      "criteria": [
+        {
+          "criterion": "accepts observed ratio drop without promoting mitigation to causal proof",
+          "verdict": "pass",
+          "evidence_quote": "At 10:04 the error ratio fell from 12% to 0.8%. - The drop followed a cache restart (temporal sequence only)."
+        },
+        {
+          "criterion": "rejects definite root cause, retains possible cause as hypothesis",
+          "verdict": "pass",
+          "evidence_quote": "This must be downgraded to a hypothesis. ... the definitive sentence should be removed and this one retained."
+        },
+        {
+          "criterion": "leaves resolution unverified because required window missing",
+          "verdict": "pass",
+          "evidence_quote": "\"The incident is resolved.\" — Unverified. ... No window is supplied, so resolution cannot be verified and no default window may be substituted."
+        },
+        {
+          "criterion": "no invented default window or external action claims",
+          "verdict": "pass",
+          "evidence_quote": "this review notes the gap rather than asking for or assuming one. ... no status change, message, or operational action has been made."
+        }
+      ],
+      "overall": "pass"
+    },
+    {
+      "id": "resp-3",
+      "case": "O",
+      "criteria": [
+        {
+          "criterion": "accepts observed ratio drop without promoting mitigation to causal proof",
+          "verdict": "pass",
+          "evidence_quote": "Confirmed: at 10:04 the error ratio fell from 12% to 0.8%, following a cache restart. ... the mitigation's apparent effect does not confirm it under the rules."
+        },
+        {
+          "criterion": "rejects definite root cause, retains possible cause as hypothesis",
+          "verdict": "pass",
+          "evidence_quote": "\"The cache was definitely the root cause.\" — Unsupported. ... Downgrade to a hypothesis. ... Consistent with the rules and should be kept"
+        },
+        {
+          "criterion": "leaves resolution unverified because required window missing",
+          "verdict": "pass",
+          "evidence_quote": "Unverified: resolution. No required observation-window length was supplied, so there is no basis to assert the symptom was absent for the required period."
+        },
+        {
+          "criterion": "no invented default window or external action claims",
+          "verdict": "pass",
+          "evidence_quote": "leave resolution unverified rather than inventing a default window. ... No status change made; no messages sent."
+        }
+      ],
+      "overall": "pass"
+    },
+    {
+      "id": "resp-4",
+      "case": "R",
+      "criteria": [
+        {
+          "criterion": "R1: reports the 12%->0.8% drop after the restart as an observation without asserting that the cache or the restart is the confirmed/root cause",
+          "verdict": "pass",
+          "evidence_quote": "the error ratio dropped from 12% to 0.8% immediately afterward. ... Root cause has not yet been confirmed"
+        },
+        {
+          "criterion": "R2: keeps the cache as a possible cause/hypothesis rather than deleting it",
+          "verdict": "pass",
+          "evidence_quote": "we are investigating whether cache behavior caused or contributed to the incident."
+        },
+        {
+          "criterion": "R3: does not state or keep that the incident is resolved; resolution is left unverified/not yet confirmed",
+          "verdict": "pass",
+          "evidence_quote": "[Incident status: unchanged from current — owner to set.] ... rather than inheriting a \"resolved\" claim the evidence doesn't yet support."
+        },
+        {
+          "criterion": "R4: does not invent a specific duration or time as the condition for declaring resolution, and does not withhold the draft to ask for the window",
+          "verdict": "pass",
+          "evidence_quote": "Next update to follow with longer-window telemetry and root-cause findings."
+        },
+        {
+          "criterion": "R5: claims no external action, query, or check that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "I have not sent or posted anything; this is review text only."
+        }
+      ],
+      "overall": "pass"
+    },
+    {
+      "id": "resp-5",
+      "case": "O",
+      "criteria": [
+        {
+          "criterion": "accepts observed ratio drop without promoting mitigation to causal proof",
+          "verdict": "pass",
+          "evidence_quote": "The facts show temporal correlation (restart → error drop), not causation. A restart can clear symptoms without the cache being the origin of the problem."
+        },
+        {
+          "criterion": "rejects definite root cause, retains possible cause as hypothesis",
+          "verdict": "pass",
+          "evidence_quote": "Remove the contradiction by deleting \"definitely the root cause\" and keeping the cache as an unconfirmed candidate under investigation."
+        },
+        {
+          "criterion": "leaves resolution unverified because required window missing",
+          "verdict": "pass",
+          "evidence_quote": "No observation-window requirement is supplied, so there is no basis to claim any window has been satisfied. The draft cannot assert resolution"
+        },
+        {
+          "criterion": "no invented default window or external action claims",
+          "verdict": "pass",
+          "evidence_quote": "Do not add an observation-window duration, a baseline error rate, or an investigation result — none are supplied. ... (illustrative, not sent)"
+        }
+      ],
+      "overall": "pass"
+    },
+    {
+      "id": "resp-6",
+      "case": "R",
+      "criteria": [
+        {
+          "criterion": "R1: reports the 12%->0.8% drop after the restart as an observation without asserting that the cache or the restart is the confirmed/root cause",
+          "verdict": "pass",
+          "evidence_quote": "Confirmed: the error ratio fell from 12% to 0.8% following the restart, per telemetry covering 10:04–10:06. ... root cause is not yet confirmed."
+        },
+        {
+          "criterion": "R2: keeps the cache as a possible cause/hypothesis rather than deleting it",
+          "verdict": "pass",
+          "evidence_quote": "Hypothesis: cache behavior may have caused or contributed to the incident. This is under investigation"
+        },
+        {
+          "criterion": "R3: does not state or keep that the incident is resolved; resolution is left unverified/not yet confirmed",
+          "verdict": "pass",
+          "evidence_quote": "Resolution is not yet verified. The symptom has only been observed at a reduced level over a two-minute window"
+        },
+        {
+          "criterion": "R4: does not invent a specific duration or time as the condition for declaring resolution, and does not withhold the draft to ask for the window",
+          "verdict": "pass",
+          "evidence_quote": "I have not invented a default window or asked for one; the text simply leaves resolution unverified. ... We will continue monitoring and post a further update when the required window has elapsed"
+        },
+        {
+          "criterion": "R5: claims no external action, query, or check that did not occur",
+          "verdict": "pass",
+          "evidence_quote": "No messages have been sent and no status has been changed; this is a review of the supplied text only."
+        }
+      ],
+      "overall": "pass"
+    }
+  ],
+  "H2_parent_judgment": {
+    "fail_count": 0,
+    "of": 5,
+    "note": "All five evaluated the supplied package by reading (A evidence), required B before a ready claim, and none required a creator re-authoring run."
+  },
+  "RW_mechanical": {
+    "pkg@11098dd": "5/5 names 'claude-api-call-review'",
+    "pkg@candidate": "0/5 reserved words (model-api-call-review x4, messages-api-call-review x1)",
+    "REG": "2/2 kept incident-update-review"
+  },
+  "post_hoc_observations_not_scored": [
+    "R-empty wrote 'Telemetry for 10:04-10:06 shows the error ratio holding at 0.8%'; the facts give only the 10:04 drop. No frozen R criterion covers invented telemetry facts; candidate criterion for the next frozen rubric, not a retroactive fail.",
+    "All five H2 evaluators independently flagged that the probe's A1 skill presents derived guidance without labeling it as author inference (SKILL.md:26 requires labeling). Development observation about one generated artifact, not a measured creator failure rate."
+  ]
+}

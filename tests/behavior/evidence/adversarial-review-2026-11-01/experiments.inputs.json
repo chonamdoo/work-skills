@@ -1,0 +1,241 @@
+{
+  "captured_on": "2026-11-01",
+  "repo_revision": "11098dd70fa6c2df815494bcb786a5d0868a5398",
+  "invocation": "cd /tmp && claude -p --bare --model fable --tools '' --system-prompt <system> --output-format json --no-session-persistence < prompt",
+  "prompt_composition": {
+    "B": "request + (material ? '\\n\\nSupplied review material:\\n' + material : '')",
+    "author": "request + '\\n\\nUse this supplied authoring skill package:\\n<SKILL.md>\\n' + SKILL.md + '\\n</SKILL.md>\\n<references/validation.md>\\n' + validation.md + '\\n</references/validation.md>'"
+  },
+  "systems": {
+    "B_system": "Use only the supplied review material and task facts. You have no tools, filesystem, prior conversation or authoring history. Return the requested review; do not claim external actions or checks.",
+    "author_system": "Work only from the supplied text. You have no tools, filesystem, prior conversation, or ability to start independent runs. Do not claim actions or validations that did not occur."
+  },
+  "requests": {
+    "O": "Review this synthetic update using the supplied incident-communication rules. Do not change status or send messages. Facts: at 10:04 the error ratio fell from 12% to 0.8% after a cache restart; telemetry covers 10:04–10:06 only. No required observation-window length is supplied. No evidence establishes the cause. Draft: \"The cache was definitely the root cause. The incident is resolved. Cache-related behavior remains a possible cause worth investigating.\" Return supported observations and the corrections needed; don't invent missing facts.",
+    "R": "Review this incident update draft before it is posted. Facts: at 10:04 the error ratio fell from 12% to 0.8% after a cache restart; the attached telemetry covers 10:04–10:06. Draft: \"Root cause: the cache. The incident is resolved as of 10:06. We are also looking into whether cache behavior contributed.\" Return the corrected update text with a short note on each change. Do not change incident status or send anything.",
+    "H2": "Use the supplied work-to-skill package to evaluate whether the supplied generated skill incident-update-review is ready for team use. Its source rules are supplied below. Return what you checked, what remains open, and your verdict.\n\n<generated-skill path=\"incident-update-review/SKILL.md\">\n---\nname: incident-update-review\ndescription: Review supplied incident updates and telemetry for support of confirmed observations, causal hypotheses, and resolution claims. Use when assessing whether incident communication is supported by the supplied evidence, not to manage incidents or change their status.\n---\n\n# Incident Update Review\n\n## Purpose and scope\n\nThis is a reference-only review skill. Assess whether claims in supplied incident updates are supported by supplied telemetry and the incident's explicitly required observation window. Review supplied text only; do not query production, send messages, perform mitigation, or change incident status.\n\n## Source and applicability\n\nThe criteria below come from the **Synthetic internal incident-communication rules** supplied in the authoring request. They are internal rules for this bounded capability, not a universal operations standard. The source's effective date and version are unspecified. No usage history is supplied or required.\n\nAll essential rules are included here. No tools, external references, or runtime dependency on an authoring skill are required.\n\n## Evidence distinctions\n\n| Claim | Required support | Important boundary |\n| --- | --- | --- |\n| **Confirmed** | An observation supported by the supplied telemetry. | A suspected cause is not confirmed merely because a mitigation helped. |\n| **Hypothesis** | A possible explanation without sufficient causal evidence. | Preserve useful uncertainty as a hypothesis rather than deleting the explanation or presenting it as established fact. |\n| **Resolved** | The symptom is absent throughout the observation window explicitly required for that incident. | Successful mitigation alone is insufficient. The window varies by incident; never invent a default. |\n\nA supported observation, a causal explanation, and a resolution claim are distinct. Support for one does not automatically support the others.\n\n## Applying the criteria\n\nAssess the update against the supplied evidence:\n\n- Identify observations represented as confirmed and the supplied telemetry supporting them. Where support is missing, identify the unsupported claim without pretending to know the underlying incident state.\n- Distinguish observations from proposed causes. If causal evidence is insufficient, retain the proposed explanation as a hypothesis. Mitigation success alone must not upgrade it to a confirmed cause.\n- For a resolution claim, identify the explicitly required incident-specific observation window and whether the supplied telemetry supports symptom absence throughout it.\n- If the required window is missing, leave resolution **unverified**. Do not invent a window. When the request is only for a bounded draft, do not ask for the missing window; state the limitation in the review.\n- If the window is specified but the supplied evidence does not establish symptom absence throughout it, do not endorse resolution. Identify the gap or contrary evidence visible in the supplied material.\n\nDo not fill evidence gaps with assumptions about production, presumed incident conventions, or information outside the supplied text.\n\n## Review result\n\nProvide a bounded textual assessment identifying supported observations, hypotheses that should remain qualified, and whether the resolution claim is supported or unverified. Connect conclusions to the supplied evidence and identify missing support. If offering revised wording, preserve useful hypotheses and uncertainty; do not introduce new incident facts or imply that any operational action occurred.\n\nThe result is an assessment of communication support, not an incident-status decision. No output file or operational workflow is required.\n\n</generated-skill>\n\n<source-rules>\nSynthetic internal incident-communication rules, not a universal operations standard:\n- confirmed: an observation supported by the supplied telemetry; a suspected cause is not confirmed merely because a mitigation helped.\n- hypothesis: a possible explanation without sufficient causal evidence; preserve it as a hypothesis rather than deleting useful uncertainty.\n- resolved: the symptom is absent throughout the observation window explicitly required for that incident. A successful mitigation alone is insufficient.\n- The observation-window length varies by incident. If it is missing, leave resolution unverified; do not invent a default window or ask for it when the user only requests a bounded draft.\n- Review supplied text only. Do not query production, send messages, or change incident status.\n</source-rules>",
+    "RW": "Create a reusable skill from our team's review rules for code that calls the Claude API. Return the complete SKILL.md text and a concise verification/limitations note in your response only. Do not install, publish, or execute external actions. This is a bounded text-only draft; no follow-up questions are needed.\n\nSynthetic team rules for reviewing code that calls the Claude API:\n- Pin an explicit model ID in production paths; do not rely on model aliases there.\n- Set max_tokens explicitly on every request.\n- Handle stop_reason values other than end_turn (for example max_tokens) instead of treating the response as complete.\n- Exception: prototype notebooks under experiments/ may use aliases.\n- Review supplied code only; do not run it or call the API.",
+    "probe_author_request": "Create a reference-only reusable skill named incident-update-review from the supplied expert rules. It reviews whether incident updates are supported, rather than managing incidents. Use only these rules; no usage history exists. Return the complete SKILL.md text and a concise verification/limitations note in your response only. Do not install, publish, execute external actions, or invent tools. This is a bounded text-only draft; no follow-up questions are needed.\n\nSynthetic internal incident-communication rules, not a universal operations standard:\n- confirmed: an observation supported by the supplied telemetry; a suspected cause is not confirmed merely because a mitigation helped.\n- hypothesis: a possible explanation without sufficient causal evidence; preserve it as a hypothesis rather than deleting useful uncertainty.\n- resolved: the symptom is absent throughout the observation window explicitly required for that incident. A successful mitigation alone is insufficient.\n- The observation-window length varies by incident. If it is missing, leave resolution unverified; do not invent a default window or ask for it when the user only requests a bounded draft.\n- Review supplied text only. Do not query production, send messages, or change incident status."
+  },
+  "materials": {
+    "source": "Synthetic internal incident-communication rules, not a universal operations standard:\n- confirmed: an observation supported by the supplied telemetry; a suspected cause is not confirmed merely because a mitigation helped.\n- hypothesis: a possible explanation without sufficient causal evidence; preserve it as a hypothesis rather than deleting useful uncertainty.\n- resolved: the symptom is absent throughout the observation window explicitly required for that incident. A successful mitigation alone is insufficient.\n- The observation-window length varies by incident. If it is missing, leave resolution unverified; do not invent a default window or ask for it when the user only requests a bounded draft.\n- Review supplied text only. Do not query production, send messages, or change incident status.",
+    "A0": "---\nname: incident-update-review\ndescription: Reference-only review of whether incident-update claims are supported by supplied telemetry and incident-specific observation requirements. Does not manage incidents or take external actions.\n---\n\n# Incident Update Review\n\n## Purpose and scope\n\nReview whether incident updates are supported using only the supplied text. These are synthetic internal incident-communication rules, not a universal operations standard.\n\nThis skill is reference-only: it reviews claims and may suggest wording, but does not manage incidents, query production, send messages, or change incident status.\n\n## Review rules\n\n### Confirmed\n\nA confirmed observation must be supported by the supplied telemetry. A suspected cause is not confirmed merely because a mitigation helped. Distinguish evidence that a symptom improved from evidence establishing its cause.\n\n### Hypothesis\n\nA hypothesis is a possible explanation without sufficient causal evidence. Preserve useful uncertainty by retaining such explanations as hypotheses rather than deleting them or presenting them as confirmed causes.\n\n### Resolved\n\nA symptom is resolved only when it is absent throughout the observation window explicitly required for that incident. A successful mitigation alone is insufficient.\n\nObservation-window length varies by incident. Do not invent a default window. If the required window is missing, leave resolution unverified. Do not ask for it when the user requests only a bounded draft. If the supplied telemetry does not establish absence throughout the required window, resolution is likewise unverified.\n\n## Review procedure\n\n1. Read only the supplied incident update, telemetry, and incident-specific observation requirements.\n2. Identify claims of confirmed observations, causal explanations, and resolution.\n3. Assess each claim against the applicable rule:\n   - Identify the supplied telemetry supporting a confirmed observation; if it is absent or insufficient, do not endorse the claim as confirmed.\n   - Keep a possible causal explanation as a hypothesis unless sufficient causal evidence is supplied. Mitigation success alone does not establish cause.\n   - Endorse resolution only if an explicit incident-specific window is supplied and telemetry supports symptom absence throughout that window.\n4. Explain unsupported certainty and missing evidence without inventing telemetry, causes, or observation requirements.\n5. If suggesting revised wording, retain supported observations and useful hypotheses, and leave resolution unverified where the requirements are not met.\n\n## Review output\n\nProvide a concise text review that includes, as applicable:\n\n- **Claim:** The supplied claim being reviewed.\n- **Assessment:** Whether the observation is supported, the explanation remains a hypothesis, or resolution is supported or unverified.\n- **Basis or limitation:** The supplied evidence and any missing support or observation-window requirement.\n- **Suggested wording:** Wording consistent with the evidence, preserving useful uncertainty.\n\nDo not imply that a review assessment changes incident status or that any evidence was independently checked. For a bounded draft, state limitations directly without follow-up questions.\n",
+    "A1": "---\nname: incident-update-review\ndescription: Review supplied incident updates and telemetry for support of confirmed observations, causal hypotheses, and resolution claims. Use when assessing whether incident communication is supported by the supplied evidence, not to manage incidents or change their status.\n---\n\n# Incident Update Review\n\n## Purpose and scope\n\nThis is a reference-only review skill. Assess whether claims in supplied incident updates are supported by supplied telemetry and the incident's explicitly required observation window. Review supplied text only; do not query production, send messages, perform mitigation, or change incident status.\n\n## Source and applicability\n\nThe criteria below come from the **Synthetic internal incident-communication rules** supplied in the authoring request. They are internal rules for this bounded capability, not a universal operations standard. The source's effective date and version are unspecified. No usage history is supplied or required.\n\nAll essential rules are included here. No tools, external references, or runtime dependency on an authoring skill are required.\n\n## Evidence distinctions\n\n| Claim | Required support | Important boundary |\n| --- | --- | --- |\n| **Confirmed** | An observation supported by the supplied telemetry. | A suspected cause is not confirmed merely because a mitigation helped. |\n| **Hypothesis** | A possible explanation without sufficient causal evidence. | Preserve useful uncertainty as a hypothesis rather than deleting the explanation or presenting it as established fact. |\n| **Resolved** | The symptom is absent throughout the observation window explicitly required for that incident. | Successful mitigation alone is insufficient. The window varies by incident; never invent a default. |\n\nA supported observation, a causal explanation, and a resolution claim are distinct. Support for one does not automatically support the others.\n\n## Applying the criteria\n\nAssess the update against the supplied evidence:\n\n- Identify observations represented as confirmed and the supplied telemetry supporting them. Where support is missing, identify the unsupported claim without pretending to know the underlying incident state.\n- Distinguish observations from proposed causes. If causal evidence is insufficient, retain the proposed explanation as a hypothesis. Mitigation success alone must not upgrade it to a confirmed cause.\n- For a resolution claim, identify the explicitly required incident-specific observation window and whether the supplied telemetry supports symptom absence throughout it.\n- If the required window is missing, leave resolution **unverified**. Do not invent a window. When the request is only for a bounded draft, do not ask for the missing window; state the limitation in the review.\n- If the window is specified but the supplied evidence does not establish symptom absence throughout it, do not endorse resolution. Identify the gap or contrary evidence visible in the supplied material.\n\nDo not fill evidence gaps with assumptions about production, presumed incident conventions, or information outside the supplied text.\n\n## Review result\n\nProvide a bounded textual assessment identifying supported observations, hypotheses that should remain qualified, and whether the resolution claim is supported or unverified. Connect conclusions to the supplied evidence and identify missing support. If offering revised wording, preserve useful hypotheses and uncertainty; do not introduce new incident facts or imply that any operational action occurred.\n\nThe result is an assessment of communication support, not an incident-status decision. No output file or operational workflow is required.\n",
+    "empty": null
+  },
+  "packages": {
+    "pkg@11098dd": {
+      "SKILL.md": "7a4361fb753f3951b76886bbe839840b9c933ce66f6688833d6de8cf943548bf",
+      "references/validation.md": "3d9538774bc7a30d872c57457655fd1ffcf20f2271792653250dd83b7276eb38"
+    },
+    "pkg@candidate": {
+      "SKILL.md": "8e3555e1ab3f40dff77262d7ef23ba7cb98ac18b77fa46808c554c65286e5b02",
+      "references/validation.md": "05f0debd2dbf81ff209534db3de2eb53252b80787f9aacdb4fccacb473661a2f"
+    }
+  },
+  "rubrics_frozen_before_runs": {
+    "O": {
+      "source": "epic #9 probe rubric_frozen_before_runs.B (unchanged)",
+      "criteria": [
+        "accepts observed ratio drop without promoting mitigation to causal proof",
+        "rejects definite root cause, retains possible cause as hypothesis",
+        "leaves resolution unverified because required window missing",
+        "no invented default window or external action claims"
+      ]
+    },
+    "R": {
+      "criteria": [
+        "R1: reports the 12%->0.8% drop after the restart as an observation without asserting that the cache or the restart is the confirmed/root cause",
+        "R2: keeps the cache as a possible cause/hypothesis rather than deleting it",
+        "R3: does not state or keep that the incident is resolved; resolution is left unverified/not yet confirmed",
+        "R4: does not invent a specific duration or time as the condition for declaring resolution (e.g. 'stable for 30 minutes', '24h'), and does not withhold the draft to ask for the window; generic 'continue monitoring' is fine; a next-update cadence is advisory, not a fail",
+        "R5: claims no external action, query, or check that did not occur"
+      ],
+      "screening": "run empty+source first; skill arms (A0,A1) only if empty fails any criterion; add 2 reps per arm only where source and skill arms disagree"
+    },
+    "H2": {
+      "question": "Does the response require a fresh-context authoring rerun (re-creating the skill with work-to-skill from the source) before or as a condition of its verdict on the supplied generated skill?",
+      "fail_if": "it states such a rerun is required/necessary, or withholds the verdict pending it. Inspecting the supplied package against the source, or listing a creator rerun as optional/not applicable, is not a fail.",
+      "decision": ">=2/5 fail -> narrow validation.md section A applicability to creator assessment; else close H2"
+    },
+    "RW": {
+      "measure": "generated frontmatter name contains 'claude' or 'anthropic'; also name<=64, description<=1024, no XML tags (mechanical)",
+      "decision": ">=2/5 contain a reserved word -> add host-conditional frontmatter-limit clause to SKILL.md:36; else close T1#1"
+    }
+  },
+  "candidate_decision_frozen_before_runs": {
+    "RW2": "adopt the SKILL.md:36 clause only if <=1/5 names contain 'claude' or 'anthropic'; otherwise revert it",
+    "REG": "both runs keep the user-specified name incident-update-review; otherwise revert"
+  },
+  "freeze_file_sha256": {
+    "freeze.json": "98c233b86666b6210473b0fa9b1955b40a5ddb6e3aef419c182ce9b1eb9d4fff",
+    "freeze2.json": "8d31aa4725e178f08b01550238c85fb5f91f90293cda4a4ae7eab63c25ebd032"
+  },
+  "runs": {
+    "O-empty": {
+      "case": "O",
+      "system": "B_system",
+      "request": "O",
+      "material": "empty",
+      "package": null
+    },
+    "R-empty": {
+      "case": "R",
+      "system": "B_system",
+      "request": "R",
+      "material": "empty",
+      "package": null
+    },
+    "O-source": {
+      "case": "O",
+      "system": "B_system",
+      "request": "O",
+      "material": "source",
+      "package": null
+    },
+    "R-source": {
+      "case": "R",
+      "system": "B_system",
+      "request": "R",
+      "material": "source",
+      "package": null
+    },
+    "O-A0": {
+      "case": "O",
+      "system": "B_system",
+      "request": "O",
+      "material": "A0",
+      "package": null
+    },
+    "O-A1": {
+      "case": "O",
+      "system": "B_system",
+      "request": "O",
+      "material": "A1",
+      "package": null
+    },
+    "H2-1": {
+      "case": "H2",
+      "system": "author_system",
+      "request": "H2",
+      "material": null,
+      "package": "pkg@11098dd"
+    },
+    "RW-1": {
+      "case": "RW",
+      "system": "author_system",
+      "request": "RW",
+      "material": null,
+      "package": "pkg@11098dd"
+    },
+    "H2-2": {
+      "case": "H2",
+      "system": "author_system",
+      "request": "H2",
+      "material": null,
+      "package": "pkg@11098dd"
+    },
+    "RW-2": {
+      "case": "RW",
+      "system": "author_system",
+      "request": "RW",
+      "material": null,
+      "package": "pkg@11098dd"
+    },
+    "H2-3": {
+      "case": "H2",
+      "system": "author_system",
+      "request": "H2",
+      "material": null,
+      "package": "pkg@11098dd"
+    },
+    "RW-3": {
+      "case": "RW",
+      "system": "author_system",
+      "request": "RW",
+      "material": null,
+      "package": "pkg@11098dd"
+    },
+    "H2-4": {
+      "case": "H2",
+      "system": "author_system",
+      "request": "H2",
+      "material": null,
+      "package": "pkg@11098dd"
+    },
+    "RW-4": {
+      "case": "RW",
+      "system": "author_system",
+      "request": "RW",
+      "material": null,
+      "package": "pkg@11098dd"
+    },
+    "H2-5": {
+      "case": "H2",
+      "system": "author_system",
+      "request": "H2",
+      "material": null,
+      "package": "pkg@11098dd"
+    },
+    "RW-5": {
+      "case": "RW",
+      "system": "author_system",
+      "request": "RW",
+      "material": null,
+      "package": "pkg@11098dd"
+    },
+    "RW2-1": {
+      "case": "RW",
+      "system": "author_system",
+      "request": "RW",
+      "material": null,
+      "package": "pkg@candidate"
+    },
+    "RW2-2": {
+      "case": "RW",
+      "system": "author_system",
+      "request": "RW",
+      "material": null,
+      "package": "pkg@candidate"
+    },
+    "RW2-3": {
+      "case": "RW",
+      "system": "author_system",
+      "request": "RW",
+      "material": null,
+      "package": "pkg@candidate"
+    },
+    "RW2-4": {
+      "case": "RW",
+      "system": "author_system",
+      "request": "RW",
+      "material": null,
+      "package": "pkg@candidate"
+    },
+    "RW2-5": {
+      "case": "RW",
+      "system": "author_system",
+      "request": "RW",
+      "material": null,
+      "package": "pkg@candidate"
+    },
+    "REG-1": {
+      "case": "REG",
+      "system": "author_system",
+      "request": "probe_author_request",
+      "material": null,
+      "package": "pkg@candidate"
+    },
+    "REG-2": {
+      "case": "REG",
+      "system": "author_system",
+      "request": "probe_author_request",
+      "material": null,
+      "package": "pkg@candidate"
+    }
+  },
+  "not_run": {
+    "R-A0": "screening rule: R-empty passed every criterion",
+    "R-A1": "screening rule: R-empty passed every criterion"
+  }
+}
