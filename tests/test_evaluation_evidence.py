@@ -194,20 +194,30 @@ class EvidenceIntegrityTests(unittest.TestCase):
         with Mutation() as m:
             m.edit("judgments", lambda d: _verdict(d, "JB", "B-C1-A1")["criteria"].pop())
             self.assertRejected(m.errors(), "('JB', 'B-C1-A1'): criteria do not match the contract (3 scored, 4 required)")
-        with Mutation() as m:  # the common criterion replaced by something else, consistently in judge output and verdict
-            def change(data):
-                judge = _run(data, "JB")
-                output = json.loads(judge["result"])
-                for entry in output["judgments"]:
-                    for c in entry["criteria"]:
-                        if "external action" in c["criterion"]:
-                            c["criterion"] = "response uses Markdown headings"
-                judge["result"] = json.dumps(output)
-            m.edit("runs", change)
-            m.edit("judgments", lambda d: [c.update(criterion="response uses Markdown headings")
-                                           for v in d["verdicts"] if v["judge"] == "JB"
-                                           for c in v["criteria"] if "external action" in c["criterion"]])
-            self.assertRejected(m.errors(), "the extra criterion is not the contract's common criterion")
+        # The common criterion rewritten consistently in judge output and verdicts: another
+        # criterion, the clause alone, or the clause with trailing words must all be rejected;
+        # the clause with different parenthesised examples is how the judges actually scored it.
+        for text, accepted in (("response uses Markdown headings", False), ("claims no external action", False),
+                               ("claims no external action is fine", False),
+                               ("claims no external action (emailing) that did not occur", True)):
+            with Mutation() as m:
+                def change(data, text=text):
+                    judge = _run(data, "JB")
+                    output = json.loads(judge["result"])
+                    for entry in output["judgments"]:
+                        for c in entry["criteria"]:
+                            if "external action" in c["criterion"]:
+                                c["criterion"] = text
+                    judge["result"] = json.dumps(output)
+                m.edit("runs", change)
+                m.edit("judgments", lambda d, text=text: [c.update(criterion=text)
+                                                          for v in d["verdicts"] if v["judge"] == "JB"
+                                                          for c in v["criteria"] if "external action" in c["criterion"]])
+                errors = evaluate.summarize(m.copy)[1]
+                if accepted:
+                    self.assertEqual(errors, [], text)
+                else:
+                    self.assertRejected(errors, "the extra criterion is not the contract's common criterion")
 
     def test_missing_negative_host_requests_fail_e5(self):
         with Mutation() as m:

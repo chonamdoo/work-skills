@@ -18,6 +18,7 @@ Passing says nothing about whether a verdict is semantically right.
 
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -144,22 +145,27 @@ def _check_verdict(verdict, run, contract, errors):
     all_pass = all(c["verdict"] == "pass" for c in verdict["criteria"])
     if (verdict["overall"] == "pass") != all_pass:
         errors.append(f"{key}: overall verdict disagrees with its criteria")
+    scored = [c["criterion"] for c in verdict["criteria"]]
     if run["kind"] == "author":
+        # A fidelity criterion may be scored under its full contract text or its id ("F1" for "F1: ...").
         required, extra = contract["fidelity_gate"], 0
+        covered = [c for c in required if c in scored or c.split(":", 1)[0] in scored]
     else:
         required, extra = contract["b_rubric"].get(run.get("case"), []), 1  # the extra one is b_common
-    scored = [c["criterion"] for c in verdict["criteria"]]
-    # A criterion may be scored under its full contract text or its id ("F1" for "F1: ...").
-    covered = [c for c in required if c in scored or c.split(":", 1)[0] in scored]
+        covered = [c for c in required if c in scored]
     if len(scored) != len(set(scored)) or len(scored) != len(required) + extra or len(covered) != len(required):
         errors.append(f"{key}: criteria do not match the contract ({len(scored)} scored, {len(required) + extra} required)")
     elif extra:
-        # b_common reads "every case: <clause> (<examples>) ..."; the judges scored it under the
-        # clause with varying examples, optionally prefixed "common: ".
-        clause = contract["b_common"].split(": ", 1)[-1].split(" (", 1)[0]
-        common = [c for c in scored if c not in required and c.split(":", 1)[0] not in [r.split(":", 1)[0] for r in required]]
-        if len(common) != 1 or not common[0].removeprefix("common: ").startswith(clause):
+        # b_common reads "every case: <clause> (<examples>) <rest>"; the judges scored it with
+        # varying or no examples, optionally prefixed "common: ".
+        common = [c for c in scored if c not in required]
+        expected = _without_examples(contract["b_common"].split(": ", 1)[-1])
+        if len(common) != 1 or _without_examples(common[0].removeprefix("common: ")) != expected:
             errors.append(f"{key}: the extra criterion is not the contract's common criterion ({common})")
+
+
+def _without_examples(text):
+    return re.sub(r" \([^)]*\)", "", text)
 
 
 def _check_transcription(judged, by_id, errors):

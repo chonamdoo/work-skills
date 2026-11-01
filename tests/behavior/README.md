@@ -74,10 +74,11 @@ CI runs the same check without network access. It rejects a bundle when:
 - a verdict is anything other than `pass`/`fail`, scores a criterion set that
   differs from the contract, or is not a verbatim transcription of the judge's
   recorded output through the blind map. Fidelity criteria match by full text
-  or by id (`F1`). Task verdicts score the case rubric plus one common
-  criterion, matched by the clause of `b_common` before its parenthesised
-  examples, optionally prefixed `common: ` (the three 2026-11-01 bundles word
-  the examples differently);
+  or by id (`F1`); rubric criteria by full text only. Task verdicts score the
+  case rubric plus one common criterion, which must equal `b_common` after its
+  `every case: ` prefix with any parenthesised examples removed, optionally
+  prefixed `common: ` (the three 2026-11-01 bundles word the examples
+  differently);
 - any JSON file, or a judge's recorded output, repeats a key or a judgment id;
 - a generated skill does not name the run-1 authoring run of its arm or is not
   quoted from that run's output;
