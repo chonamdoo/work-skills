@@ -1,3 +1,4 @@
+import datetime
 import importlib.util
 import random
 import sys
@@ -128,11 +129,12 @@ class CheckSkillTests(unittest.TestCase):
                 "Linked image [![d](missing-image.png)](missing-outer.md) and [step [1]](missing-nested.md).\n\n"
                 "Not links: an [example](missing-open.md is unclosed, a [gap\n\nline](missing-gap.md),\n"
                 "<!-- [old](missing-comment.md) -->\n\n"
+                "A link inside link text voids the outer one: [outer [inner](missing-inner.md)](not-a-link.md).\n\n"
                 "Template lines and definitions are not checked:\n\n[Severity]: high\n\n[r]: missing-ref.md\n")
         skill = make_skill(self.tmp.name, "syntax", "name: syntax\ndescription: S.", body=body)
         self.assertEqual(sorted(self.run_check(skill)[0]), [
             f"SKILL.md: link '{name}' does not resolve"
-            for name in ("missing-image.png", "missing-nested.md", "missing-outer.md",
+            for name in ("missing-image.png", "missing-inner.md", "missing-nested.md", "missing-outer.md",
                          "missing-split.md", "missing-wrapped.md")
         ])
 
@@ -217,6 +219,14 @@ VALID_FRONTMATTER = {
     "comment before the value": "name: good\ndescription: # why the skill exists\n  Use when reviewing.",
     "integer and string keys": "name: good\ndescription: Good.\nmetadata:\n  42: x\n  \"42\": y",
     "document end marker": "name: good\ndescription: Good.\n...",
+    "tabs inside nested quoted and block values": "name: good\ndescription: Good.\nmetadata:\n  owner: \"a\tb\"\n"
+    "license: |\n  a\tb",
+    "tabs in nested block scalars and quoted list items": "name: good\ndescription: Good.\nmetadata:\n"
+    "  notes: |\n    col1\tcol2\n  more: >-\n    a\tb\nallowed-tools:\n  - \"a\tb\"",
+    "quoted value continued on the next line": "name: good\ndescription: \"Reviews changes\n  across lines.\"",
+    "block indicator on the next line": "name: good\ndescription:\n  |\n  Use when: reviewing PRs.",
+    "naive and UTC timestamps as distinct keys": "name: good\ndescription: Good.\nmetadata:\n"
+    "  2026-11-04T10:00:00: x\n  2026-11-04T10:00:00Z: y\n  last: 0001-01-01T00:00:00+01:00",
 }
 INVALID_FRONTMATTER = {
     "numeric description": "name: good\ndescription: 42",
@@ -232,8 +242,22 @@ INVALID_FRONTMATTER = {
     "sequence entry as a value": "name: good\ndescription: - Reviews rules.",
     "duplicate name": "name: claude-x\nname: good\ndescription: Good.",
     "date description": "name: good\ndescription: 2026-11-04",
+    "tab after a quoted value": "name: good\ndescription: 'Reviews changes.'\t# note",
     "tab-indented continuation": "name: good\ndescription: Reviews changes.\n\tUse when reviewing.",
 }
+
+
+def shape(value):
+    """Comparable form that keeps types, time zones, and nested values; lists keep only their type."""
+    if isinstance(value, list):
+        return ("list",)
+    if isinstance(value, dict):
+        return {shape(k): shape(v) for k, v in value.items()}
+    if isinstance(value, datetime.datetime):
+        return ("datetime", value.replace(tzinfo=None), value.utcoffset())
+    if isinstance(value, float) and value != value:
+        return ("float", "nan")
+    return (type(value).__name__, value)
 
 
 class FrontmatterParsingTests(unittest.TestCase):
@@ -286,13 +310,7 @@ class FrontmatterParsingTests(unittest.TestCase):
             finally:
                 check_skill.yaml = installed
             for key in ("name", "description", "license", "compatibility", "metadata"):
-                value = expected.get(key)
-                if isinstance(value, dict) and not all(isinstance(v, str) for v in value.values()):
-                    self.assertIs(type(actual.get(key)), dict, key)
-                elif isinstance(value, (str, int, float, bool, dict)) or value is None:
-                    self.assertEqual(actual.get(key), value, key)
-                else:
-                    self.assertIs(type(actual.get(key)), type(value), key)
+                self.assertEqual(shape(actual.get(key)), shape(expected.get(key)), key)
 
     def test_fallback_values_match_yaml(self):
         if check_skill.yaml is None:
@@ -322,6 +340,7 @@ class FrontmatterParsingTests(unittest.TestCase):
             + r.choice(["42", "\"42\"", "yes", "on"]) + ": y",
             lambda r: "allowed-tools:\n" + r.choice(["- Read", "  - Read", "  - Read\n  - Grep"]),
             lambda r: "compatibility: " + r.choice(scalars),
+            lambda r: "metadata:\n  notes: " + r.choice(["|\n    a\tb", ">-\n    a\tb", "\"a\tb\"", "'a'\t", "a\tb"]),
             lambda r: r.choice(["...", "# done\n...", "...\nlicense: MIT", "\tlicense: MIT"]),
         ]
         rng = random.Random(7)

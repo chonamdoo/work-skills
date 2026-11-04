@@ -141,9 +141,10 @@ Screened in: D1 and Y3. Paired comparisons:
   Downstream task effect is unverified.
 - **Judge-to-output binding is partial.** Primary judge records store the
   digest and length of their prompt; secondary records store the digest only.
-  The prompt template was not archived, so `tests/test_depth_evidence.py` binds
-  primary verdicts to run outputs through the constant template length, and
-  secondary verdicts only through the blind map. An equal-length edit to an
-  output, or a swap of secondary verdicts between runs, is not detected.
+  The prompt template was not archived, so `tests/test_depth_evidence.py` checks
+  that each primary record's prompt length fits its mapped run output, and binds
+  secondary records only through the blind map. The verdict text itself is not
+  bound to its record: moving verdicts between records of either judge, or an
+  equal-length edit to an output, is not detected.
 - **Author spend: $46.57** for Claude runs and primary judging. Secondary judging
   ran on a Codex subscription and has no per-call cost record.

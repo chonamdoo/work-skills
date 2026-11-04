@@ -113,12 +113,14 @@ def resolve_plain(value):
             return datetime.date(*map(int, groups[:3]))
         year, month, day, hour, minute, second, fraction, zone = groups[3:]
         micro = int((fraction or "0")[:6].ljust(6, "0"))
-        stamp = datetime.datetime(int(year), int(month), int(day), int(hour), int(minute), int(second), micro)
-        if zone and zone != "Z":
+        tzinfo = None
+        if zone == "Z":
+            tzinfo = datetime.timezone.utc
+        elif zone:
             sign = -1 if zone[0] == "-" else 1
             hours, _, minutes = zone[1:].partition(":")
-            stamp -= sign * datetime.timedelta(hours=int(hours), minutes=int(minutes or 0))
-        return stamp
+            tzinfo = datetime.timezone(sign * datetime.timedelta(hours=int(hours), minutes=int(minutes or 0)))
+        return datetime.datetime(int(year), int(month), int(day), int(hour), int(minute), int(second), micro, tzinfo)
     if BOOL.match(value):
         return value.lower() in ("yes", "true", "on")
     if INT.match(value):
@@ -144,15 +146,16 @@ def resolve_plain(value):
 
 def plain_scalar(value):
     """Interpret a YAML scalar written on one logical line, keeping its type."""
-    value = value.strip()
+    raw = value.lstrip(" ")
+    value = raw.rstrip()
     if value[:1] == '"':
         end = re.match(r'"(?:[^"\\]|\\.)*"', value)
-        if not end or value[end.end():].strip()[:1] not in ("", "#"):
+        if not end or value[end.end():].strip()[:1] not in ("", "#") or has_tab(raw[end.end():]):
             raise ValueError(f"malformed double-quoted value: {value}")
         return unescape_double_quoted(end.group(0)[1:-1])
     if value[:1] == "'":
         end = re.match(r"'(?:[^']|'')*'", value)
-        if not end or value[end.end():].strip()[:1] not in ("", "#"):
+        if not end or value[end.end():].strip()[:1] not in ("", "#") or has_tab(raw[end.end():]):
             raise ValueError(f"malformed single-quoted value: {value}")
         return end.group(0)[1:-1].replace("''", "'")
     value = strip_comment(value)
@@ -336,17 +339,37 @@ def parse_mapping(lines):
         quoted = value.strip()[:1] in ("\"", "'")
         if has_tab(line[: len(line) - len(value)]) or (not quoted and has_tab(value)):
             raise ValueError(f"tabs are not allowed outside quoted or block values: {line.strip()[:60]}")
+        raw_value = value
         commented = not quoted and strip_comment(value) != value.strip()
         value = value.strip() if quoted else strip_comment(value)
         j = block_end(lines, i, allow_sequence=not value)
         block, i = lines[i:j], j
-        if value[:1] not in (">", "|") and any(has_tab(b) for b in block if b.strip()[:1] not in ("\"", "'")):
-            raise ValueError(f"tabs are not allowed outside quoted or block values under '{key}'")
+        if quoted and not any(b.strip() and not b.lstrip().startswith("#") for b in block):
+            plain_scalar(raw_value)  # rejects text or tabs after the closing quote
+        first = next((b.strip() for b in block if b.strip() and not b.lstrip().startswith("#")), "")
+        nested_mapping = not value and is_key_line(first)
+        if value[:1] in (">", "|", "\"", "'") or nested_mapping:
+            pass  # block and quoted scalars may hold tabs; nested mappings are checked as they are parsed
+        elif not value:
+            for b in block:
+                item = b.strip(" ")
+                if not item.strip() or item.lstrip().startswith("#"):
+                    continue
+                if SEQUENCE_ENTRY.match(item):
+                    if has_tab(item[:2]):
+                        raise ValueError(f"tabs are not allowed after a list marker under '{key}'")
+                    item = item[1:].lstrip(" ")
+                if "\t" in b[: len(b) - len(b.lstrip())] or (item[:1] not in ("\"", "'") and has_tab(item)):
+                    raise ValueError(f"tabs are not allowed outside quoted or block values under '{key}'")
+        elif any(has_tab(b) for b in block):
+            raise ValueError(f"tabs are not allowed in a multi-line plain value of '{key}'")
         if value[:1] in (">", "|"):
             fields[key] = block_scalar(value, block)
             continue
         content = [b for b in block if b.strip() and not b.lstrip().startswith("#")]
         first = content[0].strip() if content else ""
+        if not value and BLOCK_INDICATOR.match(first):
+            raise Unsupported(f"block scalar indicator on the line after '{key}'")
         if value and content and value[:1] in "\"'":
             raise Unsupported(f"multi-line quoted value of '{key}'")
         if not value and content and SEQUENCE_ENTRY.match(first):
@@ -491,10 +514,6 @@ def check_fields(fields, skill_dir, host, errors, warnings):
                 errors.append(f"{key}: contains an XML tag, which Anthropic hosts reject")
 
 
-def unescape_markdown(text):
-    return re.sub(r"\\([%s])" % re.escape(string.punctuation), r"\1", text)
-
-
 def skip_space(text, i):
     """Skip spaces and tabs with at most one line break; None at a blank line."""
     while i < len(text) and text[i] in " \t":
@@ -588,18 +607,29 @@ def inline_destination(text, i):
     return destination if k < len(text) and text[k] == ")" else None
 
 
+def complete_link(prose, start):
+    """Destination of a complete inline link whose label opens at prose[start], or None."""
+    label = INLINE_LINK.match(prose, start)
+    if not label:
+        return None
+    # Links cannot contain links: link text that holds a complete non-image link is plain text.
+    inner = prose[start + 1 : label.end() - 2]
+    for nested in re.finditer(r"\[", inner):
+        if (nested.start() == 0 or inner[nested.start() - 1] != "!") and complete_link(inner, nested.start()):
+            return None
+    return inline_destination(prose, label.end())
+
+
 def link_targets(prose):
-    """Yield destinations of complete inline links, including links nested in link text.
+    """Yield destinations of complete inline links, including links and images nested in link text.
 
     Reference-style definitions are not checked: telling them apart from template
     lines such as "[Severity]: high" needs a full CommonMark block parser.
     """
     for start in (m.start() for m in re.finditer(r"\[", prose)):
-        label = INLINE_LINK.match(prose, start)
-        if label:
-            destination = inline_destination(prose, label.end())
-            if destination is not None:
-                yield destination
+        destination = complete_link(prose, start)
+        if destination is not None:
+            yield destination
 
 
 def markdown_files(skill_dir, errors, warnings):

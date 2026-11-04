@@ -17,8 +17,11 @@ entry `I9-reproduced-failure`. Those edits were reverted. The shipped files agai
 match the evaluated Amin digests, and
 `RecordedDepthEvaluationTests.test_shipped_instructions_are_the_evaluated_candidate`
 now enforces this. On the second fix, C1 returned MERGEABLE. C2 and S returned
-NOT MERGEABLE on parser and link findings; the third fix addresses them, as
-listed below.
+NOT MERGEABLE on parser and link findings. On the third fix, C1 again returned
+MERGEABLE, while C2 and S found regressions from that fix: tabs inside nested
+quoted or block values were rejected, a link inside link text made the outer
+text count as a link, and time zones were dropped from timestamps. The fourth
+fix addresses all findings listed below.
 
 ## Fixed
 
@@ -34,7 +37,9 @@ listed below.
 | C2: links inside HTML comments were checked | HTML comments are skipped. |
 | S: a comment before a value was read as ending the value | Only a comment after the value has started ends it. |
 | S: plain and quoted keys such as `42` and `"42"` were merged into one duplicate key | Plain keys are typed as PyYAML types them. |
-| C2: dates were typed as strings; a `...` document end failed; tabs passed where PyYAML rejects them; a `<<` block key produced a false metadata warning | Timestamps resolve to dates and datetimes. `...` ends the document. Tabs outside quoted and block values fail. Merge keys report "frontmatter not checked". |
+| C2: dates were typed as strings; a `...` document end failed; tabs passed where PyYAML rejects them; a `<<` block key produced a false metadata warning | Timestamps resolve to dates and datetimes, and their time zone is kept. `...` ends the document. Tabs fail where PyYAML rejects them, including after a closing quote, and pass inside quoted and block values at any depth. Merge keys report "frontmatter not checked". |
+| S: the outer text of `[outer [inner](a.md)](b.md)` was checked as a link | Link text that holds a complete non-image link makes the outer text plain, as CommonMark specifies. |
+| C2: a block indicator on the line after the key failed | Reports "frontmatter not checked". |
 | C2: `compatibility` over 500 characters passed | Fails. |
 | C2: a UTF-8 byte-order mark failed with a misleading message | The message names the mark. |
 | S: depth evidence had no integrity check | `tests/test_depth_evidence.py` recomputes every stored aggregate and the documented numbers from the raw runs and verdicts. |
@@ -43,7 +48,8 @@ listed below.
 | C1 N4: superseded sentence in the 2026-11-04 review | Annotated. |
 
 A generated parity test compares the fallback with PyYAML on 400 generated
-frontmatters, covering dates, tabs, typed keys, comments, and document ends. A
+frontmatters, covering dates, time zones, tabs at each depth, typed keys,
+comments, and document ends. It compares nested values with their types. A
 throwaway run over 60 seeds (24,000 frontmatters) found no mismatch.
 
 ## Declined, with reasons
