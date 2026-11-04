@@ -38,7 +38,7 @@ class CheckSkillTests(unittest.TestCase):
             errors, _ = self.run_check(ROOT / "skills" / "work-to-skill", host)
             self.assertEqual(errors, [], host)
 
-    def test_optional_specification_fields_are_preserved_not_rejected(self):
+    def test_optional_specification_fields_are_accepted(self):
         skill = make_skill(
             self.tmp.name,
             "payments-review",
@@ -116,25 +116,24 @@ class CheckSkillTests(unittest.TestCase):
         self.assertTrue(any("x.md" in e for e in errors))
         self.assertTrue(any("sibling" in w and "outside" in w for w in warnings))
 
-    def test_link_destinations_with_parentheses_angles_and_references_resolve(self):
+    def test_link_destinations_with_parentheses_and_angles_resolve(self):
         body = ("Read [v2](references/rules(v2).md), [spaced](<references/my rules.md>),\n"
-                "and [ref][r].\n\n[r]: references/gone.md\n")
+                "and [escaped](<references/rules\\(v2\\).md>).\n")
         skill = make_skill(self.tmp.name, "parens", "name: parens\ndescription: P.", body=body,
                            files={"references/rules(v2).md": "V2.\n", "references/my rules.md": "Spaced.\n"})
-        errors, warnings = self.run_check(skill)
-        self.assertEqual(errors, ["SKILL.md: link 'references/gone.md' does not resolve"])
-        self.assertFalse(any("not linked" in w for w in warnings))
+        self.assertEqual(self.run_check(skill), ([], []))
 
     def test_link_syntax_is_parsed_to_the_end(self):
-        body = ("Escaped [a](<rules\\(v2\\).md>) and [b][r].\n\n[r]: rules\\(v2\\).md\n\n"
-                "Split [c](\nmissing-split.md\n) and [d].\n\n[d]:\n  missing-ref.md\n\n"
-                "Not links: an [example](missing-open.md is unclosed.\n\n"
-                "[Required]: the ticket number\n\nText\n[x]: missing-paragraph.md\n")
-        skill = make_skill(self.tmp.name, "syntax", "name: syntax\ndescription: S.", body=body,
-                           files={"rules(v2).md": "V2.\n"})
+        body = ("Split [c](\nmissing-split.md\n) and hard-wrapped [payment\nrules](missing-wrapped.md).\n\n"
+                "Linked image [![d](missing-image.png)](missing-outer.md) and [step [1]](missing-nested.md).\n\n"
+                "Not links: an [example](missing-open.md is unclosed, a [gap\n\nline](missing-gap.md),\n"
+                "<!-- [old](missing-comment.md) -->\n\n"
+                "Template lines and definitions are not checked:\n\n[Severity]: high\n\n[r]: missing-ref.md\n")
+        skill = make_skill(self.tmp.name, "syntax", "name: syntax\ndescription: S.", body=body)
         self.assertEqual(sorted(self.run_check(skill)[0]), [
-            "SKILL.md: link 'missing-ref.md' does not resolve",
-            "SKILL.md: link 'missing-split.md' does not resolve",
+            f"SKILL.md: link '{name}' does not resolve"
+            for name in ("missing-image.png", "missing-nested.md", "missing-outer.md",
+                         "missing-split.md", "missing-wrapped.md")
         ])
 
     def test_unreadable_markdown_is_reported_not_a_crash(self):
@@ -215,6 +214,9 @@ VALID_FRONTMATTER = {
     "merge key": "name: good\ndescription: Good.\nmetadata:\n  <<: &common\n    owner: team\n  version: \"1.0\"",
     "key containing a colon": "name: good\ndescription: Good.\nmetadata:\n  a:b: c",
     "YAML 1.1 scalars that stay strings": "name: good\ndescription: Good.\nlicense: 08\ncompatibility: 1e3",
+    "comment before the value": "name: good\ndescription: # why the skill exists\n  Use when reviewing.",
+    "integer and string keys": "name: good\ndescription: Good.\nmetadata:\n  42: x\n  \"42\": y",
+    "document end marker": "name: good\ndescription: Good.\n...",
 }
 INVALID_FRONTMATTER = {
     "numeric description": "name: good\ndescription: 42",
@@ -229,6 +231,8 @@ INVALID_FRONTMATTER = {
     "unquoted colon on a continuation line": "name: good\ndescription: Reviews rules.\n  Use when: reviewing.",
     "sequence entry as a value": "name: good\ndescription: - Reviews rules.",
     "duplicate name": "name: claude-x\nname: good\ndescription: Good.",
+    "date description": "name: good\ndescription: 2026-11-04",
+    "tab-indented continuation": "name: good\ndescription: Reviews changes.\n\tUse when reviewing.",
 }
 
 
@@ -301,19 +305,24 @@ class FrontmatterParsingTests(unittest.TestCase):
             self.skipTest("PyYAML not installed")
         scalars = ["Reviews changes.", "08", "1e3", "1.5e+3", "on", "Off", "0x1f", "0b101", "1_000", "1:20",
                    ".inf", "~", "nUll", "yes please", "a # note", "a#b", "-x", "- x", "? x", "Use: it",
-                   "\"a: b\"", "'it''s'", "", "[]", "{}", "*ref"]
+                   "\"a: b\"", "'it''s'", "", "[]", "{}", "*ref", "2026-11-04", "2026-1-4",
+                   "2026-11-04 10:00:00", "2026-11-04T10:00:00.5+09:00", "\tx", "x\t"]
         descriptions = [
             lambda r: "description: " + r.choice(scalars),
             lambda r: "description:\n  " + r.choice(scalars) + "\n  " + r.choice(scalars),
             lambda r: "description: " + r.choice(scalars) + "\n\n  " + r.choice(scalars),
+            lambda r: "description: # why\n  " + r.choice(scalars) + r.choice(["", "\n  more", "\n  # c\n  more"]),
             lambda r: "description: " + r.choice(["|", ">", "|-", ">-", "|+", ">+"]) + "\n  "
             + r.choice(scalars) + r.choice(["", "\n    more", "\n\n  next", "\n # note"]) + r.choice(["", "\n", "\n\n"]),
         ]
         extras = [
             lambda r: "license: " + r.choice(scalars),
             lambda r: "metadata:\n  owner: " + r.choice(scalars) + r.choice(["", "\n# c\n  v: '1'", "\n  tags:\n  - a"]),
+            lambda r: "metadata:\n  " + r.choice(["42", "\"42\"", "yes", "'yes'", "a:b"]) + ": x\n  "
+            + r.choice(["42", "\"42\"", "yes", "on"]) + ": y",
             lambda r: "allowed-tools:\n" + r.choice(["- Read", "  - Read", "  - Read\n  - Grep"]),
             lambda r: "compatibility: " + r.choice(scalars),
+            lambda r: r.choice(["...", "# done\n...", "...\nlicense: MIT", "\tlicense: MIT"]),
         ]
         rng = random.Random(7)
         for n in range(400):

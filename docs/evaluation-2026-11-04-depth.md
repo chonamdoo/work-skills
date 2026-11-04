@@ -139,9 +139,11 @@ Screened in: D1 and Y3. Paired comparisons:
 - **No B runs.** The plan conditioned B on a D-only result; the narrowed
   candidate changed where unconfirmed proposals go (the report, not the skill).
   Downstream task effect is unverified.
-- **Judge-to-output binding is by length only.** Each judge record stores the
-  digest and length of its prompt, not the prompt template, so
-  `tests/test_depth_evidence.py` binds a verdict to its run output through the
-  constant template length. An equal-length edit to an output is not detected.
+- **Judge-to-output binding is partial.** Primary judge records store the
+  digest and length of their prompt; secondary records store the digest only.
+  The prompt template was not archived, so `tests/test_depth_evidence.py` binds
+  primary verdicts to run outputs through the constant template length, and
+  secondary verdicts only through the blind map. An equal-length edit to an
+  output, or a swap of secondary verdicts between runs, is not detected.
 - **Author spend: $46.57** for Claude runs and primary judging. Secondary judging
   ran on a Codex subscription and has no per-call cost record.

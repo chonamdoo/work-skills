@@ -189,7 +189,7 @@ skills were not measured. See the [2026-11-04 evaluation](docs/evaluation-2026-1
 
 The skill ships [`scripts/check_skill.py`](skills/work-to-skill/scripts/check_skill.py).
 `python3 <path-to>/work-to-skill/scripts/check_skill.py <skill-dir> [--host generic|anthropic]`
-checks any skill's frontmatter, optional field limits, links, and host name limits
+checks any skill's frontmatter, optional field limits, inline links, and host name limits
 using only the Python standard library, or PyYAML when installed. Exit 1 means
 format errors; exit 3 means the frontmatter used YAML the standard-library parser
 cannot read, and the rest of the package was still checked. A "frontmatter not

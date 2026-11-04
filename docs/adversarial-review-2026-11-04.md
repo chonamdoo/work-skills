@@ -42,7 +42,7 @@ development checks on reused cases, not a comparative evaluation.
 | A4-reference | — | 3/3 criteria |
 | A6-update | — | 2/2 criteria |
 | A8-depth, criterion 3 (proposals inactive) | 0 of 1 run (`3c6f940`: 0 of 1) | 0 of 1 before the build-step sentence, 2 of 3 after |
-| A9-outcome-range | 4/4 criteria | 4/4 criteria |
+| A9-outcome-range | 4/4 criteria | 4/4 criteria (criteria later revised in [round 3](adversarial-review-2026-11-04-round-3.md); not rescored) |
 
 A8 criterion 3 failed on main and on `3c6f940` (one run each): labeled proposals
 were placed inside procedure steps and so ran unconfirmed. The build and review

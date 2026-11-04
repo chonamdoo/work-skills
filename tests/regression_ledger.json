@@ -45,7 +45,8 @@
       {
         "kind": "auto",
         "tests": [
-          "test_check_skill.CheckSkillTests.test_optional_specification_fields_are_preserved_not_rejected"
+          "test_check_skill.CheckSkillTests.test_optional_specification_fields_are_accepted",
+          "test_check_skill.CheckSkillTests.test_optional_field_limits_fail_and_loose_types_warn"
         ]
       }
     ]

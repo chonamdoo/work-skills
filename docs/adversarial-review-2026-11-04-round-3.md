@@ -9,15 +9,16 @@ for this round. Each reviewer ran in a fresh context without the others' output.
 | C2 | Claude Code CLI, `claude -p --model opus`, script focus | `scripts/check_skill.py` and its tests |
 | S | omp `adversarial-sol61` subagent (GPT-6.1-sol) | whole package and evidence |
 
-All three returned NOT MERGEABLE on `25571f3`, and all three returned NOT
-MERGEABLE on the first fix. The first fix edited `SKILL.md` and
-`references/validation.md`. C1 and C2 both found that this broke the
-pre-registered `judge_disagreement` rule in `addendum-2.json` ("do not ship a
-body change beyond the restore/narrow default") and ledger entry
-`I9-reproduced-failure`. Those edits were reverted. The shipped files again
+All three returned NOT MERGEABLE on `25571f3` and again on the first fix. That
+fix edited `SKILL.md` and `references/validation.md`. C1 and C2 both found that
+this broke the pre-registered `judge_disagreement` rule in `addendum-2.json`
+("do not ship a body change beyond the restore/narrow default") and ledger
+entry `I9-reproduced-failure`. Those edits were reverted. The shipped files again
 match the evaluated Amin digests, and
 `RecordedDepthEvaluationTests.test_shipped_instructions_are_the_evaluated_candidate`
-now enforces this.
+now enforces this. On the second fix, C1 returned MERGEABLE. C2 and S returned
+NOT MERGEABLE on parser and link findings; the third fix addresses them, as
+listed below.
 
 ## Fixed
 
@@ -29,8 +30,11 @@ now enforces this.
 | C2, S: PyYAML path accepted duplicate keys; the duplicate-key loader then rejected `<<` merges | The loader rejects keys repeated in one mapping and leaves merge keys to SafeLoader. |
 | C2: unreadable `.md` files, `x.md` directories, and broken symlinks crashed the checker | Each case is reported; a symlink to a directory is skipped. |
 | C2: unsupported frontmatter skipped link and placeholder checks | The body is checked regardless; exit 3 is kept separate from usage errors (exit 2). |
-| C2, S: link destinations with parentheses, `<...>`, or escapes were truncated; links split across lines were missed; reference-style links were ignored | Inline links are parsed through the closing `)`, with one line break allowed, and reference definitions are recognised. |
-| C2: reference definitions matched `[Field]: text` and lines inside a paragraph | A definition needs a destination with only an optional title after it, and must not interrupt a paragraph. |
+| C2, S: link destinations with parentheses, `<...>`, or escapes were truncated; links split across lines were missed | Inline links are parsed through the closing `)`. One line break is allowed in link text and around the destination, and one level of nested brackets is allowed in link text, so linked images are covered. |
+| C2: links inside HTML comments were checked | HTML comments are skipped. |
+| S: a comment before a value was read as ending the value | Only a comment after the value has started ends it. |
+| S: plain and quoted keys such as `42` and `"42"` were merged into one duplicate key | Plain keys are typed as PyYAML types them. |
+| C2: dates were typed as strings; a `...` document end failed; tabs passed where PyYAML rejects them; a `<<` block key produced a false metadata warning | Timestamps resolve to dates and datetimes. `...` ends the document. Tabs outside quoted and block values fail. Merge keys report "frontmatter not checked". |
 | C2: `compatibility` over 500 characters passed | Fails. |
 | C2: a UTF-8 byte-order mark failed with a misleading message | The message names the mark. |
 | S: depth evidence had no integrity check | `tests/test_depth_evidence.py` recomputes every stored aggregate and the documented numbers from the raw runs and verdicts. |
@@ -38,16 +42,18 @@ now enforces this.
 | Evidence test: the secondary narrow-update guard trip was not stated | Stated in the evaluation decision. |
 | C1 N4: superseded sentence in the 2026-11-04 review | Annotated. |
 
-A generated parity test now compares the fallback with PyYAML on 400 generated
-frontmatters. A throwaway run over 50 seeds (20,000 frontmatters) found no
-mismatch.
+A generated parity test compares the fallback with PyYAML on 400 generated
+frontmatters, covering dates, tabs, typed keys, comments, and document ends. A
+throwaway run over 60 seeds (24,000 frontmatters) found no mismatch.
 
 ## Declined, with reasons
 
 | Finding | Reason |
 | --- | --- |
 | S B1: non-string `metadata` values and list-form `allowed-tools` should fail | The reference validator `skills-ref` converts metadata values with `str()` and does not check the type of `allowed-tools`. Both stay warnings. |
-| S S1: bind verdicts to outputs by prompt digest | The judge prompt template was not archived, and rebuilding it from the recorded fields did not reproduce `prompt_sha256`. The limit is recorded in the evaluation's Limits section. |
+| S S1: bind verdicts to outputs by prompt digest | The judge prompt template was not archived, and rebuilding it from the recorded fields did not reproduce `prompt_sha256`. The evaluation's Limits section states what the remaining binding covers: length for primary records, the blind map alone for secondary records. |
+| C2, S: reference-style definitions (`[r]: path`) produced false failures on template lines such as `[Severity]: high`, unterminated titles, and `#hashtag` paragraphs, and were missed inside lists and block quotes | Reference-definition checking, added earlier in this round, was removed. Telling definitions apart from template lines needs a full CommonMark block parser. Reference-style links stay unchecked, as they were on `main`, and the documentation says so. |
+| C2: links in indented code blocks are checked | Indented code cannot be told apart from indented list content without a block parser. Unchanged from `main`. |
 
 ## Deferred: body changes that need a reproduced failure and a rerun
 
@@ -83,7 +89,9 @@ rescored.
 
 ## Checks
 
-The suite ran locally, with and without PyYAML, together with Git's whitespace
-check over the committed tree. GitHub Actions was paused for this change.
+The full suite ran locally with PyYAML installed. The checker tests also ran
+without PyYAML; `tests/test_package.py` imports PyYAML and does not run without
+it. Git's whitespace check ran over the committed tree. GitHub Actions was paused
+for this change.
 Smoke runs on the reverted instruction edit are development observations and
 are not evidence for the shipped text.

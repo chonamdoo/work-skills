@@ -14,6 +14,7 @@ mappings and lists), resolving plain scalars as PyYAML does.
 """
 
 import argparse
+import datetime
 import re
 import string
 import sys
@@ -27,8 +28,9 @@ except ImportError:  # the fallback parser below covers skill frontmatter
 
 NAME = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 XML_TAG = re.compile(r"</?[A-Za-z][\w.-]*(?:\s[^<>]*)?/?>")
-INLINE_LINK = re.compile(r"!?\[(?:[^\]\\\n]|\\.)*\]\(")
-REFERENCE_DEFINITION = re.compile(r"^ {0,3}\[(?!\^)(?:[^\]\\\n]|\\.)+\]:(.*)$")
+# Link text may hold one level of nested brackets and single line breaks, not a blank line.
+_LABEL_CHAR = r"(?:[^\[\]\\\n]|\\.|\n(?![ \t]*\n))"
+INLINE_LINK = re.compile(r"\[(?:%s|\[%s*\])*\]\(" % (_LABEL_CHAR, _LABEL_CHAR))
 PLACEHOLDER = re.compile(r"\b(?:TODO|TBD|FIXME)\b\s*[:\]]|\[(?:TODO|TBD|FIXME)\b|<(?:placeholder|TODO|TBD)>")
 OPENING = re.compile(r"---[ \t]*\n")
 CLOSING = re.compile(r"(?m)^---[ \t]*$")
@@ -40,6 +42,8 @@ RESERVED = ("anthropic", "claude")
 UNCHECKED = "frontmatter not checked:"
 
 # PyYAML's YAML 1.1 implicit resolvers for plain scalars.
+TIMESTAMP = re.compile(r"^([0-9]{4})-([0-9]{2})-([0-9]{2})$|^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})(?:[Tt]|[ \t]+)"
+                       r"([0-9]{1,2}):([0-9]{2}):([0-9]{2})(?:\.([0-9]*))?(?:[ \t]*(Z|[-+][0-9]{1,2}(?::[0-9]{2})?))?$")
 NULL = re.compile(r"^(?:~|null|Null|NULL)$")
 BOOL = re.compile(r"^(?:yes|Yes|YES|no|No|NO|true|True|TRUE|false|False|FALSE|on|On|ON|off|Off|OFF)$")
 INT = re.compile(r"^(?:[-+]?0b[0-1_]+|[-+]?0[0-7_]+|[-+]?(?:0|[1-9][0-9_]*)|[-+]?0x[0-9a-fA-F_]+"
@@ -84,6 +88,12 @@ def strip_comment(value):
     return "" if value.startswith("#") else re.sub(r"\s+#.*$", "", value)
 
 
+def has_tab(text):
+    """Whether a tab appears before any comment; PyYAML rejects tabs there."""
+    comment = re.search(r"(?:^|[ \t])#", text)
+    return "\t" in (text if not comment else text[: comment.start() + 1])
+
+
 def sexagesimal(text, convert):
     sign = -1 if text[:1] == "-" else 1
     total = 0
@@ -96,6 +106,19 @@ def resolve_plain(value):
     """Type a plain scalar the way PyYAML's SafeLoader does."""
     if NULL.match(value):
         return None
+    timestamp = TIMESTAMP.match(value)
+    if timestamp:
+        groups = timestamp.groups()
+        if groups[0] is not None:
+            return datetime.date(*map(int, groups[:3]))
+        year, month, day, hour, minute, second, fraction, zone = groups[3:]
+        micro = int((fraction or "0")[:6].ljust(6, "0"))
+        stamp = datetime.datetime(int(year), int(month), int(day), int(hour), int(minute), int(second), micro)
+        if zone and zone != "Z":
+            sign = -1 if zone[0] == "-" else 1
+            hours, _, minutes = zone[1:].partition(":")
+            stamp -= sign * datetime.timedelta(hours=int(hours), minutes=int(minutes or 0))
+        return stamp
     if BOOL.match(value):
         return value.lower() in ("yes", "true", "on")
     if INT.match(value):
@@ -215,7 +238,8 @@ def split_key(line):
     plain = PLAIN_KEY.match(line)
     if not plain:
         return None
-    return plain.group(1).strip(), line[plain.end():]
+    key = plain.group(1).strip()
+    return (key if key == "<<" else resolve_plain(key)), line[plain.end():]
 
 
 def is_key_line(line):
@@ -261,9 +285,11 @@ def plain_lines(value, commented, block):
     if not entries:
         return plain_scalar(value)
     first = value or entries[0][1]
+    if not value and re.match(r"\?(?:\s|$)", first):
+        raise Unsupported(f"complex mapping key: {first[:40]}")
     if first[:1] in ("[", "{") and (value or len(entries) > 1):
         raise Unsupported(f"multi-line flow collection: {first[:40]}")
-    text, blanks, ended = value, 0, commented
+    text, blanks, ended = value, 0, bool(value) and commented
     if value:
         plain_scalar(value)
     for kind, piece, has_comment in entries:
@@ -293,18 +319,29 @@ def parse_mapping(lines):
         i += 1
         if not line.strip() or line.lstrip().startswith("#"):
             continue
+        if line.rstrip() == "...":
+            if any(rest.strip() and rest.rstrip() != "..." and not rest.lstrip().startswith("#") for rest in lines[i:]):
+                raise ValueError("content after the '...' document end marker")
+            break
         if line[0] in " \t":
             raise ValueError(f"unexpected indented frontmatter line: {line.strip()}")
         split = split_key(line)
         if split is None:
             raise ValueError(f"frontmatter line is not 'key: value': {line.strip()}")
         key, value = split
+        if key == "<<":
+            raise Unsupported("YAML merge key")
         if key in fields:
             raise ValueError(f"duplicate frontmatter key: {key}")
-        commented = value.strip()[:1] not in ("\"", "'") and strip_comment(value) != value.strip()
-        value = strip_comment(value) if value.strip()[:1] not in ("\"", "'") else value.strip()
+        quoted = value.strip()[:1] in ("\"", "'")
+        if has_tab(line[: len(line) - len(value)]) or (not quoted and has_tab(value)):
+            raise ValueError(f"tabs are not allowed outside quoted or block values: {line.strip()[:60]}")
+        commented = not quoted and strip_comment(value) != value.strip()
+        value = value.strip() if quoted else strip_comment(value)
         j = block_end(lines, i, allow_sequence=not value)
         block, i = lines[i:j], j
+        if value[:1] not in (">", "|") and any(has_tab(b) for b in block if b.strip()[:1] not in ("\"", "'")):
+            raise ValueError(f"tabs are not allowed outside quoted or block values under '{key}'")
         if value[:1] in (">", "|"):
             fields[key] = block_scalar(value, block)
             continue
@@ -368,6 +405,9 @@ def parse_fields(header):
         if not isinstance(fields, dict):
             raise ValueError("frontmatter must be a mapping")
         return fields
+    for line in header.splitlines():
+        if line[:1] == "\t" and line.strip():
+            raise ValueError(f"tabs cannot indent YAML: {line.strip()[:60]}")
     return parse_mapping(header.splitlines())
 
 
@@ -548,51 +588,18 @@ def inline_destination(text, i):
     return destination if k < len(text) and text[k] == ")" else None
 
 
-def definition_destination(rest):
-    """Parse what follows '[label]:' in a reference definition; return the destination or None."""
-    rest = rest.strip()
-    if not rest:
-        return None
-    if rest[0] == "<":
-        parsed = angle_destination(rest, 0)
-        if parsed is None:
-            return None
-        destination, end = parsed
-    else:
-        destination, end = raw_destination(rest, 0)
-    remainder = rest[end:]
-    if remainder and not remainder[0].isspace():
-        return None
-    remainder = remainder.strip()
-    if remainder and (remainder[0] not in "\"'(" or (skip_title(remainder, 0) not in (None, len(remainder)))):
-        return None
-    return destination
-
-
 def link_targets(prose):
-    """Yield destinations of complete inline links and of reference definitions."""
-    for match in INLINE_LINK.finditer(prose):
-        destination = inline_destination(prose, match.end())
-        if destination is not None:
-            yield destination
-    lines = prose.split("\n")
-    can_start = True  # a definition cannot interrupt a paragraph
-    i = 0
-    while i < len(lines):
-        line = lines[i]
-        definition = REFERENCE_DEFINITION.match(line) if can_start else None
-        if definition:
-            rest, used = definition.group(1), 1
-            if not rest.strip() and i + 1 < len(lines) and lines[i + 1].strip():
-                rest, used = lines[i + 1], 2
-            destination = definition_destination(rest)
+    """Yield destinations of complete inline links, including links nested in link text.
+
+    Reference-style definitions are not checked: telling them apart from template
+    lines such as "[Severity]: high" needs a full CommonMark block parser.
+    """
+    for start in (m.start() for m in re.finditer(r"\[", prose)):
+        label = INLINE_LINK.match(prose, start)
+        if label:
+            destination = inline_destination(prose, label.end())
             if destination is not None:
                 yield destination
-                i += used
-                continue
-        stripped = line.strip()
-        can_start = not stripped or stripped.startswith("#")
-        i += 1
 
 
 def markdown_files(skill_dir, errors, warnings):
@@ -645,6 +652,7 @@ def check(skill_dir, host="generic"):
         rel = path.relative_to(skill_dir)
         prose = re.sub(r"(?ms)^\s*(```|~~~).*?^\s*\1[^\n]*$", "", content)
         prose = re.sub(r"`[^`\n]*`", "", prose)
+        prose = re.sub(r"(?s)<!--.*?-->", "", prose)
         for target in link_targets(prose):
             url = urlsplit(target)
             if url.scheme or url.netloc or not url.path:
