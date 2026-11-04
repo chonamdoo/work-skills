@@ -66,7 +66,7 @@
     "acceptance": [
       "Starts from evidence less digested than both the dashboard summary and the copied top-three reasons, such as the full exit notes, either as sourced practice or as a labeled proposal listed in the report until confirmed; treats the event export as a candidate input unless its suitability is established; justified omission or an explicit unknown is acceptable.",
       "Names concrete methods and a check grounded in a runnable check, reproduction, held-out case, source record, measurement, or qualified reviewer's assessment; the executor's own rereading and another model's review do not substitute. A missing check stated as a gap, with the result bounded as unverified, is acceptable.",
-      "Author proposals that change inputs, methods, checks, tool access, effort, or cost are labeled, distinct from the analyst's practice, and absent from the skill unless confirmed; labeled derived examples may stay; no invented thresholds stated as rules.",
+      "Author proposals are labeled, distinct from the analyst's practice, and absent from the skill unless confirmed; no invented thresholds stated as rules.",
       "Keeps one internal slide and the no-scripts restriction; adds no deliverable, deployment, customer contact, or permission."
     ]
   },

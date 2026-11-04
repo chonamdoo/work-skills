@@ -6,10 +6,11 @@ Usage: python3 check_skill.py <skill-dir> [--host generic|anthropic]
 Errors (exit 1) are format violations that make the package invalid for the
 selected host. Warnings are guidance from host documentation, not failures.
 Exit 2 is a command-line usage error. Exit 3 means the frontmatter uses YAML
-the fallback parser cannot read; links and placeholders are still checked.
+the fallback parser cannot read; the rest of the package is still checked, and
+a "frontmatter not checked" warning keeps that meaning whatever the exit code.
 Uses PyYAML when installed; otherwise a standard-library parser for the
 frontmatter subset skills use (plain, quoted, and block scalars; block
-mappings and lists).
+mappings and lists), resolving plain scalars as PyYAML does.
 """
 
 import argparse
@@ -27,18 +28,24 @@ except ImportError:  # the fallback parser below covers skill frontmatter
 NAME = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 XML_TAG = re.compile(r"</?[A-Za-z][\w.-]*(?:\s[^<>]*)?/?>")
 INLINE_LINK = re.compile(r"!?\[(?:[^\]\\\n]|\\.)*\]\(")
-REFERENCE_LINK = re.compile(r"(?m)^ {0,3}\[(?!\^)[^\]\n]+\]:[ \t]*(<[^>\n]*>|\S+)")
+REFERENCE_DEFINITION = re.compile(r"^ {0,3}\[(?!\^)(?:[^\]\\\n]|\\.)+\]:(.*)$")
 PLACEHOLDER = re.compile(r"\b(?:TODO|TBD|FIXME)\b\s*[:\]]|\[(?:TODO|TBD|FIXME)\b|<(?:placeholder|TODO|TBD)>")
 OPENING = re.compile(r"---[ \t]*\n")
 CLOSING = re.compile(r"(?m)^---[ \t]*$")
 QUOTED_KEY = re.compile(r"""^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')[ \t]*:(?=[ \t]|$)""")
+PLAIN_KEY = re.compile(r"^([^\s#\"'\-?\[{&*!|>%@`][^\n]*?|-[^\s][^\n]*?):(?=[ \t]|$)")
+SEQUENCE_ENTRY = re.compile(r"-(?:[ \t]|$)")
 BLOCK_INDICATOR = re.compile(r"([|>])([+-]?)")
 RESERVED = ("anthropic", "claude")
 UNCHECKED = "frontmatter not checked:"
 
-
-SCALARS = {"true": True, "false": False, "yes": True, "no": False, "null": None, "~": None}
-NUMBER = re.compile(r"^[-+]?(?:\d[\d_]*(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?$")
+# PyYAML's YAML 1.1 implicit resolvers for plain scalars.
+NULL = re.compile(r"^(?:~|null|Null|NULL)$")
+BOOL = re.compile(r"^(?:yes|Yes|YES|no|No|NO|true|True|TRUE|false|False|FALSE|on|On|ON|off|Off|OFF)$")
+INT = re.compile(r"^(?:[-+]?0b[0-1_]+|[-+]?0[0-7_]+|[-+]?(?:0|[1-9][0-9_]*)|[-+]?0x[0-9a-fA-F_]+"
+                 r"|[-+]?[1-9][0-9_]*(?::[0-5]?[0-9])+)$")
+FLOAT = re.compile(r"^(?:[-+]?(?:[0-9][0-9_]*)\.[0-9_]*(?:[eE][-+][0-9]+)?|\.[0-9_]+(?:[eE][-+][0-9]+)?"
+                   r"|[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+\.[0-9_]*|[-+]?\.(?:inf|Inf|INF)|\.(?:nan|NaN|NAN))$")
 ESCAPES = {"0": "\0", "a": "\a", "b": "\b", "t": "\t", "\t": "\t", "n": "\n", "v": "\v", "f": "\f",
            "r": "\r", "e": "\x1b", " ": " ", '"': '"', "/": "/", "\\": "\\", "N": "\x85", "_": "\xa0",
            "L": "\u2028", "P": "\u2029"}
@@ -77,6 +84,41 @@ def strip_comment(value):
     return "" if value.startswith("#") else re.sub(r"\s+#.*$", "", value)
 
 
+def sexagesimal(text, convert):
+    sign = -1 if text[:1] == "-" else 1
+    total = 0
+    for part in text.lstrip("+-").split(":"):
+        total = total * 60 + convert(part)
+    return sign * total
+
+
+def resolve_plain(value):
+    """Type a plain scalar the way PyYAML's SafeLoader does."""
+    if NULL.match(value):
+        return None
+    if BOOL.match(value):
+        return value.lower() in ("yes", "true", "on")
+    if INT.match(value):
+        digits = value.replace("_", "")
+        if ":" in digits:
+            return sexagesimal(digits, int)
+        body = digits.lstrip("+-")
+        sign = -1 if digits[:1] == "-" else 1
+        if body.startswith("0b"):
+            return sign * int(body[2:], 2)
+        if body.startswith("0x"):
+            return sign * int(body[2:], 16)
+        if body != "0" and body.startswith("0"):
+            return sign * int(body, 8)
+        return sign * int(body)
+    if FLOAT.match(value):
+        digits = value.replace("_", "").lower()
+        if ":" in digits:
+            return float(sexagesimal(digits, float))
+        return float(digits.replace(".inf", "inf").replace(".nan", "nan"))
+    return value
+
+
 def plain_scalar(value):
     """Interpret a YAML scalar written on one logical line, keeping its type."""
     value = value.strip()
@@ -97,15 +139,13 @@ def plain_scalar(value):
         if value in ("[]", "{}"):
             return [] if value == "[]" else {}
         raise Unsupported(f"YAML flow collection: {value[:40]}")
+    if re.match(r"[-?:](?:\s|$)", value):
+        raise ValueError(f"a value cannot start with '{value[0]} '; quote it: {value[:60]}")
     if re.search(r":(?:\s|$)", value):
         raise ValueError(f"unquoted value contains ': ', which YAML reads as a mapping; quote it: {value[:60]}")
     if value == "":
         return None
-    if value.lower() in SCALARS:
-        return SCALARS[value.lower()]
-    if NUMBER.match(value):
-        return float(value) if any(c in value for c in ".eE") else int(value.replace("_", ""))
-    return value
+    return resolve_plain(value)
 
 
 def indent_of(line):
@@ -119,13 +159,26 @@ def block_scalar(indicator, block):
         raise Unsupported(f"block scalar indicator '{indicator}'")
     style, chomp = match.groups()
     content = [line for line in block if line.strip()]
-    indent = indent_of(content[0]) if content else 0
-    lines = []
+    leading = []
+    for line in block:
+        if line.strip():
+            break
+        leading.append(len(line) - len(line.lstrip(" ")))
+    # Like PyYAML, the indentation is the deepest of the leading blank lines and the first content line.
+    indent = max([indent_of(content[0])] + leading) if content else 0
+    lines, ended = [], False
     for line in block:
         if not line.strip():
-            lines.append("")
+            if not ended:
+                lines.append("")
         elif indent_of(line) < indent:
+            if line.lstrip().startswith("#"):
+                ended = True  # a less-indented comment ends the scalar
+                continue
             raise ValueError(f"block scalar line is less indented than its first line: {line.strip()}")
+        elif ended:
+            if not line.lstrip().startswith("#"):
+                raise ValueError(f"indented line after the block scalar ended: {line.strip()}")
         else:
             lines.append(line[indent:])
     trailing = 0
@@ -159,10 +212,76 @@ def split_key(line):
         return plain_scalar(quoted.group(1)), line[quoted.end():]
     if line[:1] in ("?", "[", "{", "&", "*", "!"):
         raise Unsupported(f"complex or flow mapping key: {line.strip()[:40]}")
-    key, sep, rest = line.partition(":")
-    if not sep or not key.strip() or key[:1] in ("\"", "'", "-") or rest[:1] not in ("", " ", "\t"):
+    plain = PLAIN_KEY.match(line)
+    if not plain:
         return None
-    return key.strip(), rest
+    return plain.group(1).strip(), line[plain.end():]
+
+
+def is_key_line(line):
+    return bool(QUOTED_KEY.match(line) or PLAIN_KEY.match(line))
+
+
+def block_end(lines, start, allow_sequence):
+    """Index after the lines that belong to the value of the key on lines[start - 1]."""
+    j = start
+    while j < len(lines):
+        line = lines[j]
+        if not line.strip() or line[0] in " \t" or (allow_sequence and SEQUENCE_ENTRY.match(line)):
+            j += 1
+            continue
+        if line.startswith("#"):
+            k = j + 1
+            while k < len(lines) and (not lines[k].strip() or lines[k].startswith("#")):
+                k += 1
+            if k < len(lines) and (lines[k][0] in " \t" or (allow_sequence and SEQUENCE_ENTRY.match(lines[k]))):
+                j = k
+                continue
+        break
+    return j
+
+
+def plain_lines(value, commented, block):
+    """Fold a multi-line plain scalar as PyYAML does: line breaks become spaces, blank lines newlines."""
+    entries = []
+    for raw in block:
+        stripped = raw.strip()
+        if not stripped:
+            entries.append(("blank", "", False))
+        elif stripped.startswith("#"):
+            entries.append(("comment", "", False))
+        else:
+            piece = strip_comment(stripped)
+            entries.append(("text", piece, piece != stripped))
+    while entries and entries[-1][0] != "text":
+        entries.pop()
+    if not value:
+        while entries and entries[0][0] != "text":
+            entries.pop(0)
+    if not entries:
+        return plain_scalar(value)
+    first = value or entries[0][1]
+    if first[:1] in ("[", "{") and (value or len(entries) > 1):
+        raise Unsupported(f"multi-line flow collection: {first[:40]}")
+    text, blanks, ended = value, 0, commented
+    if value:
+        plain_scalar(value)
+    for kind, piece, has_comment in entries:
+        if kind == "blank":
+            blanks += 1
+            continue
+        if kind == "comment":
+            ended = True
+            continue
+        if ended:
+            raise ValueError(f"a comment ends a multi-line value; quote the value or move the comment: {piece[:60]}")
+        if text and re.search(r":(?:\s|$)", piece):
+            raise ValueError(f"unquoted value contains ': ', which YAML reads as a mapping; quote it: {piece[:60]}")
+        if text:
+            text += "\n" * blanks if blanks else " "
+        text += piece
+        blanks, ended = 0, has_comment
+    return plain_scalar(text) if "\n" not in text else text
 
 
 def parse_mapping(lines):
@@ -182,11 +301,10 @@ def parse_mapping(lines):
         key, value = split
         if key in fields:
             raise ValueError(f"duplicate frontmatter key: {key}")
-        j = i
-        while j < len(lines) and (not lines[j].strip() or lines[j][0] in " \t"):
-            j += 1
-        block, i = lines[i:j], j
+        commented = value.strip()[:1] not in ("\"", "'") and strip_comment(value) != value.strip()
         value = strip_comment(value) if value.strip()[:1] not in ("\"", "'") else value.strip()
+        j = block_end(lines, i, allow_sequence=not value)
+        block, i = lines[i:j], j
         if value[:1] in (">", "|"):
             fields[key] = block_scalar(value, block)
             continue
@@ -194,9 +312,13 @@ def parse_mapping(lines):
         first = content[0].strip() if content else ""
         if value and content and value[:1] in "\"'":
             raise Unsupported(f"multi-line quoted value of '{key}'")
-        if not value and content and (first == "-" or first.startswith("- ")):
+        if not value and content and SEQUENCE_ENTRY.match(first):
+            indent = indent_of(content[0])
+            if any(indent_of(b) < indent or (indent_of(b) == indent and not SEQUENCE_ENTRY.match(b.strip()))
+                   for b in content):
+                raise ValueError(f"'{key}' mixes list entries with other lines at the same indentation")
             fields[key] = []
-        elif not value and content and (QUOTED_KEY.match(first) or re.match(r"^[^\s#\"'\-][^:]*:(?:\s|$)", first)):
+        elif not value and content and is_key_line(first):
             indent = indent_of(content[0])
             if any(indent_of(b) < indent for b in content):
                 raise ValueError(f"inconsistent indentation under '{key}'")
@@ -207,18 +329,19 @@ def parse_mapping(lines):
                 raise Unsupported(f"multi-line quoted value of '{key}'")
             fields[key] = plain_scalar(first)
         else:
-            pieces = ([value] if value else []) + [strip_comment(p) for p in content]
-            fields[key] = plain_scalar(" ".join(p for p in pieces if p))
+            fields[key] = plain_lines(value, commented, block)
     return fields
 
 
 def yaml_loader():
-    """PyYAML SafeLoader that rejects duplicate keys, as strict skill loaders do."""
+    """PyYAML SafeLoader that rejects keys repeated in one mapping, as strict skill loaders do."""
 
     class UniqueKeyLoader(yaml.SafeLoader):
         def construct_mapping(self, node, deep=False):
             seen = set()
             for key_node, _ in node.value:
+                if key_node.tag == "tag:yaml.org,2002:merge":
+                    continue  # merged keys may be overridden; SafeLoader applies the merge
                 key = self.construct_object(key_node, deep=deep)
                 try:
                     duplicate = key in seen
@@ -245,7 +368,7 @@ def parse_fields(header):
         if not isinstance(fields, dict):
             raise ValueError("frontmatter must be a mapping")
         return fields
-    return parse_mapping(header.split("\n"))
+    return parse_mapping(header.splitlines())
 
 
 def split_frontmatter(text):
@@ -300,9 +423,13 @@ def check_fields(fields, skill_dir, host, errors, warnings):
         elif len(compatibility) > 500:
             errors.append(f"compatibility: {len(compatibility)} characters; the limit is 500")
 
+    # The specification types these fields, but its reference validator (skills-ref)
+    # stringifies metadata values and does not type allowed-tools, so mismatches warn.
     if "metadata" in fields:
         metadata = fields["metadata"]
-        if not isinstance(metadata, dict):
+        if metadata is None:
+            warnings.append("metadata: empty; remove it or add key-value pairs")
+        elif not isinstance(metadata, dict):
             errors.append(f"metadata: must be a mapping, not {type(metadata).__name__}")
         else:
             loose = [str(k) for k, v in metadata.items() if not isinstance(k, str) or not isinstance(v, str)]
@@ -324,39 +451,148 @@ def check_fields(fields, skill_dir, host, errors, warnings):
                 errors.append(f"{key}: contains an XML tag, which Anthropic hosts reject")
 
 
-def link_targets(prose):
-    """Yield local-or-remote destinations of inline and reference-style Markdown links."""
-    for match in INLINE_LINK.finditer(prose):
-        i = match.end()
-        while i < len(prose) and prose[i] in " \t":
+def unescape_markdown(text):
+    return re.sub(r"\\([%s])" % re.escape(string.punctuation), r"\1", text)
+
+
+def skip_space(text, i):
+    """Skip spaces and tabs with at most one line break; None at a blank line."""
+    while i < len(text) and text[i] in " \t":
+        i += 1
+    if i < len(text) and text[i] == "\n":
+        i += 1
+        while i < len(text) and text[i] in " \t":
             i += 1
-        if prose[i : i + 1] == "<":
-            end = prose.find(">", i)
-            if end > i and "\n" not in prose[i:end]:
-                yield prose[i + 1 : end]
+        if i < len(text) and text[i] == "\n":
+            return None
+    return i
+
+
+def angle_destination(text, i):
+    """Parse '<...>' at text[i]; return (destination, end) or None."""
+    j, out = i + 1, []
+    while j < len(text) and text[j] not in "<>\n":
+        if text[j] == "\\" and text[j + 1 : j + 2] and text[j + 1] in string.punctuation:
+            out.append(text[j + 1])
+            j += 2
             continue
-        depth, j, out = 0, i, []
-        while j < len(prose):
-            char = prose[j]
-            if char == "\\" and prose[j + 1 : j + 2] and prose[j + 1] in string.punctuation:
-                out.append(prose[j + 1])
-                j += 2
-                continue
-            if char.isspace():
+        out.append(text[j])
+        j += 1
+    if j >= len(text) or text[j] != ">":
+        return None
+    return "".join(out), j + 1
+
+
+def raw_destination(text, i):
+    """Parse a bare destination with balanced parentheses; return (destination, end)."""
+    depth, j, out = 0, i, []
+    while j < len(text):
+        char = text[j]
+        if char == "\\" and text[j + 1 : j + 2] and text[j + 1] in string.punctuation:
+            out.append(text[j + 1])
+            j += 2
+            continue
+        if char.isspace() or ord(char) < 32:
+            break
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            if depth == 0:
                 break
-            if char == "(":
-                depth += 1
-            elif char == ")":
-                if depth == 0:
-                    break
-                depth -= 1
-            out.append(char)
-            j += 1
-        if out:
-            yield "".join(out)
-    for match in REFERENCE_LINK.finditer(prose):
-        target = match.group(1)
-        yield target[1:-1] if target.startswith("<") else target
+            depth -= 1
+        out.append(char)
+        j += 1
+    return "".join(out), j
+
+
+def skip_title(text, i):
+    """Skip a link title opening at text[i]; return the end or None if it never closes."""
+    close = {'"': '"', "'": "'", "(": ")"}[text[i]]
+    j = i + 1
+    while j < len(text):
+        if text[j] == "\\":
+            j += 2
+            continue
+        if text[j] == close:
+            return j + 1
+        if text[j] == "\n" and text[j + 1 : j + 2] == "\n":
+            return None
+        j += 1
+    return None
+
+
+def inline_destination(text, i):
+    """Parse the inside of '(...)' after a link label; return the destination or None."""
+    i = skip_space(text, i)
+    if i is None or i >= len(text) or text[i] == ")":
+        return None
+    if text[i] == "<":
+        parsed = angle_destination(text, i)
+        if parsed is None:
+            return None
+        destination, end = parsed
+    else:
+        destination, end = raw_destination(text, i)
+        if not destination:
+            return None
+    k = skip_space(text, end)
+    if k is None:
+        return None
+    if k > end and k < len(text) and text[k] in "\"'(":
+        k = skip_title(text, k)
+        if k is None:
+            return None
+        k = skip_space(text, k)
+        if k is None:
+            return None
+    return destination if k < len(text) and text[k] == ")" else None
+
+
+def definition_destination(rest):
+    """Parse what follows '[label]:' in a reference definition; return the destination or None."""
+    rest = rest.strip()
+    if not rest:
+        return None
+    if rest[0] == "<":
+        parsed = angle_destination(rest, 0)
+        if parsed is None:
+            return None
+        destination, end = parsed
+    else:
+        destination, end = raw_destination(rest, 0)
+    remainder = rest[end:]
+    if remainder and not remainder[0].isspace():
+        return None
+    remainder = remainder.strip()
+    if remainder and (remainder[0] not in "\"'(" or (skip_title(remainder, 0) not in (None, len(remainder)))):
+        return None
+    return destination
+
+
+def link_targets(prose):
+    """Yield destinations of complete inline links and of reference definitions."""
+    for match in INLINE_LINK.finditer(prose):
+        destination = inline_destination(prose, match.end())
+        if destination is not None:
+            yield destination
+    lines = prose.split("\n")
+    can_start = True  # a definition cannot interrupt a paragraph
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        definition = REFERENCE_DEFINITION.match(line) if can_start else None
+        if definition:
+            rest, used = definition.group(1), 1
+            if not rest.strip() and i + 1 < len(lines) and lines[i + 1].strip():
+                rest, used = lines[i + 1], 2
+            destination = definition_destination(rest)
+            if destination is not None:
+                yield destination
+                i += used
+                continue
+        stripped = line.strip()
+        can_start = not stripped or stripped.startswith("#")
+        i += 1
 
 
 def markdown_files(skill_dir, errors, warnings):
@@ -364,7 +600,7 @@ def markdown_files(skill_dir, errors, warnings):
     for path in sorted(skill_dir.rglob("*.md")):
         rel = path.relative_to(skill_dir)
         if not path.is_file():
-            if path.is_symlink():
+            if path.is_symlink() and not path.exists():
                 errors.append(f"{rel}: broken symbolic link")
             continue
         try:

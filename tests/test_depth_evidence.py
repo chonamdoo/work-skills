@@ -748,6 +748,15 @@ class RecordedDepthEvaluationTests(unittest.TestCase):
         self.assertEqual({j: recount.ship(j) for j in ("primary", "secondary")}, {"primary": "Amin", "secondary": "restore Abase"})
         self.assertEqual(errors, [])
 
+    def test_shipped_instructions_are_the_evaluated_candidate(self):
+        # The pre-registered judge_disagreement rule ships no body change beyond the
+        # narrowed candidate; a later edit needs a reproduced failure and a rerun.
+        amin = BUNDLE["addendum-2"]["arms"]["Amin"]
+        package = ROOT / "skills" / "work-to-skill"
+        for rel in ("SKILL.md", "references/validation.md"):
+            with self.subTest(rel):
+                self.assertEqual(_sha256((package / rel).read_bytes()), amin[rel])
+
 
 class DepthEvidenceIntegrityTests(unittest.TestCase):
     def setUp(self):

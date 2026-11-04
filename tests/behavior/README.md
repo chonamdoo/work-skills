@@ -7,8 +7,9 @@ Check generated packages with `skills/work-to-skill/scripts/check_skill.py`, onc
 per intended host. Common Agent Skills format errors fail on every host; Anthropic
 reserved names and XML tags fail only with `--host anthropic`; length and nesting
 are warnings. Optional fields are accepted; a non-mapping `metadata` or a
-`compatibility` over 500 characters fails, and non-string `metadata` values or a
-list-form `allowed-tools` warn. `tests/test_package.py`
+`compatibility` over 500 characters fails, and an empty or non-string `metadata`
+or a list-form `allowed-tools` warns, because the reference validator
+(`skills-ref`) accepts them. `tests/test_package.py`
 also requires this repository's exact `name`/`description` field set, which is
 not a rule for generated skills.
 

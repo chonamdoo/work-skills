@@ -1,4 +1,5 @@
 import importlib.util
+import random
 import sys
 import tempfile
 import unittest
@@ -124,11 +125,25 @@ class CheckSkillTests(unittest.TestCase):
         self.assertEqual(errors, ["SKILL.md: link 'references/gone.md' does not resolve"])
         self.assertFalse(any("not linked" in w for w in warnings))
 
+    def test_link_syntax_is_parsed_to_the_end(self):
+        body = ("Escaped [a](<rules\\(v2\\).md>) and [b][r].\n\n[r]: rules\\(v2\\).md\n\n"
+                "Split [c](\nmissing-split.md\n) and [d].\n\n[d]:\n  missing-ref.md\n\n"
+                "Not links: an [example](missing-open.md is unclosed.\n\n"
+                "[Required]: the ticket number\n\nText\n[x]: missing-paragraph.md\n")
+        skill = make_skill(self.tmp.name, "syntax", "name: syntax\ndescription: S.", body=body,
+                           files={"rules(v2).md": "V2.\n"})
+        self.assertEqual(sorted(self.run_check(skill)[0]), [
+            "SKILL.md: link 'missing-ref.md' does not resolve",
+            "SKILL.md: link 'missing-split.md' does not resolve",
+        ])
+
     def test_unreadable_markdown_is_reported_not_a_crash(self):
         skill = make_skill(self.tmp.name, "odd", "name: odd\ndescription: O.")
         (skill / "references").mkdir()
         (skill / "references" / "legacy.md").write_bytes("가".encode("cp949"))
         (skill / "folder.md").mkdir()
+        (skill / "examples").mkdir()
+        (skill / "linked-dir.md").symlink_to(skill / "examples")
         (skill / "dangling.md").symlink_to(skill / "nowhere.md")
         errors, warnings = self.run_check(skill)
         self.assertEqual(errors, ["dangling.md: broken symbolic link"])
@@ -192,6 +207,14 @@ VALID_FRONTMATTER = {
     "folded with more-indented lines": "name: good\ndescription: >\n  Reviews changes.\n    - kept line\n  Use when reviewing.\n",
     "YAML hex escape": 'name: good\ndescription: "\\x41 review"',
     "plain value on indented lines": "name: good\ndescription:\n  Reviews changes. Use when\n  reviewing pull requests.",
+    "plain value with a blank line": "name: good\ndescription: Reviews changes.\n\n  Use when reviewing.",
+    "unindented sequences": "name: good\ndescription: Good.\nallowed-tools:\n- Read\n- Grep\nmetadata:\n  tags:\n  - a\n",
+    "column-0 comment inside a mapping": "name: good\ndescription: Good.\nmetadata:\n  owner: t\n# old\n  team: x\n",
+    "kept block scalar as the last field": "name: good\ndescription: |+\n  " + "x" * 1022 + "\n",
+    "less-indented comment after a block": "name: good\ndescription: |\n  Reviews changes.\n # for the next field\nlicense: MIT",
+    "merge key": "name: good\ndescription: Good.\nmetadata:\n  <<: &common\n    owner: team\n  version: \"1.0\"",
+    "key containing a colon": "name: good\ndescription: Good.\nmetadata:\n  a:b: c",
+    "YAML 1.1 scalars that stay strings": "name: good\ndescription: Good.\nlicense: 08\ncompatibility: 1e3",
 }
 INVALID_FRONTMATTER = {
     "numeric description": "name: good\ndescription: 42",
@@ -204,6 +227,7 @@ INVALID_FRONTMATTER = {
     "comment-only value": "name: good\ndescription: # none yet",
     "unquoted colon": "name: good\ndescription: Reviews rules. Static review only: do not run code.",
     "unquoted colon on a continuation line": "name: good\ndescription: Reviews rules.\n  Use when: reviewing.",
+    "sequence entry as a value": "name: good\ndescription: - Reviews rules.",
     "duplicate name": "name: claude-x\nname: good\ndescription: Good.",
 }
 
@@ -239,35 +263,63 @@ class FrontmatterParsingTests(unittest.TestCase):
                 with self.subTest(label, parser=parser):
                     self.assertEqual(len(errors), 1, errors)
 
+    def assert_parity(self, label, frontmatter):
+        installed = check_skill.yaml
+        with self.subTest(label, frontmatter=frontmatter):
+            try:
+                expected = installed.load(frontmatter, Loader=check_skill.yaml_loader())
+            except installed.YAMLError:
+                expected = None
+            check_skill.yaml = None
+            try:
+                if expected is None:
+                    with self.assertRaises(ValueError):
+                        check_skill.parse_fields(frontmatter)
+                    return
+                actual = check_skill.parse_fields(frontmatter)
+            except check_skill.Unsupported:
+                return  # the fallback reports these as unchecked rather than guessing
+            finally:
+                check_skill.yaml = installed
+            for key in ("name", "description", "license", "compatibility", "metadata"):
+                value = expected.get(key)
+                if isinstance(value, dict) and not all(isinstance(v, str) for v in value.values()):
+                    self.assertIs(type(actual.get(key)), dict, key)
+                elif isinstance(value, (str, int, float, bool, dict)) or value is None:
+                    self.assertEqual(actual.get(key), value, key)
+                else:
+                    self.assertIs(type(actual.get(key)), type(value), key)
+
     def test_fallback_values_match_yaml(self):
         if check_skill.yaml is None:
             self.skipTest("PyYAML not installed")
-        installed = check_skill.yaml
         for label, frontmatter in {**VALID_FRONTMATTER, **INVALID_FRONTMATTER}.items():
-            with self.subTest(label):
-                try:
-                    expected = installed.load(frontmatter, Loader=check_skill.yaml_loader())
-                except installed.YAMLError:
-                    expected = None
-                check_skill.yaml = None
-                try:
-                    if expected is None:
-                        with self.assertRaises(ValueError):
-                            check_skill.parse_fields(frontmatter)
-                        continue
-                    actual = check_skill.parse_fields(frontmatter)
-                except check_skill.Unsupported:
-                    continue  # the fallback reports these as unchecked rather than guessing
-                finally:
-                    check_skill.yaml = installed
-                for key in ("name", "description", "license", "metadata"):
-                    value = expected.get(key)
-                    if isinstance(value, dict) and not all(isinstance(v, str) for v in value.values()):
-                        self.assertIs(type(actual.get(key)), dict, key)
-                    elif isinstance(value, (str, int, float, bool, dict)) or value is None:
-                        self.assertEqual(actual.get(key), value, key)
-                    else:
-                        self.assertIs(type(actual.get(key)), type(value), key)
+            self.assert_parity(label, frontmatter + "\n")
+
+    def test_fallback_matches_yaml_on_generated_frontmatter(self):
+        if check_skill.yaml is None:
+            self.skipTest("PyYAML not installed")
+        scalars = ["Reviews changes.", "08", "1e3", "1.5e+3", "on", "Off", "0x1f", "0b101", "1_000", "1:20",
+                   ".inf", "~", "nUll", "yes please", "a # note", "a#b", "-x", "- x", "? x", "Use: it",
+                   "\"a: b\"", "'it''s'", "", "[]", "{}", "*ref"]
+        descriptions = [
+            lambda r: "description: " + r.choice(scalars),
+            lambda r: "description:\n  " + r.choice(scalars) + "\n  " + r.choice(scalars),
+            lambda r: "description: " + r.choice(scalars) + "\n\n  " + r.choice(scalars),
+            lambda r: "description: " + r.choice(["|", ">", "|-", ">-", "|+", ">+"]) + "\n  "
+            + r.choice(scalars) + r.choice(["", "\n    more", "\n\n  next", "\n # note"]) + r.choice(["", "\n", "\n\n"]),
+        ]
+        extras = [
+            lambda r: "license: " + r.choice(scalars),
+            lambda r: "metadata:\n  owner: " + r.choice(scalars) + r.choice(["", "\n# c\n  v: '1'", "\n  tags:\n  - a"]),
+            lambda r: "allowed-tools:\n" + r.choice(["- Read", "  - Read", "  - Read\n  - Grep"]),
+            lambda r: "compatibility: " + r.choice(scalars),
+        ]
+        rng = random.Random(7)
+        for n in range(400):
+            parts = ["name: good", rng.choice(descriptions)(rng)] + [rng.choice(extras)(rng) for _ in range(rng.randrange(3))]
+            rng.shuffle(parts)
+            self.assert_parity(f"generated {n}", "\n".join(parts) + "\n")
 
 
 if __name__ == "__main__":

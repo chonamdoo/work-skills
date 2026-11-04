@@ -37,7 +37,7 @@ Evidence: [`tests/behavior/evidence/depth-2026-11-04/`](../tests/behavior/eviden
 | --- | --- | ---: |
 | Abase | `baa679f`, before #14 | 1,259 |
 | Amain | `3135f5b`, #14 and #15 as merged | 2,159 |
-| Amin | `3135f5b`, narrowed per the reviews below (this change) | 1,765 |
+| Amin | `3135f5b`, narrowed per the reviews below (shipped in #16; digests pinned by `tests/test_depth_evidence.py`) | 1,765 |
 | Abase+F | Abase, plus the article's four-question prompt in the request | 1,259 |
 | A0 | No authoring skill | — |
 
@@ -139,5 +139,9 @@ Screened in: D1 and Y3. Paired comparisons:
 - **No B runs.** The plan conditioned B on a D-only result; the narrowed
   candidate changed where unconfirmed proposals go (the report, not the skill).
   Downstream task effect is unverified.
+- **Judge-to-output binding is by length only.** Each judge record stores the
+  digest and length of its prompt, not the prompt template, so
+  `tests/test_depth_evidence.py` binds a verdict to its run output through the
+  constant template length. An equal-length edit to an output is not detected.
 - **Author spend: $46.57** for Claude runs and primary judging. Secondary judging
   ran on a Codex subscription and has no per-call cost record.

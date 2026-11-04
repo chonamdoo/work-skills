@@ -164,8 +164,9 @@ See the [2026-11-01 comparative evaluation](docs/evaluation-2026-11-01.md),
 [initial validation record](docs/validation-v0.1.0.md), the
 [2026-09-25 adversarial review](docs/adversarial-review-2026-09-25.md), the
 [2026-11-01 review and probes](docs/adversarial-review-2026-11-01.md), the
-[2026-11-04 depth-pass review](docs/adversarial-review-2026-11-04.md), and the
-[2026-11-04 depth-pass evaluation](docs/evaluation-2026-11-04-depth.md) for tested scope and limitations.
+[2026-11-04 depth-pass review](docs/adversarial-review-2026-11-04.md), the
+[2026-11-04 depth-pass evaluation](docs/evaluation-2026-11-04-depth.md), and the
+[2026-11-04 third-round review](docs/adversarial-review-2026-11-04-round-3.md) for tested scope and limitations.
 
 The evaluation used three synthetic rule sets and one model. Generated skills did
 not do the work more correctly than the same notes supplied directly. A skill's
@@ -177,7 +178,7 @@ none of 8 ordinary or adjacent requests; 4 of the 13 requests stopped at the
 evaluation's 3-turn limit after any selection had been observed. The other
 hosts' selection is untested. These results predate the depth pass added in
 [#14](https://github.com/chonamdoo/work-skills/pull/14). In a later authoring-only
-evaluation, skills authored with the depth pass named less-digested inputs and an
+evaluation, skills authored with the depth pass shipped in #16 named less-digested inputs and an
 outside check, as requirements, proposals, or stated gaps, where the earlier skill
 omitted them: 9 wins and 0 losses under the primary judge and 7 and 0 under the
 secondary judge, on 2 screened criteria. The secondary judge also failed the
@@ -191,7 +192,9 @@ The skill ships [`scripts/check_skill.py`](skills/work-to-skill/scripts/check_sk
 checks any skill's frontmatter, optional field limits, links, and host name limits
 using only the Python standard library, or PyYAML when installed. Exit 1 means
 format errors; exit 3 means the frontmatter used YAML the standard-library parser
-cannot read, so only links and placeholders were checked. It does not judge content.
+cannot read, and the rest of the package was still checked. A "frontmatter not
+checked" warning means the frontmatter was not checked, whatever the exit code.
+It does not judge content.
 There is no mandatory creator, agent-flow, CLI, or model dependency at runtime.
 
 ## Maintain and release

@@ -40,7 +40,7 @@
   {
     "id": "I9-optional-fields",
     "source": "#9 §2",
-    "decision": "Optional specification fields such as metadata are preserved, not rejected",
+    "decision": "Optional specification fields are accepted when they match the specification's types; mismatches the reference validator tolerates warn",
     "checks": [
       {
         "kind": "auto",
@@ -126,6 +126,12 @@
     "source": "#9 P2",
     "decision": "Body changes need a reproduced failure and a same-condition candidate rerun",
     "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_depth_evidence.RecordedDepthEvaluationTests.test_shipped_instructions_are_the_evaluated_candidate"
+        ]
+      },
       {
         "kind": "model",
         "evidence": "tests/behavior/evidence/depth-2026-11-04/results.json",
