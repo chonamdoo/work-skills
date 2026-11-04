@@ -205,7 +205,8 @@ Recheck affected outputs separately when a consequential creator defect is fixed
 The design draws on [OpenAI's skill guidance](https://learn.chatgpt.com/docs/build-skills),
 [Anthropic's skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator),
 and [Matt Pocock's writing-for-agents](https://github.com/mattpocock/skills/tree/main/skills/productivity/writing-for-agents).
-The depth pass adapts the four questions and request rewrite from
+The outcome step, depth pass, belief testing, and cross-field method borrowing
+adapt the Altitude, Depth, and Range sections of
 [Felix Rieseberg's "How to be more ambitious"](https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/)
 within this skill's provenance and authorization boundaries.
 These are background sources, not runtime dependencies or bundled copies.

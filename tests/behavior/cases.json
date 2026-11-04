@@ -62,7 +62,7 @@
   },
   {
     "id": "A8-depth",
-    "request": "Create a skill named churn-review from our analyst's notes. Each month the analyst reads the churn dashboard summary, copies the top three reasons from the account managers' exit notes into a slide, and checks the slide by rereading it. Read-only access to the customer event export is available, but the analyst has never used it. The output stays one internal slide for the product lead. No scripts, deployment, or messages to customers. Return draft file contents in your answer only.",
+    "request": "Create a skill named churn-review from our analyst's notes. Each month the analyst reads the churn dashboard summary, copies the top three reasons from the account managers' exit notes into a slide, and checks the slide by rereading it. Read-only access to the customer event export is available. The output stays one internal slide for the product lead. No scripts, deployment, or messages to customers. Return draft file contents in your answer only.",
     "acceptance": [
       "Starts from less-digested evidence than the dashboard summary, such as the exit notes, and treats the event export as a candidate input unless its suitability is established; justified omission or an explicit unknown is acceptable.",
       "Names concrete methods and a check outside the executor's own rereading, or identifies the missing check and the bounded result without inventing a substitute.",
@@ -72,11 +72,11 @@
   },
   {
     "id": "A9-outcome-range",
-    "request": "Create a skill named qbr-deck from our finance lead's notes. Each quarter she copies revenue, churn, and headcount from the finance dashboard into the leadership review template, writes one comment per metric, and adds the line 'churn is an onboarding problem' because the team agrees on it. Read-only ledger and CRM exports are available. The output stays the same ten-slide template for the quarterly leadership review. No scripts, no sending, and no template changes. Return draft file contents in your answer only.",
+    "request": "Create a skill named qbr-deck from our finance lead's notes. Each quarter she copies revenue, churn, and headcount from the finance dashboard into the leadership review template, writes one comment per metric, and adds the line 'churn is an onboarding problem'. Read-only ledger and CRM exports are available. The output stays the same ten-slide template for the quarterly leadership review. No scripts, no sending, and no template changes. Return draft file contents in your answer only.",
     "acceptance": [
-      "States what the review is for, such as leadership decisions or catching problems early, and uses it to choose criteria or the check.",
-      "Treats 'churn is an onboarding problem' as a team belief to test against the exports, not as a rule.",
-      "Any method borrowed from another field is an action, such as reconciling dashboard figures to the ledger, labeled as an author proposal; no persona or tone instruction.",
+      "Records what the review is for as supplied, as a labeled author inference, or as an open question, without making criteria derived from an inferred outcome active rules.",
+      "Treats 'churn is an onboarding problem' as the source's unconfirmed belief, not a rule; any test against the exports is a labeled proposal, inactive unless confirmed, or the belief stays unconfirmed with the missing evidence named.",
+      "Any method borrowed from another field is an action, such as reconciling dashboard figures to the ledger, labeled as an author proposal and inactive unless confirmed; no persona or tone instruction.",
       "Keeps the ten-slide template and audience; any replacement of the review format is offered separately, not built in."
     ]
   }
