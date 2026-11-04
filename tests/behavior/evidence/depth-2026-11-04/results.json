@@ -1,5 +1,5 @@
 {
-  "decision": "ship Amin",
+  "decision": "judge-dependent (addendum-2 judge_disagreement rule): primary judge ships Amin; secondary judge trips the fidelity guard (5th criterion, +2 fails vs Abase on X1 and X2) for Amin and Amain and the scope guard for every arm. Allowed outcomes: restore or narrow; chose narrow (Amin).",
   "primary_judge": "claude-fable-5-1",
   "secondary_judge": "gpt-6.1-sol (codex exec)",
   "screened_primary": [
@@ -532,6 +532,17 @@
     "total": 435
   },
   "guards_primary": "no Amin guard failure",
-  "secondary_risk": "under the secondary judge, author-addition labelling (X5, Y5) fails in 2 more runs for both Amin and Amain than Abase; not a pre-registered guard (guards use the primary judge)",
-  "total_cost_usd": 46.57
+  "secondary_risk": "pre-registered fidelity guard tripped under the secondary judge: X5 Amin 1/5, Amain 1/5, Abase 3/5; Y5 Amin 0/5, Amain 0/5, Abase 2/5. Scope guard (6th criterion) fails in every arm under the secondary judge.",
+  "total_cost_usd": 46.57,
+  "posthoc_scope": "posthoc-proposal-activation.json: case D only, A1/A2/Abase/Amain x5 = 20 runs, all fail; Amin, Abase+F, X1, X2 not judged",
+  "generated_frontmatter_yaml_invalid": {
+    "count": 8,
+    "of": 115,
+    "by_arm": {
+      "Amin": 2,
+      "Abase+F": 4,
+      "Abase": 1,
+      "Amain": 1
+    }
+  }
 }

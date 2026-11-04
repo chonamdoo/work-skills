@@ -88,14 +88,18 @@ class CheckSkillTests(unittest.TestCase):
         self.assertTrue(self.run_check(empty)[0])
         self.assertTrue(self.run_check(long)[0])
 
-    def test_local_links_must_resolve_inside_the_skill(self):
-        body = "Read [rules](references/rules.md), [missing](references/gone.md), and [outside](../x.md).\n"
+    def test_local_links_must_resolve_and_outside_links_warn(self):
+        body = ("Read [rules](references/rules.md), [missing](references/gone.md), "
+                "[gone outside](../x.md), and [sibling](../sibling/SKILL.md).\n\n"
+                "```cpp\nauto f = [&db](...) { return 1; };\n```\n\nInline `[a](b.md)` is code.\n")
+        make_skill(self.tmp.name, "sibling", "name: sibling\ndescription: Sibling.")
         skill = make_skill(self.tmp.name, "links", "name: links\ndescription: Linked.", body=body,
                            files={"references/rules.md": "Rules.\n"})
-        errors = self.run_check(skill)[0]
+        errors, warnings = self.run_check(skill)
         self.assertEqual(len(errors), 2)
         self.assertTrue(any("gone.md" in e for e in errors))
-        self.assertTrue(any("outside" in e for e in errors))
+        self.assertTrue(any("x.md" in e for e in errors))
+        self.assertTrue(any("sibling" in w and "outside" in w for w in warnings))
 
     def test_unlinked_nested_reference_and_placeholders_warn(self):
         body = "Read [rules](references/rules.md).\n\nTODO: add tax rules\n"
@@ -118,6 +122,83 @@ class CheckSkillTests(unittest.TestCase):
         self.assertEqual(check_skill.main([str(good)]), 0)
         self.assertEqual(check_skill.main([str(bad)]), 0)
         self.assertEqual(check_skill.main([str(bad), "--host", "anthropic"]), 1)
+
+
+VALID_FRONTMATTER = {
+    "blank line after a field": 'name: good\n\ndescription: Good.',
+    "inline comments": 'name: "good" # folder name\ndescription: Reviews things # short',
+    "escapes and colons": 'name: good\ndescription: "Use when: a \\"quoted\\" rule applies"',
+    "single quotes": "name: 'good'\ndescription: 'It''s a review: rules apply.'",
+    "folded and literal blocks": "name: good\ndescription: >-\n  Reviews changes.\n\n  Use when reviewing.\nlicense: |\n  MIT\n",
+    "nested metadata and lists": "name: good\ndescription: Good.\nmetadata:\n  owner: team\n  tags:\n    - a\nallowed-tools:\n  - Read\n",
+    "plain value on indented lines": "name: good\ndescription:\n  Reviews changes. Use when\n  reviewing pull requests.",
+}
+INVALID_FRONTMATTER = {
+    "numeric description": "name: good\ndescription: 42",
+    "boolean description": "name: good\ndescription: true",
+    "mapping description": "name: good\ndescription:\n  text: Good.",
+    "list name": "name:\n  - good\ndescription: Good.",
+    "empty description": "name: good\ndescription:",
+    "unquoted colon": "name: good\ndescription: Reviews rules. Static review only: do not run code.",
+    "unquoted colon on a continuation line": "name: good\ndescription: Reviews rules.\n  Use when: reviewing.",
+}
+
+
+class FrontmatterParsingTests(unittest.TestCase):
+    """The standard-library fallback must agree with YAML on skill frontmatter."""
+
+    def check_with_each_parser(self, frontmatter):
+        results = {}
+        installed = check_skill.yaml
+        parsers = {"stdlib": None}
+        if installed is not None:
+            parsers["pyyaml"] = installed
+        for label, parser in parsers.items():
+            check_skill.yaml = parser
+            try:
+                with tempfile.TemporaryDirectory() as root:
+                    skill = make_skill(root, "good", frontmatter)
+                    results[label] = check_skill.check(skill)[0]
+            finally:
+                check_skill.yaml = installed
+        return results
+
+    def test_valid_frontmatter_passes(self):
+        for label, frontmatter in VALID_FRONTMATTER.items():
+            for parser, errors in self.check_with_each_parser(frontmatter).items():
+                with self.subTest(label, parser=parser):
+                    self.assertEqual(errors, [])
+
+    def test_wrong_types_and_missing_values_fail(self):
+        for label, frontmatter in INVALID_FRONTMATTER.items():
+            for parser, errors in self.check_with_each_parser(frontmatter).items():
+                with self.subTest(label, parser=parser):
+                    self.assertEqual(len(errors), 1, errors)
+
+    def test_fallback_values_match_yaml(self):
+        if check_skill.yaml is None:
+            self.skipTest("PyYAML not installed")
+        installed = check_skill.yaml
+        for label, frontmatter in {**VALID_FRONTMATTER, **INVALID_FRONTMATTER}.items():
+            with self.subTest(label):
+                try:
+                    expected = installed.safe_load(frontmatter)
+                except installed.YAMLError:
+                    expected = None
+                check_skill.yaml = None
+                try:
+                    if expected is None:
+                        with self.assertRaises(ValueError):
+                            check_skill.parse_fields(frontmatter)
+                        continue
+                    actual = check_skill.parse_fields(frontmatter)
+                finally:
+                    check_skill.yaml = installed
+                for key in ("name", "description"):
+                    if isinstance(expected.get(key), (str, int, float, bool)) or expected.get(key) is None:
+                        self.assertEqual(actual.get(key), expected.get(key), key)
+                    else:
+                        self.assertIs(type(actual.get(key)), type(expected.get(key)), key)
 
 
 if __name__ == "__main__":

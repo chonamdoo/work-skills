@@ -1,11 +1,28 @@
 # 2026-11-04 evaluation of the depth pass
 
-**Decision: keep the depth pass, narrowed.** On two pre-registered criteria where the
-pre-depth skill failed, the merged depth pass and the narrowed version both won
-9 of 9 discordant pairs (0 losses). The narrowed version had no guard failure, and
-its body is 18% shorter than the merged text. The same gain appeared when the
-four-question prompt from the source article was supplied beside the pre-depth
-skill. So the gain comes from asking the questions, not from the body's wording.
+**Decision: judge-dependent; ship the narrowed depth pass.** The pre-depth skill
+failed two pre-registered criteria. On both, the narrowed version and the merged
+depth pass won 9 of 9 discordant pairs under the primary judge and 7 of 7 under
+the secondary judge, with no losses.
+
+The guards split the judges:
+
+- **Primary judge:** no guard failure for the narrowed version, so the
+  pre-registered rule ships it.
+- **Secondary judge:** it trips the pre-registered fidelity guard. The 5th
+  criterion, labelling author additions, fails in 2 more runs than the pre-depth
+  skill in X1 and in X2, for both the narrowed and the merged version. It also
+  fails the scope guard in every arm, the pre-depth skill included.
+
+Under `addendum-2.json`'s disagreement rule, a judge-dependent result allows no
+body change beyond restoring the pre-depth body or narrowing the merged one.
+**We narrow rather than restore.** Both judges agree on the depth gain. The
+secondary judge's scope failures do not distinguish the two options, and the
+narrowed body is 18% shorter than the merged one. The labelling risk stays open
+(see Limits).
+
+Supplying the article's four-question prompt beside the pre-depth skill gave
+the same results on the screened criteria.
 
 This is authoring (A) evidence from three synthetic source bundles, one author
 model, and text-only runs. It does not establish B task behavior, host selection,
@@ -80,8 +97,15 @@ Screened in: D1 and Y3. Paired comparisons:
 **Guards:**
 
 - Primary judge: Amin passed the scope criterion (D6, X6, Y6) in 15/15 runs,
-  F1–F7 in 3/3, N1–N3 in 3/3, and the reserved-name check in 5/5.
-- The fidelity criteria (4th, 5th, 7th) were not worse than Abase.
+  F1–F7 in 3/3, N1–N3 in 3/3, and the reserved-name check in 5/5. Its 4th, 5th,
+  and 7th criteria were not worse than Abase.
+- Secondary judge:
+  - X5: Amin 1/5, Amain 1/5, Abase 3/5. Y5: Amin 0/5, Amain 0/5, Abase 2/5.
+    That trips the fidelity guard for both depth variants.
+  - Scope criterion (D6, X6, Y6): Amin 2/15, Amain 5/15, Abase 0/15. It trips
+    the scope guard in every arm.
+  - N3: Amin 0/3, Abase 0/3. The judge counted the hand-off notes after the
+    edited file as added content.
 
 **Cost and size, cases D, X1, and X2 (medians, 15 runs per arm):**
 
@@ -94,18 +118,21 @@ Screened in: D1 and Y3. Paired comparisons:
 
 ## Limits and open risks
 
-- **The secondary judge is stricter on labelling author additions.** It scores
-  the 5th criterion (X5, Y5) 2 runs worse than Abase for both Amin and Amain, and
-  fails most scope criteria in every arm, Abase included. The two judges agree on
-  79% of addendum-2 verdicts. Labelling is not a pre-registered guard, so this
-  does not change the decision, but it remains an open risk.
+- **Labelling of author additions is judge-dependent.** The secondary judge fails
+  it more often for both depth variants than for the pre-depth skill (above).
+  The two judges agree on 343 of 435 addendum-2 verdicts (79%).
 - **Strict reading: author-derived steps.** An exploratory criterion written
-  after the outputs were seen (`posthoc-proposal-activation.json`) failed every
-  arm, Abase included (15/15). It failed any author-derived step, stopping
-  condition, or required input placed in an active procedure. The skill
-  instructs authors to add proportionate stopping conditions and labeled
-  inferences, so this reading conflicts with the skill's own rules. It is
-  recorded as a question to resolve, not a regression.
+  after the outputs were seen (`posthoc-proposal-activation.json`) failed all
+  20 runs it judged. Those were case D only, 5 runs each of A1, A2, Abase, and
+  Amain. Amin, Abase+F, X1, and X2 were not judged under it. It fails any
+  author-derived step, stopping condition, or required input in an active
+  procedure, which conflicts with the skill's own call for proportionate
+  stopping conditions. It is recorded as a question to resolve, not as evidence
+  for or against the narrowed version.
+- **Generated frontmatter.** 8 of the 115 generated skills had an unquoted
+  `description` containing `: `, which strict YAML rejects. 2 of these came from
+  Amin, 4 from Abase+F, 1 from Abase, and 1 from Amain. The judges did not
+  check this. `scripts/check_skill.py` reports all 8.
 - **Discrimination rests on 2 criteria in 2 bundles.** D2–D4 and most X/Y
   criteria were already passed without the depth pass.
 - **No B runs.** The plan conditioned B on a D-only result; the narrowed

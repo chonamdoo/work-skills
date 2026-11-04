@@ -60,9 +60,12 @@
         "tests": [
           "test_check_skill.CheckSkillTests.test_invalid_names_are_rejected",
           "test_check_skill.CheckSkillTests.test_description_must_exist_and_fit",
-          "test_check_skill.CheckSkillTests.test_local_links_must_resolve_inside_the_skill",
+          "test_check_skill.CheckSkillTests.test_local_links_must_resolve_and_outside_links_warn",
           "test_package.PackageTests.test_skill_metadata_and_body",
-          "test_package.PackageTests.test_skill_files_are_self_contained"
+          "test_package.PackageTests.test_skill_files_are_self_contained",
+          "test_check_skill.FrontmatterParsingTests.test_valid_frontmatter_passes",
+          "test_check_skill.FrontmatterParsingTests.test_wrong_types_and_missing_values_fail",
+          "test_check_skill.FrontmatterParsingTests.test_fallback_values_match_yaml"
         ]
       }
     ]
