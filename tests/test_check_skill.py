@@ -134,8 +134,11 @@ class CheckSkillTests(unittest.TestCase):
                 "or around an empty destination: [o [i]()](not-a-link-3.md) [o [i](<>)](not-a-link-4.md).\n\n"
                 "An image description may hold a link: ![o [i](SKILL.md)](missing-described.png).\n\n"
                 "Malformed targets are reported, not fatal: [x](<//[>) and [y](a%00.md).\n\n"
+                "Code and escapes are not links: ``[a](missing-code.md)``, `the [b](missing-code2.md)\nform`,\n"
+                "and \\[c](missing-escaped-open.md). An entity is decoded: [d](a&amp;b.md).\n\n"
                 "Template lines and definitions are not checked:\n\n[Severity]: high\n\n[r]: missing-ref.md\n")
-        skill = make_skill(self.tmp.name, "syntax", "name: syntax\ndescription: S.", body=body)
+        skill = make_skill(self.tmp.name, "syntax", "name: syntax\ndescription: S.", body=body,
+                           files={"a&b.md": "Entity.\n"})
         self.assertEqual(sorted(self.run_check(skill)[0]), sorted([
             f"SKILL.md: link '{name}' does not resolve"
             for name in ("missing-described.png", "missing-escaped.md", "missing-image.png", "missing-inner.md",
@@ -348,7 +351,9 @@ class FrontmatterParsingTests(unittest.TestCase):
         scalars = ["Reviews changes.", "08", "1e3", "1.5e+3", "on", "Off", "0x1f", "0b101", "1_000", "1:20",
                    ".inf", "~", "nUll", "yes please", "a # note", "a#b", "-x", "- x", "? x", "Use: it",
                    "\"a: b\"", "'it''s'", "", "[]", "{}", "*ref", "2026-11-04", "2026-1-4",
-                   "2026-11-04 10:00:00", "2026-11-04T10:00:00.5+09:00", "\tx", "x\t"]
+                   "2026-11-04 10:00:00", "2026-11-04T10:00:00.5+09:00", "\tx", "x\t", "=", "<<", ",x", "]x",
+                   "}x", "|x", ">x", "#x", "%x", "&x", "@x", "`x", ":x", "-", "?", "a\x1bb", "a\x85b",
+                   "a\u2028b", "\"unterminated", "x: ", "a: b: c"]
         descriptions = [
             lambda r: "description: " + r.choice(scalars),
             lambda r: "description:\n  " + r.choice(scalars) + "\n  " + r.choice(scalars),
@@ -363,6 +368,10 @@ class FrontmatterParsingTests(unittest.TestCase):
             lambda r: "metadata:\n  " + r.choice(["42", "\"42\"", "yes", "'yes'", "a:b"]) + ": x\n  "
             + r.choice(["42", "\"42\"", "yes", "on"]) + ": y",
             lambda r: "allowed-tools:\n" + r.choice(["- Read", "  - Read", "  - Read\n  - Grep"]),
+            lambda r: "allowed-tools:\n  - " + r.choice(scalars) + r.choice(["", "\n  - " + r.choice(scalars),
+                                                                     "\n    more", "\n  # c\n  - x"]),
+            lambda r: "metadata:\n  owner: " + r.choice(scalars) + r.choice(["\n  # c\n    b", "\n# c\n    b",
+                                                                        "\n  # c\n  v: x", "\n    b"]),
             lambda r: "compatibility: " + r.choice(scalars),
             lambda r: "metadata:\n  notes: " + r.choice(["|\n    a\tb", ">-\n    a\tb", "\"a\tb\"", "'a'\t", "a\tb"]),
             lambda r: r.choice(["...", "# done\n...", "...\nlicense: MIT", "\tlicense: MIT"]),

@@ -15,6 +15,7 @@ mappings and lists), resolving plain scalars as PyYAML does.
 
 import argparse
 import datetime
+import html
 import re
 import string
 import sys
@@ -40,6 +41,10 @@ SEQUENCE_ENTRY = re.compile(r"-(?:[ \t]|$)")
 BLOCK_INDICATOR = re.compile(r"([|>])([+-]?)")
 RESERVED = ("anthropic", "claude")
 UNCHECKED = "frontmatter not checked:"
+# Control characters, NEL, line and paragraph separators, BOM, and non-characters.
+UNUSUAL_CHARACTER = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f\u2028\u2029\ufeff\ufffe\uffff\ud800-\udfff]")
+ENTITY = re.compile(r"&(?:#[0-9]{1,7}|#[xX][0-9a-fA-F]{1,6}|[A-Za-z][A-Za-z0-9]{1,31});")
+CODE_SPAN = re.compile(r"(?<!`)(`+)(?!`)(?:(?!\n[ \t]*\n).)+?(?<!`)\1(?!`)", re.S)
 
 # PyYAML's YAML 1.1 implicit resolvers for plain scalars.
 TIMESTAMP = re.compile(r"^([0-9]{4})-([0-9]{2})-([0-9]{2})$|^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})(?:[Tt]|[ \t]+)"
@@ -98,6 +103,8 @@ def sexagesimal(text, convert):
 
 def resolve_plain(value):
     """Type a plain scalar the way PyYAML's SafeLoader does."""
+    if value in ("=", "<<"):
+        raise Unsupported(f"plain '{value}', which PyYAML resolves to a special tag")
     if NULL.match(value):
         return None
     timestamp = TIMESTAMP.match(value)
@@ -154,6 +161,8 @@ def plain_scalar(value):
     value = strip_comment(value)
     if value[:1] in ("&", "*", "!", "%", "@", "`"):
         raise Unsupported(f"YAML anchors, aliases, tags, or reserved indicators: {value[:40]}")
+    if value[:1] in (",", "]", "}"):
+        raise ValueError(f"a plain value cannot start with '{value[0]}'; quote it: {value[:60]}")
     if value[:1] in ("[", "{"):
         if value in ("[]", "{}"):
             return [] if value == "[]" else {}
@@ -286,8 +295,7 @@ def plain_lines(value, commented, block):
     if first[:1] in ("[", "{") and (value or len(entries) > 1):
         raise Unsupported(f"multi-line flow collection: {first[:40]}")
     text, blanks, ended = value, 0, bool(value) and commented
-    if value:
-        plain_scalar(value)
+    plain_scalar(value or entries[0][1])  # the first line obeys the single-line rules
     for kind, piece, has_comment in entries:
         if kind == "blank":
             blanks += 1
@@ -355,12 +363,26 @@ def parse_mapping(lines):
             if any(indent_of(b) < indent or (indent_of(b) == indent and not SEQUENCE_ENTRY.match(b.strip()))
                    for b in content):
                 raise ValueError(f"'{key}' mixes list entries with other lines at the same indentation")
+            for b in content:
+                entry = b.strip()
+                item = entry[1:].strip(" ")
+                if indent_of(b) > indent or not SEQUENCE_ENTRY.match(entry) or not item:
+                    raise Unsupported(f"list item of '{key}' that spans lines or nests")
+                if SEQUENCE_ENTRY.match(item) or is_key_line(item) or item[:1] in ("|", ">") \
+                        or re.match(r"[?:](?:\s|$)", item):
+                    raise Unsupported(f"nested collection or block value in a list item of '{key}'")
+                if item[:1] in ("\"", "'") and not re.match(r"""^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')""", item):
+                    raise Unsupported(f"quoted list item of '{key}' that continues past its line")
+                plain_scalar(item)
             fields[key] = []
         elif not value and content and is_key_line(first):
             indent = indent_of(content[0])
             if any(indent_of(b) < indent for b in content):
                 raise ValueError(f"inconsistent indentation under '{key}'")
-            nested = ["" if not b.strip() or b.lstrip().startswith("#") else b[indent:] for b in block]
+            # Comments keep their place so that they still end plain values; a comment
+            # shallower than the mapping becomes a column-0 comment of the nested block.
+            nested = ["" if not b.strip() else "#" if b.lstrip().startswith("#") and indent_of(b) < indent
+                      else b[indent:] for b in block]
             fields[key] = parse_mapping(nested)
         elif not value and content and first[:1] in "\"'":
             if len(content) > 1:
@@ -408,6 +430,9 @@ def parse_fields(header):
         return fields
     if "\t" in header:
         raise Unsupported("tab characters, which YAML accepts only in some positions")
+    unusual = UNUSUAL_CHARACTER.search(header)
+    if unusual:
+        raise Unsupported(f"character U+{ord(unusual.group()):04X}, which YAML rejects or treats as a line break")
     return parse_mapping(header.splitlines())
 
 
@@ -532,6 +557,8 @@ def raw_destination(text, i):
             break
         if char == "(":
             depth += 1
+            if depth > 32:  # CommonMark lets parsers cap nesting; this bounds the scan
+                break
         elif char == ")":
             if depth == 0:
                 break
@@ -581,13 +608,20 @@ def inline_destination(text, i):
         k = skip_space(text, k)
         if k is None:
             return None
-    return destination if k < len(text) and text[k] == ")" else None
+    if k < len(text) and text[k] == ")":
+        return ENTITY.sub(lambda m: html.unescape(m.group()), destination)
+    return None
+
+
+def is_escaped(text, i):
+    """Whether text[i] follows an odd number of backslashes."""
+    before = text[:i]
+    return (len(before) - len(before.rstrip("\\"))) % 2 == 1
 
 
 def is_image_opener(text, start):
     """Whether the '[' at text[start] follows an unescaped '!'."""
-    before = text[:start]
-    return before.endswith("!") and (len(before) - 1 - len(before[:-1].rstrip("\\"))) % 2 == 0
+    return text[start - 1 : start] == "!" and not is_escaped(text, start - 1)
 
 
 def complete_link(prose, start):
@@ -599,7 +633,9 @@ def complete_link(prose, start):
         # Links cannot contain links: link text holding a complete non-image link is plain text.
         inner = prose[start + 1 : label.end() - 2]
         for nested in re.finditer(r"\[", inner):
-            if not is_image_opener(inner, nested.start()) and complete_link(inner, nested.start()) is not None:
+            if is_escaped(inner, nested.start()) or is_image_opener(inner, nested.start()):
+                continue
+            if complete_link(inner, nested.start()) is not None:
                 return None
     return inline_destination(prose, label.end())
 
@@ -611,6 +647,8 @@ def link_targets(prose):
     lines such as "[Severity]: high" needs a full CommonMark block parser.
     """
     for start in (m.start() for m in re.finditer(r"\[", prose)):
+        if is_escaped(prose, start):
+            continue
         destination = complete_link(prose, start)
         if destination is not None:
             yield destination
@@ -665,7 +703,7 @@ def check(skill_dir, host="generic"):
     for path, content in documents:
         rel = path.relative_to(skill_dir)
         prose = re.sub(r"(?ms)^\s*(```|~~~).*?^\s*\1[^\n]*$", "", content)
-        prose = re.sub(r"`[^`\n]*`", "", prose)
+        prose = CODE_SPAN.sub("", prose)
         prose = re.sub(r"(?s)<!--.*?-->", "", prose)
         for target in link_targets(prose):
             try:

@@ -28,8 +28,12 @@ values, empty and image link destinations, and a crash on malformed URLs).
 The fifth fix changes approach for the fallback YAML parser. Matching every
 PyYAML edge case had kept producing new wrong verdicts. The fallback now judges
 only input it fully reads. For anything else it reports "frontmatter not checked"
-(exit 3), which is neither a pass nor a failure. All findings below are addressed
-or declined.
+(exit 3), which is neither a pass nor a failure. On the fifth fix, C2 found
+inputs the fallback still judged without fully reading them: control and
+separator characters, a plain `=`, list item contents, comments inside nested
+values, and inline-level link text (code spans of several backticks, escaped
+`[`, entities). The sixth fix closes those. All findings below are addressed or
+declined.
 
 ## Fixed
 
@@ -48,6 +52,11 @@ or declined.
 | C2: dates were typed as strings; a `...` document end failed; a `<<` block key produced a false metadata warning | Timestamps resolve to dates and datetimes, and their time zone is kept. `...` ends the document. Merge keys report "frontmatter not checked". |
 | C2, S: tabs were accepted where PyYAML rejects them, and rejected inside valid quoted and block values | Without PyYAML, frontmatter containing a tab reports "frontmatter not checked". |
 | C2, S: a quoted value continued at column 0, a column-0 comment inside a block value, and a block indicator on the line after the key were misjudged | Each reports "frontmatter not checked". |
+| C2: control characters, NEL, and line or paragraph separators passed; a plain `=` or `<<` passed; plain values starting with `,`, `]`, or `}` passed | Unusual characters and `=`/`<<` report "frontmatter not checked". Plain values starting with `,`, `]`, or `}` fail, as in PyYAML. |
+| C2: list items were not read, so an unterminated quote or an alias in a list passed | Each single-line list item is read. Items that span lines, nest, or hold complex keys report "frontmatter not checked". |
+| C2: comments inside nested values were dropped, so they did not end a plain value | Comments keep their place in nested mappings. |
+| C2: code spans of two or more backticks, code spans across a line break, escaped `[`, and entities in destinations produced false link failures | Code spans follow CommonMark backtick matching, escaped `[` opens no link, and `&amp;`-style entities in destinations are decoded. |
+| C2: an unclosed `(` repeated through a file made link checking quadratic | Parenthesis nesting in a destination is capped at 32, which CommonMark permits. A 200,000-character case runs in under a second. |
 | S: the outer text of `[outer [inner](a.md)](b.md)` was checked as a link, including around empty destinations and after an escaped `!` | Link text that holds a complete non-image link, including one with an empty destination, makes the outer text plain, as CommonMark specifies. An escaped `!` does not open an image. |
 | S: a link inside an image description voided the image | Images may describe links; the image destination is checked. |
 | S: a malformed URL such as `<//[>` or a NUL escape crashed the checker | Reported as "not a valid local path"; checking continues. |
@@ -59,12 +68,13 @@ or declined.
 | C1 N4: superseded sentence in the 2026-11-04 review | Annotated. |
 
 A generated parity test compares the fallback with PyYAML on 400 generated
-frontmatters, covering dates, time zones, tabs, typed keys, comments, and
-document ends. It compares nested values with their types, and it accepts
-"frontmatter not checked" as an outcome. The generator puts one space after
-each `:`, so other separators are covered only by the fixed cases. A throwaway
-run over 60 seeds (24,000 frontmatters) found no case where the fallback gave a
-different verdict from PyYAML.
+frontmatters, covering dates, time zones, tabs, typed keys, comments, document
+ends, indicator characters, control characters, list items, and nested comments.
+It compares nested values with their types, and it accepts "frontmatter not
+checked" as an outcome. The generator puts one space after each `:`, so other
+separators are covered only by the fixed cases. Throwaway runs found no value
+mismatch over 60 seeds (24,000 frontmatters) and no verdict mismatch over 200
+seeds (80,000 frontmatters).
 
 ## Declined, with reasons
 
