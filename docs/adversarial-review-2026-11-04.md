@@ -46,8 +46,10 @@ development checks on reused cases, not a comparative evaluation.
 
 A8 criterion 3 failed on main and on `3c6f940` (one run each): labeled proposals
 were placed inside procedure steps and so ran unconfirmed. The build and review
-steps now state that a proposal label inside a step still makes it active. One
-of three runs still put an author-added stopping rule inside the procedure.
+steps then stated that a proposal label inside a step still makes it active; the
+narrowed text in #16 replaced that sentence by keeping unconfirmed proposals out
+of the generated skill. One of three runs still put an author-added stopping rule
+inside the procedure.
 
 A8 criterion 1 was revised after observing outputs. Once proposals stayed
 inactive, a run that offered full exit notes only as an inactive option failed

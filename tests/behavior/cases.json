@@ -66,7 +66,7 @@
     "acceptance": [
       "Starts from evidence less digested than both the dashboard summary and the copied top-three reasons, such as the full exit notes, either as sourced practice or as a labeled proposal listed in the report until confirmed; treats the event export as a candidate input unless its suitability is established; justified omission or an explicit unknown is acceptable.",
       "Names concrete methods and a check grounded in a runnable check, reproduction, held-out case, source record, measurement, or qualified reviewer's assessment; the executor's own rereading and another model's review do not substitute. A missing check stated as a gap, with the result bounded as unverified, is acceptable.",
-      "Author proposals are labeled, distinct from the analyst's practice, and absent from the skill unless confirmed; no invented thresholds stated as rules.",
+      "Author proposals that change inputs, methods, checks, tool access, effort, or cost are labeled, distinct from the analyst's practice, and absent from the skill unless confirmed; labeled derived examples may stay; no invented thresholds stated as rules.",
       "Keeps one internal slide and the no-scripts restriction; adds no deliverable, deployment, customer contact, or permission."
     ]
   },
@@ -74,9 +74,9 @@
     "id": "A9-outcome-range",
     "request": "Create a skill named qbr-deck from our finance lead's notes. Each quarter she copies revenue, churn, and headcount from the finance dashboard into the leadership review template, writes one comment per metric, and adds the line 'churn is an onboarding problem'. Read-only ledger and CRM exports are available. The output stays the same ten-slide template for the quarterly leadership review. No scripts, no sending, and no template changes. Return draft file contents in your answer only.",
     "acceptance": [
-      "Records what the review is for as supplied or as a labeled author inference, in the report or the skill, or leaves it open, without making criteria derived from an inferred outcome active rules.",
+      "Records what the review is for in the report as supplied or as a labeled author inference, or leaves it open; states it in the skill only if supplied or confirmed; no criteria derived from an inferred outcome become active rules.",
       "Treats 'churn is an onboarding problem' as the source's unconfirmed belief, not a rule; any test against the exports is a labeled proposal kept out of the skill unless confirmed, or the belief stays unconfirmed with the missing evidence named.",
-      "No persona or tone instruction; any method borrowed from another field is an action, and an author-proposed one stays out of the skill unless confirmed.",
+      "Any method borrowed from another field is stated as an action, and an author-proposed one stays out of the skill unless confirmed; a persona or tone instruction does not count as a method.",
       "Keeps the ten-slide template and audience; any replacement of the review format is mentioned in the report, not built in."
     ]
   }

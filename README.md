@@ -177,15 +177,21 @@ none of 8 ordinary or adjacent requests; 4 of the 13 requests stopped at the
 evaluation's 3-turn limit after any selection had been observed. The other
 hosts' selection is untested. These results predate the depth pass added in
 [#14](https://github.com/chonamdoo/work-skills/pull/14). In a later authoring-only
-evaluation, the depth pass added less-digested inputs and an outside check where the
-earlier skill omitted them (9 wins, 0 losses on screened criteria). Supplying the
-four-question prompt from its source article beside the earlier skill did the same;
-task results of the generated skills were not measured.
+evaluation, skills authored with the depth pass named less-digested inputs and an
+outside check, as requirements, proposals, or stated gaps, where the earlier skill
+omitted them: 9 wins and 0 losses under the primary judge and 7 and 0 under the
+secondary judge, on 2 screened criteria. The secondary judge also failed the
+depth versions more often on labelling author additions, so the result is
+judge-dependent. Supplying the article's four-question prompt beside the earlier
+skill gave the same results on those criteria; task results of the generated
+skills were not measured. See the [2026-11-04 evaluation](docs/evaluation-2026-11-04-depth.md).
 
 The skill ships [`scripts/check_skill.py`](skills/work-to-skill/scripts/check_skill.py).
-`python3 scripts/check_skill.py <skill-dir> [--host generic|anthropic]`, run from the
-skill folder, checks any skill's frontmatter, links, and host name limits using only
-the Python standard library. It does not judge content.
+`python3 <path-to>/work-to-skill/scripts/check_skill.py <skill-dir> [--host generic|anthropic]`
+checks any skill's frontmatter, optional field limits, links, and host name limits
+using only the Python standard library, or PyYAML when installed. Exit 1 means
+format errors; exit 3 means the frontmatter used YAML the standard-library parser
+cannot read, so only links and placeholders were checked. It does not judge content.
 There is no mandatory creator, agent-flow, CLI, or model dependency at runtime.
 
 ## Maintain and release

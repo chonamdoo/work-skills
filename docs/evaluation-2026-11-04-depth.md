@@ -12,7 +12,8 @@ The guards split the judges:
 - **Secondary judge:** it trips the pre-registered fidelity guard. The 5th
   criterion, labelling author additions, fails in 2 more runs than the pre-depth
   skill in X1 and in X2, for both the narrowed and the merged version. It also
-  fails the scope guard in every arm, the pre-depth skill included.
+  fails the scope guard in every arm, the pre-depth skill included, and the
+  narrow-update guard (N3 0/3 for the narrowed version and the pre-depth skill).
 
 Under `addendum-2.json`'s disagreement rule, a judge-dependent result allows no
 body change beyond restoring the pre-depth body or narrowing the merged one.

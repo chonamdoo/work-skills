@@ -88,6 +88,20 @@ class CheckSkillTests(unittest.TestCase):
         self.assertTrue(self.run_check(empty)[0])
         self.assertTrue(self.run_check(long)[0])
 
+    def test_optional_field_limits_fail_and_loose_types_warn(self):
+        long = make_skill(self.tmp.name, "compat", "name: compat\ndescription: C.\ncompatibility: " + "x" * 501)
+        flat = make_skill(self.tmp.name, "flat", "name: flat\ndescription: F.\nmetadata: owner")
+        loose = make_skill(self.tmp.name, "loose", "name: loose\ndescription: L.\nmetadata:\n  tags:\n    - a\n"
+                           "allowed-tools:\n  - Read")
+        fits = make_skill(self.tmp.name, "fits", "name: fits\ndescription: F.\ncompatibility: " + "x" * 500)
+        self.assertEqual(len(self.run_check(long)[0]), 1)
+        self.assertEqual(len(self.run_check(flat)[0]), 1)
+        errors, warnings = self.run_check(loose)
+        self.assertEqual(errors, [])
+        self.assertTrue(any(w.startswith("metadata:") for w in warnings))
+        self.assertTrue(any(w.startswith("allowed-tools:") for w in warnings))
+        self.assertEqual(self.run_check(fits), ([], []))
+
     def test_local_links_must_resolve_and_outside_links_warn(self):
         body = ("Read [rules](references/rules.md), [missing](references/gone.md), "
                 "[gone outside](../x.md), and [sibling](../sibling/SKILL.md).\n\n"
@@ -100,6 +114,32 @@ class CheckSkillTests(unittest.TestCase):
         self.assertTrue(any("gone.md" in e for e in errors))
         self.assertTrue(any("x.md" in e for e in errors))
         self.assertTrue(any("sibling" in w and "outside" in w for w in warnings))
+
+    def test_link_destinations_with_parentheses_angles_and_references_resolve(self):
+        body = ("Read [v2](references/rules(v2).md), [spaced](<references/my rules.md>),\n"
+                "and [ref][r].\n\n[r]: references/gone.md\n")
+        skill = make_skill(self.tmp.name, "parens", "name: parens\ndescription: P.", body=body,
+                           files={"references/rules(v2).md": "V2.\n", "references/my rules.md": "Spaced.\n"})
+        errors, warnings = self.run_check(skill)
+        self.assertEqual(errors, ["SKILL.md: link 'references/gone.md' does not resolve"])
+        self.assertFalse(any("not linked" in w for w in warnings))
+
+    def test_unreadable_markdown_is_reported_not_a_crash(self):
+        skill = make_skill(self.tmp.name, "odd", "name: odd\ndescription: O.")
+        (skill / "references").mkdir()
+        (skill / "references" / "legacy.md").write_bytes("가".encode("cp949"))
+        (skill / "folder.md").mkdir()
+        (skill / "dangling.md").symlink_to(skill / "nowhere.md")
+        errors, warnings = self.run_check(skill)
+        self.assertEqual(errors, ["dangling.md: broken symbolic link"])
+        self.assertTrue(any("legacy.md" in w and "UTF-8" in w for w in warnings))
+
+    def test_byte_order_mark_is_named(self):
+        skill = make_skill(self.tmp.name, "bom", "name: bom\ndescription: B.")
+        (skill / "SKILL.md").write_bytes(b"\xef\xbb\xbf" + (skill / "SKILL.md").read_bytes())
+        errors = self.run_check(skill)[0]
+        self.assertEqual(len(errors), 1)
+        self.assertIn("byte-order mark", errors[0])
 
     def test_unlinked_nested_reference_and_placeholders_warn(self):
         body = "Read [rules](references/rules.md).\n\nTODO: add tax rules\n"
@@ -116,15 +156,17 @@ class CheckSkillTests(unittest.TestCase):
         skill = make_skill(self.tmp.name, "prose", "name: prose\ndescription: Prose.", body=body)
         self.assertEqual(self.run_check(skill), ([], []))
 
-    def test_unreadable_yaml_is_unchecked_not_invalid(self):
+    def test_unreadable_yaml_is_unchecked_and_body_is_still_checked(self):
         installed = check_skill.yaml
         check_skill.yaml = None
         try:
-            skill = make_skill(self.tmp.name, "anchored", "name: anchored\ndescription: &d Shared text.")
+            skill = make_skill(self.tmp.name, "anchored", "name: anchored\ndescription: &d Shared text.",
+                               body="Read [gone](references/gone.md).\n")
             errors, warnings = self.run_check(skill)
-            self.assertEqual(errors, [])
+            self.assertEqual(errors, ["SKILL.md: link 'references/gone.md' does not resolve"])
             self.assertTrue(warnings[0].startswith(check_skill.UNCHECKED))
-            self.assertEqual(check_skill.main([str(skill)]), 2)
+            clean = make_skill(self.tmp.name, "clean", "name: clean\ndescription: &d Shared text.")
+            self.assertEqual(check_skill.main([str(clean)]), 3)
         finally:
             check_skill.yaml = installed
 
@@ -143,6 +185,11 @@ VALID_FRONTMATTER = {
     "single quotes": "name: 'good'\ndescription: 'It''s a review: rules apply.'",
     "folded and literal blocks": "name: good\ndescription: >-\n  Reviews changes.\n\n  Use when reviewing.\nlicense: |\n  MIT\n",
     "nested metadata and lists": "name: good\ndescription: Good.\nmetadata:\n  owner: team\n  tags:\n    - a\nallowed-tools:\n  - Read\n",
+    "metadata with a leading comment": "name: good\ndescription: Good.\nmetadata:\n  # who owns it\n  owner: team\n",
+    "quoted keys": "\"name\": good\n'description': Reviews changes.\nmetadata:\n  \"version\": \"1.0\"\n  'owner': team\n",
+    "flow mapping": "name: good\ndescription: Good.\nmetadata: {author: x, version: \"1.0\"}",
+    "kept and indented block lines": "name: good\ndescription: |+\n  Reviews changes.\n    Indented example.\n\nlicense: MIT",
+    "folded with more-indented lines": "name: good\ndescription: >\n  Reviews changes.\n    - kept line\n  Use when reviewing.\n",
     "YAML hex escape": 'name: good\ndescription: "\\x41 review"',
     "plain value on indented lines": "name: good\ndescription:\n  Reviews changes. Use when\n  reviewing pull requests.",
 }
@@ -157,6 +204,7 @@ INVALID_FRONTMATTER = {
     "comment-only value": "name: good\ndescription: # none yet",
     "unquoted colon": "name: good\ndescription: Reviews rules. Static review only: do not run code.",
     "unquoted colon on a continuation line": "name: good\ndescription: Reviews rules.\n  Use when: reviewing.",
+    "duplicate name": "name: claude-x\nname: good\ndescription: Good.",
 }
 
 
@@ -198,7 +246,7 @@ class FrontmatterParsingTests(unittest.TestCase):
         for label, frontmatter in {**VALID_FRONTMATTER, **INVALID_FRONTMATTER}.items():
             with self.subTest(label):
                 try:
-                    expected = installed.safe_load(frontmatter)
+                    expected = installed.load(frontmatter, Loader=check_skill.yaml_loader())
                 except installed.YAMLError:
                     expected = None
                 check_skill.yaml = None
@@ -208,13 +256,18 @@ class FrontmatterParsingTests(unittest.TestCase):
                             check_skill.parse_fields(frontmatter)
                         continue
                     actual = check_skill.parse_fields(frontmatter)
+                except check_skill.Unsupported:
+                    continue  # the fallback reports these as unchecked rather than guessing
                 finally:
                     check_skill.yaml = installed
-                for key in ("name", "description"):
-                    if isinstance(expected.get(key), (str, int, float, bool)) or expected.get(key) is None:
-                        self.assertEqual(actual.get(key), expected.get(key), key)
+                for key in ("name", "description", "license", "metadata"):
+                    value = expected.get(key)
+                    if isinstance(value, dict) and not all(isinstance(v, str) for v in value.values()):
+                        self.assertIs(type(actual.get(key)), dict, key)
+                    elif isinstance(value, (str, int, float, bool, dict)) or value is None:
+                        self.assertEqual(actual.get(key), value, key)
                     else:
-                        self.assertIs(type(actual.get(key)), type(expected.get(key)), key)
+                        self.assertIs(type(actual.get(key)), type(value), key)
 
 
 if __name__ == "__main__":
