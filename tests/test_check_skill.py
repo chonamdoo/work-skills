@@ -129,14 +129,18 @@ class CheckSkillTests(unittest.TestCase):
                 "Linked image [![d](missing-image.png)](missing-outer.md) and [step [1]](missing-nested.md).\n\n"
                 "Not links: an [example](missing-open.md is unclosed, a [gap\n\nline](missing-gap.md),\n"
                 "<!-- [old](missing-comment.md) -->\n\n"
-                "A link inside link text voids the outer one: [outer [inner](missing-inner.md)](not-a-link.md).\n\n"
+                "A link inside link text voids the outer one: [outer [inner](missing-inner.md)](not-a-link.md),\n"
+                "also after an escaped bang: [a \\![b](missing-escaped.md)](not-a-link-either.md),\n"
+                "or around an empty destination: [o [i]()](not-a-link-3.md) [o [i](<>)](not-a-link-4.md).\n\n"
+                "An image description may hold a link: ![o [i](SKILL.md)](missing-described.png).\n\n"
+                "Malformed targets are reported, not fatal: [x](<//[>) and [y](a%00.md).\n\n"
                 "Template lines and definitions are not checked:\n\n[Severity]: high\n\n[r]: missing-ref.md\n")
         skill = make_skill(self.tmp.name, "syntax", "name: syntax\ndescription: S.", body=body)
-        self.assertEqual(sorted(self.run_check(skill)[0]), [
+        self.assertEqual(sorted(self.run_check(skill)[0]), sorted([
             f"SKILL.md: link '{name}' does not resolve"
-            for name in ("missing-image.png", "missing-inner.md", "missing-nested.md", "missing-outer.md",
-                         "missing-split.md", "missing-wrapped.md")
-        ])
+            for name in ("missing-described.png", "missing-escaped.md", "missing-image.png", "missing-inner.md",
+                         "missing-nested.md", "missing-outer.md", "missing-split.md", "missing-wrapped.md")
+        ] + [f"SKILL.md: link '{name}' is not a valid local path" for name in ("//[", "a%00.md")]))
 
     def test_unreadable_markdown_is_reported_not_a_crash(self):
         skill = make_skill(self.tmp.name, "odd", "name: odd\ndescription: O.")
@@ -242,8 +246,16 @@ INVALID_FRONTMATTER = {
     "sequence entry as a value": "name: good\ndescription: - Reviews rules.",
     "duplicate name": "name: claude-x\nname: good\ndescription: Good.",
     "date description": "name: good\ndescription: 2026-11-04",
+}
+UNCERTAIN_FRONTMATTER = {
+    "tab in a valid quoted value": "name: good\ndescription: \"Reviews\tchanges.\"",
     "tab after a quoted value": "name: good\ndescription: 'Reviews changes.'\t# note",
     "tab-indented continuation": "name: good\ndescription: Reviews changes.\n\tUse when reviewing.",
+    "tab before a quoted value": "name:\t'good'\ndescription: Good.",
+    "quoted value continued at column 0": "name: good\ndescription: 'Reviews\nchanges.'",
+    "column-0 comment inside a block value": "name: good\ndescription: >\n# c\n  Reviews changes.",
+    "block indicator on the next line with a tab": "name: good\ndescription:\n  >\n  Reviews\tchanges.",
+    "flow mapping": "name: good\ndescription: Good.\nmetadata: {a: b}",
 }
 
 
@@ -312,10 +324,22 @@ class FrontmatterParsingTests(unittest.TestCase):
             for key in ("name", "description", "license", "compatibility", "metadata"):
                 self.assertEqual(shape(actual.get(key)), shape(expected.get(key)), key)
 
+    def test_fallback_reports_uncertain_yaml_as_unchecked(self):
+        installed = check_skill.yaml
+        check_skill.yaml = None
+        try:
+            for label, frontmatter in UNCERTAIN_FRONTMATTER.items():
+                with self.subTest(label), tempfile.TemporaryDirectory() as root:
+                    errors, warnings = check_skill.check(make_skill(root, "good", frontmatter))
+                    self.assertEqual(errors, [])
+                    self.assertTrue(warnings and warnings[0].startswith(check_skill.UNCHECKED), warnings)
+        finally:
+            check_skill.yaml = installed
+
     def test_fallback_values_match_yaml(self):
         if check_skill.yaml is None:
             self.skipTest("PyYAML not installed")
-        for label, frontmatter in {**VALID_FRONTMATTER, **INVALID_FRONTMATTER}.items():
+        for label, frontmatter in {**VALID_FRONTMATTER, **INVALID_FRONTMATTER, **UNCERTAIN_FRONTMATTER}.items():
             self.assert_parity(label, frontmatter + "\n")
 
     def test_fallback_matches_yaml_on_generated_frontmatter(self):

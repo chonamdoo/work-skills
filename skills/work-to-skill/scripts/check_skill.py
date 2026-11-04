@@ -88,12 +88,6 @@ def strip_comment(value):
     return "" if value.startswith("#") else re.sub(r"\s+#.*$", "", value)
 
 
-def has_tab(text):
-    """Whether a tab appears before any comment; PyYAML rejects tabs there."""
-    comment = re.search(r"(?:^|[ \t])#", text)
-    return "\t" in (text if not comment else text[: comment.start() + 1])
-
-
 def sexagesimal(text, convert):
     sign = -1 if text[:1] == "-" else 1
     total = 0
@@ -146,16 +140,15 @@ def resolve_plain(value):
 
 def plain_scalar(value):
     """Interpret a YAML scalar written on one logical line, keeping its type."""
-    raw = value.lstrip(" ")
-    value = raw.rstrip()
+    value = value.strip()
     if value[:1] == '"':
         end = re.match(r'"(?:[^"\\]|\\.)*"', value)
-        if not end or value[end.end():].strip()[:1] not in ("", "#") or has_tab(raw[end.end():]):
+        if not end or value[end.end():].strip()[:1] not in ("", "#"):
             raise ValueError(f"malformed double-quoted value: {value}")
         return unescape_double_quoted(end.group(0)[1:-1])
     if value[:1] == "'":
         end = re.match(r"'(?:[^']|'')*'", value)
-        if not end or value[end.end():].strip()[:1] not in ("", "#") or has_tab(raw[end.end():]):
+        if not end or value[end.end():].strip()[:1] not in ("", "#"):
             raise ValueError(f"malformed single-quoted value: {value}")
         return end.group(0)[1:-1].replace("''", "'")
     value = strip_comment(value)
@@ -337,33 +330,18 @@ def parse_mapping(lines):
         if key in fields:
             raise ValueError(f"duplicate frontmatter key: {key}")
         quoted = value.strip()[:1] in ("\"", "'")
-        if has_tab(line[: len(line) - len(value)]) or (not quoted and has_tab(value)):
-            raise ValueError(f"tabs are not allowed outside quoted or block values: {line.strip()[:60]}")
         raw_value = value
         commented = not quoted and strip_comment(value) != value.strip()
         value = value.strip() if quoted else strip_comment(value)
         j = block_end(lines, i, allow_sequence=not value)
         block, i = lines[i:j], j
+        if quoted and not re.match(r"""^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')""", value):
+            raise Unsupported(f"quoted value of '{key}' continues past its line")
         if quoted and not any(b.strip() and not b.lstrip().startswith("#") for b in block):
-            plain_scalar(raw_value)  # rejects text or tabs after the closing quote
-        first = next((b.strip() for b in block if b.strip() and not b.lstrip().startswith("#")), "")
-        nested_mapping = not value and is_key_line(first)
-        if value[:1] in (">", "|", "\"", "'") or nested_mapping:
-            pass  # block and quoted scalars may hold tabs; nested mappings are checked as they are parsed
-        elif not value:
-            for b in block:
-                item = b.strip(" ")
-                if not item.strip() or item.lstrip().startswith("#"):
-                    continue
-                if SEQUENCE_ENTRY.match(item):
-                    if has_tab(item[:2]):
-                        raise ValueError(f"tabs are not allowed after a list marker under '{key}'")
-                    item = item[1:].lstrip(" ")
-                if "\t" in b[: len(b) - len(b.lstrip())] or (item[:1] not in ("\"", "'") and has_tab(item)):
-                    raise ValueError(f"tabs are not allowed outside quoted or block values under '{key}'")
-        elif any(has_tab(b) for b in block):
-            raise ValueError(f"tabs are not allowed in a multi-line plain value of '{key}'")
+            plain_scalar(raw_value)  # rejects text after the closing quote
         if value[:1] in (">", "|"):
+            if any(b[:1] == "#" for b in block):
+                raise Unsupported(f"column-0 comment inside the block value of '{key}'")
             fields[key] = block_scalar(value, block)
             continue
         content = [b for b in block if b.strip() and not b.lstrip().startswith("#")]
@@ -428,9 +406,8 @@ def parse_fields(header):
         if not isinstance(fields, dict):
             raise ValueError("frontmatter must be a mapping")
         return fields
-    for line in header.splitlines():
-        if line[:1] == "\t" and line.strip():
-            raise ValueError(f"tabs cannot indent YAML: {line.strip()[:60]}")
+    if "\t" in header:
+        raise Unsupported("tab characters, which YAML accepts only in some positions")
     return parse_mapping(header.splitlines())
 
 
@@ -581,10 +558,12 @@ def skip_title(text, i):
 
 
 def inline_destination(text, i):
-    """Parse the inside of '(...)' after a link label; return the destination or None."""
+    """Parse the inside of '(...)' after a link label; return the destination, '' if empty, or None."""
     i = skip_space(text, i)
-    if i is None or i >= len(text) or text[i] == ")":
+    if i is None or i >= len(text):
         return None
+    if text[i] == ")":
+        return ""
     if text[i] == "<":
         parsed = angle_destination(text, i)
         if parsed is None:
@@ -592,8 +571,6 @@ def inline_destination(text, i):
         destination, end = parsed
     else:
         destination, end = raw_destination(text, i)
-        if not destination:
-            return None
     k = skip_space(text, end)
     if k is None:
         return None
@@ -607,16 +584,23 @@ def inline_destination(text, i):
     return destination if k < len(text) and text[k] == ")" else None
 
 
+def is_image_opener(text, start):
+    """Whether the '[' at text[start] follows an unescaped '!'."""
+    before = text[:start]
+    return before.endswith("!") and (len(before) - 1 - len(before[:-1].rstrip("\\"))) % 2 == 0
+
+
 def complete_link(prose, start):
-    """Destination of a complete inline link whose label opens at prose[start], or None."""
+    """Destination of a complete inline link or image whose label opens at prose[start], or None."""
     label = INLINE_LINK.match(prose, start)
     if not label:
         return None
-    # Links cannot contain links: link text that holds a complete non-image link is plain text.
-    inner = prose[start + 1 : label.end() - 2]
-    for nested in re.finditer(r"\[", inner):
-        if (nested.start() == 0 or inner[nested.start() - 1] != "!") and complete_link(inner, nested.start()):
-            return None
+    if not is_image_opener(prose, start):
+        # Links cannot contain links: link text holding a complete non-image link is plain text.
+        inner = prose[start + 1 : label.end() - 2]
+        for nested in re.finditer(r"\[", inner):
+            if not is_image_opener(inner, nested.start()) and complete_link(inner, nested.start()) is not None:
+                return None
     return inline_destination(prose, label.end())
 
 
@@ -684,13 +668,18 @@ def check(skill_dir, host="generic"):
         prose = re.sub(r"`[^`\n]*`", "", prose)
         prose = re.sub(r"(?s)<!--.*?-->", "", prose)
         for target in link_targets(prose):
-            url = urlsplit(target)
-            if url.scheme or url.netloc or not url.path:
+            try:
+                url = urlsplit(target)
+                if url.scheme or url.netloc or not url.path:
+                    continue
+                resolved = (path.parent / unquote(url.path)).resolve()
+                exists = resolved.exists()
+            except (ValueError, OSError):
+                errors.append(f"{rel}: link '{target}' is not a valid local path")
                 continue
             if "\\" in url.path:
                 warnings.append(f"{rel}: link '{target}' uses backslashes; use forward slashes")
-            resolved = (path.parent / unquote(url.path)).resolve()
-            if not resolved.exists():
+            if not exists:
                 errors.append(f"{rel}: link '{target}' does not resolve")
             elif not resolved.is_relative_to(root):
                 warnings.append(f"{rel}: link '{target}' points outside the skill folder and will not travel with it")

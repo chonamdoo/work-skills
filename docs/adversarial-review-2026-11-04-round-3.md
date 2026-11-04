@@ -21,7 +21,15 @@ NOT MERGEABLE on parser and link findings. On the third fix, C1 again returned
 MERGEABLE, while C2 and S found regressions from that fix: tabs inside nested
 quoted or block values were rejected, a link inside link text made the outer
 text count as a link, and time zones were dropped from timestamps. The fourth
-fix addresses all findings listed below.
+fix addressed those. On it, C2 and S found more edge inputs (tabs in other
+positions, quoted values continued at column 0, column-0 comments in block
+values, empty and image link destinations, and a crash on malformed URLs).
+
+The fifth fix changes approach for the fallback YAML parser. Matching every
+PyYAML edge case had kept producing new wrong verdicts. The fallback now judges
+only input it fully reads. For anything else it reports "frontmatter not checked"
+(exit 3), which is neither a pass nor a failure. All findings below are addressed
+or declined.
 
 ## Fixed
 
@@ -37,9 +45,12 @@ fix addresses all findings listed below.
 | C2: links inside HTML comments were checked | HTML comments are skipped. |
 | S: a comment before a value was read as ending the value | Only a comment after the value has started ends it. |
 | S: plain and quoted keys such as `42` and `"42"` were merged into one duplicate key | Plain keys are typed as PyYAML types them. |
-| C2: dates were typed as strings; a `...` document end failed; tabs passed where PyYAML rejects them; a `<<` block key produced a false metadata warning | Timestamps resolve to dates and datetimes, and their time zone is kept. `...` ends the document. Tabs fail where PyYAML rejects them, including after a closing quote, and pass inside quoted and block values at any depth. Merge keys report "frontmatter not checked". |
-| S: the outer text of `[outer [inner](a.md)](b.md)` was checked as a link | Link text that holds a complete non-image link makes the outer text plain, as CommonMark specifies. |
-| C2: a block indicator on the line after the key failed | Reports "frontmatter not checked". |
+| C2: dates were typed as strings; a `...` document end failed; a `<<` block key produced a false metadata warning | Timestamps resolve to dates and datetimes, and their time zone is kept. `...` ends the document. Merge keys report "frontmatter not checked". |
+| C2, S: tabs were accepted where PyYAML rejects them, and rejected inside valid quoted and block values | Without PyYAML, frontmatter containing a tab reports "frontmatter not checked". |
+| C2, S: a quoted value continued at column 0, a column-0 comment inside a block value, and a block indicator on the line after the key were misjudged | Each reports "frontmatter not checked". |
+| S: the outer text of `[outer [inner](a.md)](b.md)` was checked as a link, including around empty destinations and after an escaped `!` | Link text that holds a complete non-image link, including one with an empty destination, makes the outer text plain, as CommonMark specifies. An escaped `!` does not open an image. |
+| S: a link inside an image description voided the image | Images may describe links; the image destination is checked. |
+| S: a malformed URL such as `<//[>` or a NUL escape crashed the checker | Reported as "not a valid local path"; checking continues. |
 | C2: `compatibility` over 500 characters passed | Fails. |
 | C2: a UTF-8 byte-order mark failed with a misleading message | The message names the mark. |
 | S: depth evidence had no integrity check | `tests/test_depth_evidence.py` recomputes every stored aggregate and the documented numbers from the raw runs and verdicts. |
@@ -48,9 +59,12 @@ fix addresses all findings listed below.
 | C1 N4: superseded sentence in the 2026-11-04 review | Annotated. |
 
 A generated parity test compares the fallback with PyYAML on 400 generated
-frontmatters, covering dates, time zones, tabs at each depth, typed keys,
-comments, and document ends. It compares nested values with their types. A
-throwaway run over 60 seeds (24,000 frontmatters) found no mismatch.
+frontmatters, covering dates, time zones, tabs, typed keys, comments, and
+document ends. It compares nested values with their types, and it accepts
+"frontmatter not checked" as an outcome. The generator puts one space after
+each `:`, so other separators are covered only by the fixed cases. A throwaway
+run over 60 seeds (24,000 frontmatters) found no case where the fallback gave a
+different verdict from PyYAML.
 
 ## Declined, with reasons
 

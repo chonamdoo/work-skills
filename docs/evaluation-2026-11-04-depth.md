@@ -144,7 +144,7 @@ Screened in: D1 and Y3. Paired comparisons:
   The prompt template was not archived, so `tests/test_depth_evidence.py` checks
   that each primary record's prompt length fits its mapped run output, and binds
   secondary records only through the blind map. The verdict text itself is not
-  bound to its record: moving verdicts between records of either judge, or an
-  equal-length edit to an output, is not detected.
+  bound to its record, so moving verdicts between repeated runs of the same case
+  and arm, or an equal-length edit to an output, is not detected.
 - **Author spend: $46.57** for Claude runs and primary judging. Secondary judging
   ran on a Codex subscription and has no per-call cost record.
