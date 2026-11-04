@@ -86,12 +86,12 @@ def plain_scalar(value):
     value = strip_comment(value)
     if value[:1] in ("&", "*", "!", "%", "@", "`"):
         raise Unsupported(f"YAML anchors, aliases, tags, or reserved indicators: {value[:40]}")
+    if value[:1] in ("[", "{"):
+        raise Unsupported(f"flow collection syntax is not validated: {value[:40]}")
     if re.search(r":(?:\s|$)", value):
         raise ValueError(f"unquoted value contains ': ', which YAML reads as a mapping; quote it: {value[:60]}")
     if value == "":
         return None
-    if value[0] in "[{":
-        return [] if value[0] == "[" else {}
     if value.lower() in SCALARS:
         return SCALARS[value.lower()]
     if NUMBER.match(value):

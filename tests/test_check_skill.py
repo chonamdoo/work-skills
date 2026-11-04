@@ -120,11 +120,18 @@ class CheckSkillTests(unittest.TestCase):
         installed = check_skill.yaml
         check_skill.yaml = None
         try:
-            skill = make_skill(self.tmp.name, "anchored", "name: anchored\ndescription: &d Shared text.")
-            errors, warnings = self.run_check(skill)
-            self.assertEqual(errors, [])
-            self.assertTrue(warnings[0].startswith(check_skill.UNCHECKED))
-            self.assertEqual(check_skill.main([str(skill)]), 2)
+            frontmatters = {
+                "anchored": "name: anchored\ndescription: &d Shared text.",
+                "unclosed-flow": "name: unclosed-flow\ndescription: Good.\nmetadata: {",
+                "flow-mapping": "name: flow-mapping\ndescription: Good.\nmetadata: {owner: team}",
+            }
+            for folder, frontmatter in frontmatters.items():
+                with self.subTest(folder):
+                    skill = make_skill(self.tmp.name, folder, frontmatter)
+                    errors, warnings = self.run_check(skill)
+                    self.assertEqual(errors, [])
+                    self.assertTrue(warnings[0].startswith(check_skill.UNCHECKED))
+                    self.assertEqual(check_skill.main([str(skill)]), 2)
         finally:
             check_skill.yaml = installed
 
