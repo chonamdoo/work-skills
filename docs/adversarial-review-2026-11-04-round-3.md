@@ -37,6 +37,16 @@ titles, removed spans that joined text, and a crash when printing an
 unencodable name. The sixth and seventh fixes close those. All findings below
 are addressed or declined.
 
+Edge-case hunting stopped there by maintainer decision: the remaining risk is an
+input reported as "not checked", not a wrong verdict.
+
+Merging #17, which landed on `main` during this round, kept its rule that an
+unreadable value does not hide errors in other fields: unreadable top-level
+values are reported one by one. Its "not checked" exit code moved from 2 to 3,
+because argparse already uses 2 for usage errors. Its tab cases are reported as
+"not checked", and its `description: ]` and `description: - ...` cases now fail,
+as they do in PyYAML.
+
 ## Fixed
 
 | Finding | Change |

@@ -66,6 +66,13 @@ class Unsupported(ValueError):
     """Valid-looking YAML the standard-library parser cannot interpret."""
 
 
+class Unchecked:
+    """A top-level frontmatter value the fallback parser could not check."""
+
+    def __init__(self, reason):
+        self.reason = reason
+
+
 def unescape_double_quoted(inner):
     out, i = [], 0
     while i < len(inner):
@@ -183,9 +190,11 @@ def indent_of(line):
 
 def block_scalar(indicator, block):
     """Interpret a literal (|) or folded (>) block scalar with clip, strip, or keep chomping."""
+    if not re.fullmatch(r"[|>](?:[1-9][+-]?|[+-][1-9]?)?", indicator):
+        raise ValueError(f"invalid block scalar header: {indicator[:40]}")
     match = BLOCK_INDICATOR.fullmatch(indicator)
     if not match:
-        raise Unsupported(f"block scalar indicator '{indicator}'")
+        raise Unsupported(f"block scalar indentation indicator '{indicator}'")
     style, chomp = match.groups()
     content = [line for line in block if line.strip()]
     leading = []
@@ -315,8 +324,12 @@ def plain_lines(value, commented, block):
     return plain_scalar(text) if "\n" not in text else text
 
 
-def parse_mapping(lines):
-    """Parse a block mapping with the standard library; lists keep only their type."""
+def parse_mapping(lines, top=False, state=None):
+    """Parse a block mapping with the standard library; lists keep only their type.
+
+    At the top level, a value the parser cannot read becomes Unchecked, so the other
+    fields are still checked.
+    """
     fields = {}
     i = 0
     while i < len(lines):
@@ -344,53 +357,59 @@ def parse_mapping(lines):
         value = value.strip() if quoted else strip_comment(value)
         j = block_end(lines, i, allow_sequence=not value)
         block, i = lines[i:j], j
-        if quoted and not re.match(r"""^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')""", value):
-            raise Unsupported(f"quoted value of '{key}' continues past its line")
-        if quoted and not any(b.strip() and not b.lstrip().startswith("#") for b in block):
-            plain_scalar(raw_value)  # rejects text after the closing quote
-        if value[:1] in (">", "|"):
-            if any(b[:1] == "#" for b in block):
-                raise Unsupported(f"column-0 comment inside the block value of '{key}'")
-            fields[key] = block_scalar(value, block)
-            continue
-        content = [b for b in block if b.strip() and not b.lstrip().startswith("#")]
-        first = content[0].strip() if content else ""
-        if not value and BLOCK_INDICATOR.match(first):
-            raise Unsupported(f"block scalar indicator on the line after '{key}'")
-        if value and content and value[:1] in "\"'":
-            raise Unsupported(f"multi-line quoted value of '{key}'")
-        if not value and content and SEQUENCE_ENTRY.match(first):
-            indent = indent_of(content[0])
-            if any(indent_of(b) < indent or (indent_of(b) == indent and not SEQUENCE_ENTRY.match(b.strip()))
-                   for b in content):
-                raise ValueError(f"'{key}' mixes list entries with other lines at the same indentation")
-            for b in content:
-                entry = b.strip()
-                item = entry[1:].strip(" ")
-                if indent_of(b) > indent or not SEQUENCE_ENTRY.match(entry) or not item:
-                    raise Unsupported(f"list item of '{key}' that spans lines or nests")
-                if SEQUENCE_ENTRY.match(item) or is_key_line(item) or item[:1] in ("|", ">") \
-                        or re.match(r"[?:](?:\s|$)", item):
-                    raise Unsupported(f"nested collection or block value in a list item of '{key}'")
-                if item[:1] in ("\"", "'") and not re.match(r"""^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')""", item):
-                    raise Unsupported(f"quoted list item of '{key}' that continues past its line")
-                plain_scalar(item)
-            fields[key] = []
-        elif not value and content and is_key_line(first):
-            indent = indent_of(content[0])
-            if any(indent_of(b) < indent for b in content):
-                raise ValueError(f"inconsistent indentation under '{key}'")
-            # Comments keep their place so that they still end plain values; a comment
-            # shallower than the mapping becomes a column-0 comment of the nested block.
-            nested = ["" if not b.strip() else "#" if b.lstrip().startswith("#") and indent_of(b) < indent
-                      else b[indent:] for b in block]
-            fields[key] = parse_mapping(nested)
-        elif not value and content and first[:1] in "\"'":
-            if len(content) > 1 or not re.match(r"""^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')""", first):
+        try:
+            if quoted and not re.match(r"""^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')""", value):
+                raise Unsupported(f"quoted value of '{key}' continues past its line")
+            if quoted and not any(b.strip() and not b.lstrip().startswith("#") for b in block):
+                plain_scalar(raw_value)  # rejects text after the closing quote
+            if value[:1] in (">", "|"):
+                if any(b[:1] == "#" for b in block):
+                    raise Unsupported(f"column-0 comment inside the block value of '{key}'")
+                fields[key] = block_scalar(value, block)
+                continue
+            content = [b for b in block if b.strip() and not b.lstrip().startswith("#")]
+            first = content[0].strip() if content else ""
+            if not value and BLOCK_INDICATOR.match(first):
+                raise Unsupported(f"block scalar indicator on the line after '{key}'")
+            if value and content and value[:1] in "\"'":
                 raise Unsupported(f"multi-line quoted value of '{key}'")
-            fields[key] = plain_scalar(first)
-        else:
-            fields[key] = plain_lines(value, commented, block)
+            if not value and content and SEQUENCE_ENTRY.match(first):
+                indent = indent_of(content[0])
+                if any(indent_of(b) < indent or (indent_of(b) == indent and not SEQUENCE_ENTRY.match(b.strip()))
+                       for b in content):
+                    raise ValueError(f"'{key}' mixes list entries with other lines at the same indentation")
+                for b in content:
+                    entry = b.strip()
+                    item = entry[1:].strip(" ")
+                    if indent_of(b) > indent or not SEQUENCE_ENTRY.match(entry) or not item:
+                        raise Unsupported(f"list item of '{key}' that spans lines or nests")
+                    if SEQUENCE_ENTRY.match(item) or is_key_line(item) or item[:1] in ("|", ">") \
+                            or re.match(r"[?:](?:\s|$)", item):
+                        raise Unsupported(f"nested collection or block value in a list item of '{key}'")
+                    if item[:1] in ("\"", "'") and not re.match(r"""^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')""", item):
+                        raise Unsupported(f"quoted list item of '{key}' that continues past its line")
+                    plain_scalar(item)
+                fields[key] = []
+            elif not value and content and is_key_line(first):
+                indent = indent_of(content[0])
+                if any(indent_of(b) < indent for b in content):
+                    raise ValueError(f"inconsistent indentation under '{key}'")
+                # Comments keep their place so that they still end plain values; a comment
+                # shallower than the mapping becomes a column-0 comment of the nested block.
+                nested = ["" if not b.strip() else "#" if b.lstrip().startswith("#") and indent_of(b) < indent
+                          else b[indent:] for b in block]
+                fields[key] = parse_mapping(nested)
+            elif not value and content and first[:1] in "\"'":
+                if len(content) > 1 or not re.match(r"""^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')""", first):
+                    raise Unsupported(f"multi-line quoted value of '{key}'")
+                fields[key] = plain_scalar(first)
+            else:
+                fields[key] = plain_lines(value, commented, block)
+        except Unsupported as exc:
+            if not top:
+                raise
+            fields[key] = Unchecked(str(exc))
+            state["uncertain"] = True
     return fields
 
 
@@ -434,7 +453,16 @@ def parse_fields(header):
     unusual = UNUSUAL_CHARACTER.search(header)
     if unusual:
         raise Unsupported(f"character U+{ord(unusual.group()):04X}, which YAML rejects or treats as a line break")
-    return parse_mapping(header.splitlines())
+    state = {}
+    try:
+        return parse_mapping(header.splitlines(), top=True, state=state)
+    except Unsupported:
+        raise
+    except ValueError as exc:
+        if state.get("uncertain"):
+            # An unread value may span the lines that failed; do not blame them.
+            raise Unsupported(f"{exc}, after a value the parser could not read") from None
+        raise
 
 
 def split_frontmatter(text):
@@ -457,8 +485,13 @@ def parse_frontmatter(text):
 
 
 def check_fields(fields, skill_dir, host, errors, warnings):
+    unchecked = {key for key, value in fields.items() if isinstance(value, Unchecked)}
+    for key in unchecked:
+        warnings.append(f"{UNCHECKED} {key}: {fields.pop(key).reason}; install PyYAML to check it")
     name = fields.get("name")
-    if name is None or name == "":
+    if "name" in unchecked:
+        pass
+    elif name is None or name == "":
         errors.append("name: required")
     elif not isinstance(name, str):
         errors.append(f"name: must be a string, not {type(name).__name__}")
@@ -475,7 +508,9 @@ def check_fields(fields, skill_dir, host, errors, warnings):
                     errors.append(f"name: contains '{word}', which Anthropic hosts reserve")
 
     description = fields.get("description")
-    if description is not None and not isinstance(description, str):
+    if "description" in unchecked:
+        pass
+    elif description is not None and not isinstance(description, str):
         errors.append(f"description: must be a string, not {type(description).__name__}")
     elif not isinstance(description, str) or not description.strip():
         errors.append("description: required")

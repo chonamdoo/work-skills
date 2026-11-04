@@ -193,8 +193,35 @@ class CheckSkillTests(unittest.TestCase):
             errors, warnings = self.run_check(skill)
             self.assertEqual(errors, ["SKILL.md: link 'references/gone.md' does not resolve"])
             self.assertTrue(warnings[0].startswith(check_skill.UNCHECKED))
-            clean = make_skill(self.tmp.name, "clean", "name: clean\ndescription: &d Shared text.")
-            self.assertEqual(check_skill.main([str(clean)]), 3)
+            frontmatters = {
+                "clean": "name: clean\ndescription: &d Shared text.",
+                "unclosed-flow": "name: unclosed-flow\ndescription: Good.\nmetadata: {",
+                "flow-mapping": "name: flow-mapping\ndescription: Good.\nmetadata: {owner: team}",
+                "indented-flow": "name: indented-flow\ndescription: Good.\nmetadata:\n  {owner: team",
+                "inline-list": "name: inline-list\ndescription: Good.\nallowed-tools: [Read",
+                "folded-marker-on-next-line": "name: folded-marker-on-next-line\ndescription:\n  > Reviews changes.",
+                "tab-in-quoted": "name: tab-in-quoted\ndescription: \"Reviews\n\tchanges.\"",
+            }
+            for folder, frontmatter in frontmatters.items():
+                with self.subTest(folder):
+                    skill = make_skill(self.tmp.name, folder, frontmatter)
+                    errors, warnings = self.run_check(skill)
+                    self.assertEqual(errors, [])
+                    self.assertTrue(warnings[0].startswith(check_skill.UNCHECKED))
+                    self.assertEqual(check_skill.main([str(skill)]), 3)
+        finally:
+            check_skill.yaml = installed
+
+    def test_unchecked_value_does_not_hide_other_errors(self):
+        installed = check_skill.yaml
+        check_skill.yaml = None
+        try:
+            skill = make_skill(self.tmp.name, "folder", "name: Bad_Name\ndescription: Good.\nallowed-tools: [Read, Grep]",
+                               body="Read [rules](references/gone.md).\n")
+            errors, warnings = self.run_check(skill)
+            self.assertEqual(len(errors), 3, errors)
+            self.assertTrue(any("allowed-tools" in w and w.startswith(check_skill.UNCHECKED) for w in warnings))
+            self.assertEqual(check_skill.main([str(skill)]), 1)
         finally:
             check_skill.yaml = installed
 
@@ -220,7 +247,6 @@ VALID_FRONTMATTER = {
     "nested metadata and lists": "name: good\ndescription: Good.\nmetadata:\n  owner: team\n  tags:\n    - a\nallowed-tools:\n  - Read\n",
     "metadata with a leading comment": "name: good\ndescription: Good.\nmetadata:\n  # who owns it\n  owner: team\n",
     "quoted keys": "\"name\": good\n'description': Reviews changes.\nmetadata:\n  \"version\": \"1.0\"\n  'owner': team\n",
-    "flow mapping": "name: good\ndescription: Good.\nmetadata: {author: x, version: \"1.0\"}",
     "kept and indented block lines": "name: good\ndescription: |+\n  Reviews changes.\n    Indented example.\n\nlicense: MIT",
     "folded with more-indented lines": "name: good\ndescription: >\n  Reviews changes.\n    - kept line\n  Use when reviewing.\n",
     "YAML hex escape": 'name: good\ndescription: "\\x41 review"',
@@ -230,21 +256,16 @@ VALID_FRONTMATTER = {
     "column-0 comment inside a mapping": "name: good\ndescription: Good.\nmetadata:\n  owner: t\n# old\n  team: x\n",
     "kept block scalar as the last field": "name: good\ndescription: |+\n  " + "x" * 1022 + "\n",
     "less-indented comment after a block": "name: good\ndescription: |\n  Reviews changes.\n # for the next field\nlicense: MIT",
-    "merge key": "name: good\ndescription: Good.\nmetadata:\n  <<: &common\n    owner: team\n  version: \"1.0\"",
     "key containing a colon": "name: good\ndescription: Good.\nmetadata:\n  a:b: c",
     "YAML 1.1 scalars that stay strings": "name: good\ndescription: Good.\nlicense: 08\ncompatibility: 1e3",
     "comment before the value": "name: good\ndescription: # why the skill exists\n  Use when reviewing.",
     "integer and string keys": "name: good\ndescription: Good.\nmetadata:\n  42: x\n  \"42\": y",
     "document end marker": "name: good\ndescription: Good.\n...",
     "document end marker with a comment": "name: good\ndescription: Good.\n... # end",
-    "tabs inside nested quoted and block values": "name: good\ndescription: Good.\nmetadata:\n  owner: \"a\tb\"\n"
-    "license: |\n  a\tb",
-    "tabs in nested block scalars and quoted list items": "name: good\ndescription: Good.\nmetadata:\n"
-    "  notes: |\n    col1\tcol2\n  more: >-\n    a\tb\nallowed-tools:\n  - \"a\tb\"",
-    "quoted value continued on the next line": "name: good\ndescription: \"Reviews changes\n  across lines.\"",
-    "block indicator on the next line": "name: good\ndescription:\n  |\n  Use when: reviewing PRs.",
     "naive and UTC timestamps as distinct keys": "name: good\ndescription: Good.\nmetadata:\n"
     "  2026-11-04T10:00:00: x\n  2026-11-04T10:00:00Z: y\n  last: 0001-01-01T00:00:00+01:00",
+    "bracketed text in a plain continuation": "name: good\ndescription:\n  Review these examples.\n  [a] is first.",
+    "bracketed text in a nested literal": "name: good\ndescription: Good.\nmetadata:\n  note: |\n    [a] is text.",
 }
 INVALID_FRONTMATTER = {
     "numeric description": "name: good\ndescription: 42",
@@ -260,6 +281,7 @@ INVALID_FRONTMATTER = {
     "sequence entry as a value": "name: good\ndescription: - Reviews rules.",
     "duplicate name": "name: claude-x\nname: good\ndescription: Good.",
     "date description": "name: good\ndescription: 2026-11-04",
+    "text after a block scalar header": "name: good\ndescription: >- Reviews\n  changes.",
 }
 UNCERTAIN_FRONTMATTER = {
     "tab in a valid quoted value": "name: good\ndescription: \"Reviews\tchanges.\"",
@@ -270,10 +292,23 @@ UNCERTAIN_FRONTMATTER = {
     "column-0 comment inside a block value": "name: good\ndescription: >\n# c\n  Reviews changes.",
     "block indicator on the next line with a tab": "name: good\ndescription:\n  >\n  Reviews\tchanges.",
     "flow mapping": "name: good\ndescription: Good.\nmetadata: {a: b}",
+    "tab after block indentation": "name: good\ndescription: |\n  Reviews.\n  \tIndented example.",
+    "space then tab continuation": "name: good\ndescription: Reviews\n \tchanges.",
+    "tab-only line between keys": "name: good\ndescription: Good.\n\t\nlicense: MIT",
+    "tab before a quoted value on the next line": "name: good\ndescription:\n\t\"Reviews.\"",
     "quoted value on the next line continued at column 0": "name: good\ndescription:\n  \"Reviews\nchanges.\"",
     "Unicode space before a boolean word": "name: good\ndescription: \u00a0yes",
     "indented top-level mapping": "  name: good\n  description: Good.",
     "NUL character": "name: good\ndescription: Good.\x00",
+    "merge key": "name: good\ndescription: Good.\nmetadata:\n  <<: &common\n    owner: team\n  version: \"1.0\"",
+    "tabs inside nested quoted and block values": "name: good\ndescription: Good.\nmetadata:\n  owner: \"a\tb\"\n"
+    "license: |\n  a\tb",
+    "tabs in nested block scalars and quoted list items": "name: good\ndescription: Good.\nmetadata:\n"
+    "  notes: |\n    col1\tcol2\n  more: >-\n    a\tb\nallowed-tools:\n  - \"a\tb\"",
+    "quoted value continued on the next line": "name: good\ndescription: \"Reviews changes\n  across lines.\"",
+    "block indicator on the next line": "name: good\ndescription:\n  |\n  Use when: reviewing PRs.",
+    "tab inside a nested literal": "name: good\ndescription: Good.\nmetadata:\n  note: |\n    Reviews.\n    \tIndented example.",
+    "tab inside a nested quoted value": "name: good\ndescription: Good.\nmetadata:\n  note: \"Reviews\n\tchanges.\"",
 }
 
 
@@ -304,20 +339,21 @@ class FrontmatterParsingTests(unittest.TestCase):
             try:
                 with tempfile.TemporaryDirectory() as root:
                     skill = make_skill(root, "good", frontmatter)
-                    results[label] = check_skill.check(skill)[0]
+                    results[label] = check_skill.check(skill)
             finally:
                 check_skill.yaml = installed
         return results
 
     def test_valid_frontmatter_passes(self):
         for label, frontmatter in VALID_FRONTMATTER.items():
-            for parser, errors in self.check_with_each_parser(frontmatter).items():
+            for parser, (errors, warnings) in self.check_with_each_parser(frontmatter).items():
                 with self.subTest(label, parser=parser):
                     self.assertEqual(errors, [])
+                    self.assertFalse([w for w in warnings if w.startswith(check_skill.UNCHECKED)])
 
     def test_wrong_types_and_missing_values_fail(self):
         for label, frontmatter in INVALID_FRONTMATTER.items():
-            for parser, errors in self.check_with_each_parser(frontmatter).items():
+            for parser, (errors, _) in self.check_with_each_parser(frontmatter).items():
                 with self.subTest(label, parser=parser):
                     self.assertEqual(len(errors), 1, errors)
 
@@ -330,16 +366,19 @@ class FrontmatterParsingTests(unittest.TestCase):
                 expected = None
             check_skill.yaml = None
             try:
-                if expected is None:
-                    with self.assertRaises(ValueError):
-                        check_skill.parse_fields(frontmatter)
-                    return
                 actual = check_skill.parse_fields(frontmatter)
             except check_skill.Unsupported:
                 return  # the fallback reports these as unchecked rather than guessing
+            except ValueError:
+                self.assertIsNone(expected, "the fallback rejected frontmatter PyYAML accepts")
+                return
             finally:
                 check_skill.yaml = installed
-            for key in ("name", "description", "license", "compatibility", "metadata"):
+            unchecked = {k for k, v in actual.items() if isinstance(v, check_skill.Unchecked)}
+            if expected is None:
+                self.assertTrue(unchecked, "the fallback accepted frontmatter PyYAML rejects")
+                return
+            for key in {"name", "description", "license", "compatibility", "metadata"} - unchecked:
                 self.assertEqual(shape(actual.get(key)), shape(expected.get(key)), key)
 
     def test_fallback_reports_uncertain_yaml_as_unchecked(self):

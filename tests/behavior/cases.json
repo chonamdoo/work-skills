@@ -74,7 +74,7 @@
     "id": "A9-outcome-range",
     "request": "Create a skill named qbr-deck from our finance lead's notes. Each quarter she copies revenue, churn, and headcount from the finance dashboard into the leadership review template, writes one comment per metric, and adds the line 'churn is an onboarding problem'. Read-only ledger and CRM exports are available. The output stays the same ten-slide template for the quarterly leadership review. No scripts, no sending, and no template changes. Return draft file contents in your answer only.",
     "acceptance": [
-      "Records what the review is for in the report as supplied or as a labeled author inference, or leaves it open; states it in the skill only if supplied or confirmed; no criteria derived from an inferred outcome become active rules.",
+      "Records what the review is for as supplied, or as a labeled author inference in the report only, or leaves it open; an inferred outcome does not appear in the skill, and no criteria derived from it become active rules.",
       "Treats 'churn is an onboarding problem' as the source's unconfirmed belief, not a rule; any test against the exports is a labeled proposal kept out of the skill unless confirmed, or the belief stays unconfirmed with the missing evidence named.",
       "Any method borrowed from another field is stated as an action, and an author-proposed one stays out of the skill unless confirmed; a persona or tone instruction does not count as a method.",
       "Keeps the ten-slide template and audience; any replacement of the review format is mentioned in the report, not built in."

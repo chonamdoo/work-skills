@@ -165,7 +165,8 @@ See the [2026-11-01 comparative evaluation](docs/evaluation-2026-11-01.md),
 [2026-09-25 adversarial review](docs/adversarial-review-2026-09-25.md), the
 [2026-11-01 review and probes](docs/adversarial-review-2026-11-01.md), the
 [2026-11-04 depth-pass review](docs/adversarial-review-2026-11-04.md), the
-[2026-11-04 depth-pass evaluation](docs/evaluation-2026-11-04-depth.md), and the
+[2026-11-04 depth-pass evaluation](docs/evaluation-2026-11-04-depth.md), the
+[2026-11-04 review of main](docs/adversarial-review-2026-11-04-main.md), and the
 [2026-11-04 third-round review](docs/adversarial-review-2026-11-04-round-3.md) for tested scope and limitations.
 
 The evaluation used three synthetic rule sets and one model. Generated skills did
@@ -191,9 +192,11 @@ The skill ships [`scripts/check_skill.py`](skills/work-to-skill/scripts/check_sk
 `python3 <path-to>/work-to-skill/scripts/check_skill.py <skill-dir> [--host generic|anthropic]`
 checks any skill's frontmatter, optional field limits, inline links, and host name limits
 using only the Python standard library, or PyYAML when installed. Exit 1 means
-format errors; exit 3 means the frontmatter used YAML the standard-library parser
-cannot read, and the rest of the package was still checked. A "frontmatter not
-checked" warning means the frontmatter was not checked, whatever the exit code.
+format errors. Without PyYAML, a value the standard-library parser cannot read is
+reported as "not checked" while the other fields, links, and placeholders are still
+checked; exit 3 means nothing else failed. Frontmatter holding tabs or unusual
+characters is not checked as a whole. A "not checked" warning keeps that meaning
+whatever the exit code.
 It does not judge content.
 There is no mandatory creator, agent-flow, CLI, or model dependency at runtime.
 
