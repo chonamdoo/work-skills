@@ -200,6 +200,7 @@ INVALID_FRONTMATTER = {
     "text after a block scalar header": "name: good\ndescription: >- Reviews\n  changes.",
     "tab-indented continuation": "name: good\ndescription: Reviews\n\tchanges.",
     "space then tab continuation": "name: good\ndescription: Reviews\n \tchanges.",
+    "tab-only line between keys": "name: good\ndescription: Good.\n\t\nlicense: MIT",
 }
 
 

@@ -135,6 +135,8 @@ def parse_fields(header):
         line = lines[i]
         i += 1
         if not line.strip() or line.lstrip().startswith("#"):
+            if line[:1] == "\t":
+                raise ValueError("frontmatter line is indented with a tab; YAML allows only spaces")
             continue
         if line[0] in " \t":
             raise ValueError(f"unexpected indented frontmatter line: {line.strip()}")
