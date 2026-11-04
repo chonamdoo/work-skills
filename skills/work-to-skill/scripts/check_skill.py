@@ -5,9 +5,10 @@ Usage: python3 check_skill.py <skill-dir> [--host generic|anthropic]
 
 Errors (exit 1) are format violations that make the package invalid for the
 selected host. Warnings are guidance from host documentation, not failures.
-Exit 2 means the frontmatter uses YAML the fallback parser cannot read.
-Uses PyYAML when installed; otherwise a standard-library parser for the
-frontmatter subset skills use (plain, quoted, and block scalars; nested values).
+Exit 2 means a frontmatter value uses YAML the fallback parser cannot read; the
+other checks still run. Uses PyYAML when installed; otherwise a standard-library
+parser for the frontmatter subset skills use (plain, quoted, and block scalars).
+Without PyYAML, values nested under a key are checked for type only.
 """
 
 import argparse
@@ -40,6 +41,13 @@ HEX_ESCAPES = {"x": 2, "u": 4, "U": 8}
 
 class Unsupported(ValueError):
     """Valid-looking YAML the standard-library parser cannot interpret."""
+
+
+class Unchecked:
+    """A frontmatter value the fallback parser could not check."""
+
+    def __init__(self, reason):
+        self.reason = reason
 
 
 def unescape_double_quoted(inner):
@@ -84,14 +92,12 @@ def plain_scalar(value):
             raise ValueError(f"malformed single-quoted value: {value}")
         return end.group(0)[1:-1].replace("''", "'")
     value = strip_comment(value)
-    if value[:1] in ("&", "*", "!", "%", "@", "`"):
-        raise Unsupported(f"YAML anchors, aliases, tags, or reserved indicators: {value[:40]}")
+    if value[:1] in ("&", "*", "!", "%", "@", "`", "[", "{", "]", "}", ",", "|", ">") or re.match(r"[-?:](?:\s|$)", value):
+        raise Unsupported(f"YAML indicator syntax is not validated: {value[:40]}")
     if re.search(r":(?:\s|$)", value):
         raise ValueError(f"unquoted value contains ': ', which YAML reads as a mapping; quote it: {value[:60]}")
     if value == "":
         return None
-    if value[0] in "[{":
-        return [] if value[0] == "[" else {}
     if value.lower() in SCALARS:
         return SCALARS[value.lower()]
     if NUMBER.match(value):
@@ -129,6 +135,8 @@ def parse_fields(header):
         line = lines[i]
         i += 1
         if not line.strip() or line.lstrip().startswith("#"):
+            if line[:1] == "\t":
+                raise ValueError("frontmatter line is indented with a tab; YAML allows only spaces")
             continue
         if line[0] in " \t":
             raise ValueError(f"unexpected indented frontmatter line: {line.strip()}")
@@ -144,25 +152,42 @@ def parse_fields(header):
         while j > i and not lines[j - 1].strip():
             j -= 1
         block, i = lines[i:j], j
-        value = strip_comment(value) if value.strip()[:1] not in ("\"", "'") else value.strip()
-        if value[:1] in (">", "|"):
-            fields[key] = block_scalar(value, block)
-            continue
-        parts = [b.strip() for b in block if b.strip()]
-        if value and parts and value[:1] in "\"'":
-            raise Unsupported(f"multi-line quoted value of '{key}'")
-        if not value and parts and (parts[0] == "-" or parts[0].startswith("- ")):
-            fields[key] = []
-        elif not value and parts and re.match(r"^[^\s#\"'][^:]*:(?:\s|$)", parts[0]):
-            fields[key] = {}
-        elif not value and parts and parts[0][:1] in "\"'":
-            if len(parts) > 1:
-                raise Unsupported(f"multi-line quoted value of '{key}'")
-            fields[key] = plain_scalar(parts[0])
-        else:
-            pieces = ([value] if value else []) + [strip_comment(p) for p in parts]
-            fields[key] = plain_scalar(" ".join(p for p in pieces if p))
+        try:
+            fields[key] = parse_value(key, value, block)
+        except Unsupported as exc:
+            fields[key] = Unchecked(str(exc))
     return fields
+
+
+def parse_value(key, value, block):
+    value = strip_comment(value) if value.strip()[:1] not in ("\"", "'") else value.strip()
+    if value[:1] in (">", "|"):
+        if not re.fullmatch(r"[|>](?:[1-9][+-]?|[+-][1-9]?)?", value):
+            raise ValueError(f"invalid block scalar header for '{key}': {value[:40]}")
+        if any(b[:1] == "\t" for b in block):
+            raise ValueError(f"'{key}' is indented with a tab; YAML allows only spaces")
+        return block_scalar(value, block)
+    parts = [b.strip() for b in block if b.strip()]
+    if value and parts and value[:1] in "\"'":
+        raise Unsupported(f"multi-line quoted value of '{key}'")
+    if not value and parts and "\t" in indentation(next(b for b in block if b.strip())):
+        raise ValueError(f"'{key}' is indented with a tab; YAML allows only spaces")
+    if not value and parts and (parts[0] == "-" or parts[0].startswith("- ")):
+        return []
+    if not value and parts and re.match(r"^[^\s#\"'\[{][^:]*:(?:\s|$)", parts[0]):
+        return {}
+    if not value and parts and parts[0][:1] in "\"'":
+        if len(parts) > 1:
+            raise Unsupported(f"multi-line quoted value of '{key}'")
+        return plain_scalar(parts[0])
+    if any("\t" in indentation(b) for b in block):
+        raise ValueError(f"'{key}' is indented with a tab; YAML allows only spaces")
+    pieces = ([value] if value else []) + [strip_comment(p) for p in parts]
+    return plain_scalar(" ".join(p for p in pieces if p))
+
+
+def indentation(line):
+    return re.match(r"[ \t]*", line).group(0)
 
 
 def parse_frontmatter(text):
@@ -184,13 +209,16 @@ def check(skill_dir, host="generic"):
     text = entry.read_text(encoding="utf-8")
     try:
         fields, body = parse_frontmatter(text)
-    except Unsupported as exc:
-        return errors, [f"{UNCHECKED} {exc}; install PyYAML to check the frontmatter"]
     except ValueError as exc:
         return [f"SKILL.md: {exc}"], warnings
+    for key, value in fields.items():
+        if isinstance(value, Unchecked):
+            warnings.append(f"{UNCHECKED} {key}: {value.reason}; install PyYAML to check it")
 
     name = fields.get("name")
-    if name is None or name == "":
+    if isinstance(name, Unchecked):
+        pass
+    elif name is None or name == "":
         errors.append("name: required")
     elif not isinstance(name, str):
         errors.append(f"name: must be a string, not {type(name).__name__}")
@@ -207,7 +235,9 @@ def check(skill_dir, host="generic"):
                     errors.append(f"name: contains '{word}', which Anthropic hosts reserve")
 
     description = fields.get("description")
-    if description is not None and not isinstance(description, str):
+    if isinstance(description, Unchecked):
+        pass
+    elif description is not None and not isinstance(description, str):
         errors.append(f"description: must be a string, not {type(description).__name__}")
     elif not isinstance(description, str) or not description.strip():
         errors.append("description: required")

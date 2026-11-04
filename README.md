@@ -164,8 +164,9 @@ See the [2026-11-01 comparative evaluation](docs/evaluation-2026-11-01.md),
 [initial validation record](docs/validation-v0.1.0.md), the
 [2026-09-25 adversarial review](docs/adversarial-review-2026-09-25.md), the
 [2026-11-01 review and probes](docs/adversarial-review-2026-11-01.md), the
-[2026-11-04 depth-pass review](docs/adversarial-review-2026-11-04.md), and the
-[2026-11-04 depth-pass evaluation](docs/evaluation-2026-11-04-depth.md) for tested scope and limitations.
+[2026-11-04 depth-pass review](docs/adversarial-review-2026-11-04.md), the
+[2026-11-04 depth-pass evaluation](docs/evaluation-2026-11-04-depth.md), and the
+[2026-11-04 review of main](docs/adversarial-review-2026-11-04-main.md) for tested scope and limitations.
 
 The evaluation used three synthetic rule sets and one model. Generated skills did
 not do the work more correctly than the same notes supplied directly. A skill's
@@ -184,8 +185,12 @@ task results of the generated skills were not measured.
 
 The skill ships [`scripts/check_skill.py`](skills/work-to-skill/scripts/check_skill.py).
 `python3 scripts/check_skill.py <skill-dir> [--host generic|anthropic]`, run from the
-skill folder, checks any skill's frontmatter, links, and host name limits using only
-the Python standard library. It does not judge content.
+skill folder, checks any skill's frontmatter, links, and host name limits using the
+Python standard library, or PyYAML when installed. Without PyYAML, a top-level
+value starting with a flow collection or another YAML indicator is reported as
+unchecked while the other checks still run (exit 2 when nothing else fails), and
+values nested under a key are checked for type only.
+It does not judge content.
 There is no mandatory creator, agent-flow, CLI, or model dependency at runtime.
 
 ## Maintain and release
