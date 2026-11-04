@@ -11,6 +11,8 @@ Turn a bounded professional capability into a skill another agent can use withou
 
 Use the request and available materials to identify the capability, intended users, applicable situations, expected result, and allowed changes. Ask only for missing information that changes the work, its correctness, or its authorization. A profession alone supplies no expert rules: a developer's review criteria, a planner's evidence standards, and a tax accountant's document checks each need their own supporting input.
 
+Identify the outcome the capability's result serves: what should happen once it is delivered, such as a decision being made, a problem being caught early, or a filing being accepted. Use that outcome to choose criteria and the check that shows the result is right. A different or higher-level way to reach the outcome, such as replacing the deliverable or automating the surrounding workflow, is a different capability: offer it to the user as a separate proposal instead of building it into this skill.
+
 Confirm the skill name and destination from the current request or environment; ask when neither establishes the intended location. Check for an existing skill with that name before writing. For updates, read the existing instructions and relevant resources, preserve a recoverable original through version control or a backup outside the installable skill directory, and change only the requested behavior. Preserve unrelated scope, exceptions, references, frontmatter, metadata, and invocation policy, including unfamiliar existing fields; inspect resource callers before removing or moving a file.
 
 Keep creation separate from installation, publication, and real business execution. Carry forward authorization already given, but do not infer permission for those actions from permission to author a skill.
@@ -39,12 +41,16 @@ Answer four questions from the sources and the user's input:
 
 1. **Practice**: what a top practitioner would do for this work that the request does not ask for.
 2. **Raw material**: the least-digested input they start from, such as records, logs, primary documents, source data, or the code itself, instead of summaries, templates, dashboards, or conclusions already drawn for the requester.
-3. **Instruments**: the specific methods and tools they apply, such as queries, statistical models, reproductions, reconciliations, or tests with defined pass conditions. Depth shows in changed inputs and methods; expert vocabulary over the same method leaves the work unchanged.
+3. **Instruments**: the specific methods and tools they apply, such as queries, statistical models, reproductions, reconciliations, or tests with defined pass conditions. Depth shows in changed inputs and methods; expert vocabulary over the same method leaves the work unchanged. To look past one field's habits, describe the work by what it does rather than what it produces, for example "get busy reviewers to decide under uncertainty" rather than "a deck", and consider fields that do that. Borrow their methods, not their voice: reconciling figures to source records as a forensic accountant does changes the work; writing in a forensic accountant's tone does not.
 4. **Outside check**: what, other than the executing agent or the requester, shows the result is right, such as a runnable check, a reproduction, a held-out case, a source record, a measurement, or a qualified reviewer's assessment.
 
-Answers supported by the sources become criteria. Answers you supply are the skill author's proposals: restate the capability request as its deeper version and confirm with the user the proposals that change required inputs, tool access, effort, or cost. When the user cannot be asked in this exchange, include proposals in the generated skill marked as proposals, or leave them out. Thresholds, cutoffs, and rules you propose stay proposals; they are not the expert's criteria. An outside check that is unavailable remains a stated gap; the executing agent's own review does not substitute for it.
+Where raw material can test a belief the sources state as fact, such as a presumed cause, the deeper practice tests it there instead of adopting it. Record the belief as the source's judgment; one that the material contradicts or cannot test stays visibly unconfirmed rather than becoming a rule.
 
-The pass is complete when each question has a sourced answer, a labeled proposal, or an explicit unknown, and the scope still matches the assignment.
+Treat a sourced answer according to its authority, applicability, and status as a fact, preference, example, or requirement; source support alone does not make it mandatory. Answers you supply are the skill author's proposals. Confirm with the user any change to required inputs, tool access, effort, or cost, whoever proposed it. When the user cannot be asked in this exchange, keep unconfirmed proposals as clearly marked, inactive options in the generated skill, separate from its procedure and completion conditions, or leave them out. Thresholds, cutoffs, and rules you propose stay proposals; they are not the expert's criteria. An outside check that is unavailable remains a stated gap; the executing agent's own review does not substitute for it.
+
+When the existing inputs, methods, and checks already fit the work, keep them and say why; a question may be not applicable, with a reason. Then restate the capability request as its deeper version from the adopted answers, unresolved gaps, and separated options. The restatement is the authoring specification, not an extra task deliverable.
+
+The pass is complete when each question has a sourced answer, a labeled proposal, an explicit unknown, or a reasoned not-applicable, the restatement exists, and the scope still matches the assignment.
 
 ## Build the smallest useful package
 
@@ -58,7 +64,7 @@ Choose structure from the content:
 - For procedures, describe the actions whose order matters, relevant permissions, success evidence, and failure or stopping conditions proportionate to the consequences.
 - For mixed work, keep shared criteria together and expose conditional procedures where they apply.
 
-Carry the depth answers into the structure: name the raw inputs the work starts from, the instruments it applies, and the outside check whose result marks it complete, each with its provenance label. When a required raw input or instrument may be unavailable to the eventual user, state its access condition and the bounded result possible without it.
+When the depth pass applies, carry its adopted answers into the structure: name the raw inputs the work starts from, the instruments it applies, and the outside check whose result marks it complete, each with its provenance label, and keep unanswered items as explicit gaps. When it does not apply, preserve existing inputs, methods, and completion conditions apart from the requested change. When a required raw input or instrument may be unavailable to the eventual user, state its access condition and the bounded result possible without it.
 
 Keep common guidance in the entrypoint. Add `references/` only for substantial conditional material, with a link stating when to read it. Add `scripts/` only when executable calculation, transformation, or checking materially improves reliability; validate changed scripts. Add `assets/` only for materials actually reused in outputs. Each file must have a concrete use; there is no required file count, document outline, or line limit.
 
