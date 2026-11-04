@@ -116,6 +116,18 @@ class CheckSkillTests(unittest.TestCase):
         skill = make_skill(self.tmp.name, "prose", "name: prose\ndescription: Prose.", body=body)
         self.assertEqual(self.run_check(skill), ([], []))
 
+    def test_unreadable_yaml_is_unchecked_not_invalid(self):
+        installed = check_skill.yaml
+        check_skill.yaml = None
+        try:
+            skill = make_skill(self.tmp.name, "anchored", "name: anchored\ndescription: &d Shared text.")
+            errors, warnings = self.run_check(skill)
+            self.assertEqual(errors, [])
+            self.assertTrue(warnings[0].startswith(check_skill.UNCHECKED))
+            self.assertEqual(check_skill.main([str(skill)]), 2)
+        finally:
+            check_skill.yaml = installed
+
     def test_cli_exit_status(self):
         good = make_skill(self.tmp.name, "good", "name: good\ndescription: Good.")
         bad = make_skill(self.tmp.name, "anthropic-tool", "name: anthropic-tool\ndescription: Bad on Anthropic.")
@@ -131,6 +143,7 @@ VALID_FRONTMATTER = {
     "single quotes": "name: 'good'\ndescription: 'It''s a review: rules apply.'",
     "folded and literal blocks": "name: good\ndescription: >-\n  Reviews changes.\n\n  Use when reviewing.\nlicense: |\n  MIT\n",
     "nested metadata and lists": "name: good\ndescription: Good.\nmetadata:\n  owner: team\n  tags:\n    - a\nallowed-tools:\n  - Read\n",
+    "YAML hex escape": 'name: good\ndescription: "\\x41 review"',
     "plain value on indented lines": "name: good\ndescription:\n  Reviews changes. Use when\n  reviewing pull requests.",
 }
 INVALID_FRONTMATTER = {
@@ -139,6 +152,9 @@ INVALID_FRONTMATTER = {
     "mapping description": "name: good\ndescription:\n  text: Good.",
     "list name": "name:\n  - good\ndescription: Good.",
     "empty description": "name: good\ndescription:",
+    "indented number": "name: good\ndescription:\n  42",
+    "indented boolean": "name: good\ndescription:\n  true",
+    "comment-only value": "name: good\ndescription: # none yet",
     "unquoted colon": "name: good\ndescription: Reviews rules. Static review only: do not run code.",
     "unquoted colon on a continuation line": "name: good\ndescription: Reviews rules.\n  Use when: reviewing.",
 }

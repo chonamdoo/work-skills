@@ -5,6 +5,7 @@ Usage: python3 check_skill.py <skill-dir> [--host generic|anthropic]
 
 Errors (exit 1) are format violations that make the package invalid for the
 selected host. Warnings are guidance from host documentation, not failures.
+Exit 2 means the frontmatter uses YAML the fallback parser cannot read.
 Uses PyYAML when installed; otherwise a standard-library parser for the
 frontmatter subset skills use (plain, quoted, and block scalars; nested values).
 """
@@ -26,29 +27,70 @@ XML_TAG = re.compile(r"</?[A-Za-z][\w.-]*(?:\s[^<>]*)?/?>")
 LINK = re.compile(r"\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 PLACEHOLDER = re.compile(r"\b(?:TODO|TBD|FIXME)\b\s*[:\]]|\[(?:TODO|TBD|FIXME)\b|<(?:placeholder|TODO|TBD)>")
 RESERVED = ("anthropic", "claude")
+UNCHECKED = "frontmatter not checked:"
 
 
 SCALARS = {"true": True, "false": False, "yes": True, "no": False, "null": None, "~": None}
 NUMBER = re.compile(r"^[-+]?(?:\d[\d_]*(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?$")
+ESCAPES = {"0": "\0", "a": "\a", "b": "\b", "t": "\t", "\t": "\t", "n": "\n", "v": "\v", "f": "\f",
+           "r": "\r", "e": "\x1b", " ": " ", '"': '"', "/": "/", "\\": "\\", "N": "\x85", "_": "\xa0",
+           "L": "\u2028", "P": "\u2029"}
+HEX_ESCAPES = {"x": 2, "u": 4, "U": 8}
+
+
+class Unsupported(ValueError):
+    """Valid-looking YAML the standard-library parser cannot interpret."""
+
+
+def unescape_double_quoted(inner):
+    out, i = [], 0
+    while i < len(inner):
+        char = inner[i]
+        if char != "\\":
+            out.append(char)
+            i += 1
+            continue
+        code = inner[i + 1 : i + 2]
+        if code in ESCAPES:
+            out.append(ESCAPES[code])
+            i += 2
+        elif code in HEX_ESCAPES:
+            digits = inner[i + 2 : i + 2 + HEX_ESCAPES[code]]
+            if len(digits) != HEX_ESCAPES[code] or not re.fullmatch(r"[0-9A-Fa-f]+", digits):
+                raise ValueError(f"invalid escape \\{code}{digits}")
+            out.append(chr(int(digits, 16)))
+            i += 2 + len(digits)
+        else:
+            raise ValueError(f"invalid escape \\{code}")
+    return "".join(out)
+
+
+def strip_comment(value):
+    value = value.strip()
+    return "" if value.startswith("#") else re.sub(r"\s+#.*$", "", value)
 
 
 def plain_scalar(value):
-    """Interpret a one-line YAML scalar, keeping its type."""
+    """Interpret a YAML scalar written on one logical line, keeping its type."""
     value = value.strip()
     if value[:1] == '"':
         end = re.match(r'"(?:[^"\\]|\\.)*"', value)
         if not end or value[end.end():].strip()[:1] not in ("", "#"):
             raise ValueError(f"malformed double-quoted value: {value}")
-        return json.loads(end.group(0))
+        return unescape_double_quoted(end.group(0)[1:-1])
     if value[:1] == "'":
         end = re.match(r"'(?:[^']|'')*'", value)
         if not end or value[end.end():].strip()[:1] not in ("", "#"):
             raise ValueError(f"malformed single-quoted value: {value}")
         return end.group(0)[1:-1].replace("''", "'")
-    value = re.sub(r"\s+#.*$", "", value)
+    value = strip_comment(value)
+    if value[:1] in ("&", "*", "!", "%", "@", "`"):
+        raise Unsupported(f"YAML anchors, aliases, tags, or reserved indicators: {value[:40]}")
     if re.search(r":(?:\s|$)", value):
         raise ValueError(f"unquoted value contains ': ', which YAML reads as a mapping; quote it: {value[:60]}")
-    if value[:1] in "[{":
+    if value == "":
+        return None
+    if value[0] in "[{":
         return [] if value[0] == "[" else {}
     if value.lower() in SCALARS:
         return SCALARS[value.lower()]
@@ -102,30 +144,24 @@ def parse_fields(header):
         while j > i and not lines[j - 1].strip():
             j -= 1
         block, i = lines[i:j], j
-        value = re.sub(r"\s+#.*$", "", value.strip()) if value.strip()[:1] in (">", "|") else value.strip()
+        value = strip_comment(value) if value.strip()[:1] not in ("\"", "'") else value.strip()
         if value[:1] in (">", "|"):
             fields[key] = block_scalar(value, block)
-        elif value and block:
-            continuation = [b.strip() for b in block if b.strip()]
-            if any(re.search(r":(?:\s|$)", part) for part in [value] + continuation):
-                raise ValueError(f"unquoted value of '{key}' contains ': ', which YAML reads as a mapping; quote it")
-            fields[key] = " ".join([value] + continuation)
-        elif value:
-            fields[key] = plain_scalar(value)
-        elif block:
-            parts = [b.strip() for b in block if b.strip()]
-            if parts[0] == "-" or parts[0].startswith("- "):
-                fields[key] = []
-            elif re.match(r"^[^\s#\"'][^:]*:(?:\s|$)", parts[0]):
-                fields[key] = {}
-            elif parts[0][:1] in "\"'" and len(parts) == 1:
-                fields[key] = plain_scalar(parts[0])
-            elif any(re.search(r":(?:\s|$)", part) or part[:1] in "\"'" for part in parts):
-                raise ValueError(f"multi-line value of '{key}' needs quoting or a block scalar ('>')")
-            else:
-                fields[key] = " ".join(parts)
+            continue
+        parts = [b.strip() for b in block if b.strip()]
+        if value and parts and value[:1] in "\"'":
+            raise Unsupported(f"multi-line quoted value of '{key}'")
+        if not value and parts and (parts[0] == "-" or parts[0].startswith("- ")):
+            fields[key] = []
+        elif not value and parts and re.match(r"^[^\s#\"'][^:]*:(?:\s|$)", parts[0]):
+            fields[key] = {}
+        elif not value and parts and parts[0][:1] in "\"'":
+            if len(parts) > 1:
+                raise Unsupported(f"multi-line quoted value of '{key}'")
+            fields[key] = plain_scalar(parts[0])
         else:
-            fields[key] = None
+            pieces = ([value] if value else []) + [strip_comment(p) for p in parts]
+            fields[key] = plain_scalar(" ".join(p for p in pieces if p))
     return fields
 
 
@@ -148,6 +184,8 @@ def check(skill_dir, host="generic"):
     text = entry.read_text(encoding="utf-8")
     try:
         fields, body = parse_frontmatter(text)
+    except Unsupported as exc:
+        return errors, [f"{UNCHECKED} {exc}; install PyYAML to check the frontmatter"]
     except ValueError as exc:
         return [f"SKILL.md: {exc}"], warnings
 
@@ -233,9 +271,10 @@ def main(argv=None):
         print(f"error: {message}")
     for message in warnings:
         print(f"warning: {message}")
-    if not errors:
+    unchecked = any(w.startswith(UNCHECKED) for w in warnings)
+    if not errors and not unchecked:
         print(f"ok: {args.skill_dir} ({args.host})")
-    return 1 if errors else 0
+    return 1 if errors else 2 if unchecked else 0
 
 
 if __name__ == "__main__":
