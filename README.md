@@ -186,9 +186,10 @@ task results of the generated skills were not measured.
 The skill ships [`scripts/check_skill.py`](skills/work-to-skill/scripts/check_skill.py).
 `python3 scripts/check_skill.py <skill-dir> [--host generic|anthropic]`, run from the
 skill folder, checks any skill's frontmatter, links, and host name limits using the
-Python standard library, or PyYAML when installed; without PyYAML, frontmatter
-syntax the fallback parser cannot read is reported as unchecked (exit 2). It does
-not judge content.
+Python standard library, or PyYAML when installed. Without PyYAML, a frontmatter
+value the fallback parser cannot read is reported as unchecked (exit 2) while the
+other checks still run, and values nested under a key are checked for type only.
+It does not judge content.
 There is no mandatory creator, agent-flow, CLI, or model dependency at runtime.
 
 ## Maintain and release

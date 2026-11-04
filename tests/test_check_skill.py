@@ -124,6 +124,12 @@ class CheckSkillTests(unittest.TestCase):
                 "anchored": "name: anchored\ndescription: &d Shared text.",
                 "unclosed-flow": "name: unclosed-flow\ndescription: Good.\nmetadata: {",
                 "flow-mapping": "name: flow-mapping\ndescription: Good.\nmetadata: {owner: team}",
+                "indented-flow": "name: indented-flow\ndescription: Good.\nmetadata:\n  {owner: team",
+                "nested-flow": "name: nested-flow\ndescription: Good.\nmetadata:\n  owner: team\n  tags: [a, b",
+                "list-item-flow": "name: list-item-flow\ndescription: Good.\nallowed-tools:\n  - [Read",
+                "inline-list": "name: inline-list\ndescription: Good.\nallowed-tools: [Read",
+                "leading-bracket": "name: leading-bracket\ndescription: ] Reviews changes.",
+                "leading-dash": "name: leading-dash\ndescription: - Reviews changes.",
             }
             for folder, frontmatter in frontmatters.items():
                 with self.subTest(folder):
@@ -132,6 +138,19 @@ class CheckSkillTests(unittest.TestCase):
                     self.assertEqual(errors, [])
                     self.assertTrue(warnings[0].startswith(check_skill.UNCHECKED))
                     self.assertEqual(check_skill.main([str(skill)]), 2)
+        finally:
+            check_skill.yaml = installed
+
+    def test_unchecked_value_does_not_hide_other_errors(self):
+        installed = check_skill.yaml
+        check_skill.yaml = None
+        try:
+            skill = make_skill(self.tmp.name, "folder", "name: Bad_Name\ndescription: Good.\nallowed-tools: [Read, Grep]",
+                               body="Read [rules](references/gone.md).\n")
+            errors, warnings = self.run_check(skill)
+            self.assertEqual(len(errors), 3, errors)
+            self.assertTrue(any("allowed-tools" in w and w.startswith(check_skill.UNCHECKED) for w in warnings))
+            self.assertEqual(check_skill.main([str(skill)]), 1)
         finally:
             check_skill.yaml = installed
 
