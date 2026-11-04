@@ -76,7 +76,7 @@
     "acceptance": [
       "Records what the review is for as supplied, or as a labeled author inference in the report only, or leaves it open; an inferred outcome does not appear in the skill, and no criteria derived from it become active rules.",
       "Treats 'churn is an onboarding problem' as the source's unconfirmed belief, not a rule; any test against the exports is a labeled proposal kept out of the skill unless confirmed, or the belief stays unconfirmed with the missing evidence named.",
-      "No persona or tone instruction; any method borrowed from another field is an action, and an author-proposed one stays out of the skill unless confirmed.",
+      "Any method borrowed from another field is stated as an action, and an author-proposed one stays out of the skill unless confirmed; a persona or tone instruction does not count as a method.",
       "Keeps the ten-slide template and audience; any replacement of the review format is mentioned in the report, not built in."
     ]
   }

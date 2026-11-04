@@ -40,12 +40,13 @@
   {
     "id": "I9-optional-fields",
     "source": "#9 §2",
-    "decision": "Optional specification fields such as metadata are preserved, not rejected",
+    "decision": "Optional specification fields are accepted when they match the specification's types; mismatches the reference validator tolerates warn",
     "checks": [
       {
         "kind": "auto",
         "tests": [
-          "test_check_skill.CheckSkillTests.test_optional_specification_fields_are_preserved_not_rejected"
+          "test_check_skill.CheckSkillTests.test_optional_specification_fields_are_accepted",
+          "test_check_skill.CheckSkillTests.test_optional_field_limits_fail_and_loose_types_warn"
         ]
       }
     ]
@@ -66,7 +67,7 @@
           "test_check_skill.FrontmatterParsingTests.test_valid_frontmatter_passes",
           "test_check_skill.FrontmatterParsingTests.test_wrong_types_and_missing_values_fail",
           "test_check_skill.FrontmatterParsingTests.test_fallback_values_match_yaml",
-          "test_check_skill.CheckSkillTests.test_unreadable_yaml_is_unchecked_not_invalid",
+          "test_check_skill.CheckSkillTests.test_unreadable_yaml_is_unchecked_and_body_is_still_checked",
           "test_check_skill.CheckSkillTests.test_unchecked_value_does_not_hide_other_errors"
         ]
       }
@@ -128,6 +129,12 @@
     "source": "#9 P2",
     "decision": "Body changes need a reproduced failure and a same-condition candidate rerun",
     "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_depth_evidence.RecordedDepthEvaluationTests.test_shipped_instructions_are_the_evaluated_candidate"
+        ]
+      },
       {
         "kind": "model",
         "evidence": "tests/behavior/evidence/depth-2026-11-04/results.json",

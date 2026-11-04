@@ -6,7 +6,11 @@ Package tests validate structure, not model judgment.
 Check generated packages with `skills/work-to-skill/scripts/check_skill.py`, once
 per intended host. Common Agent Skills format errors fail on every host; Anthropic
 reserved names and XML tags fail only with `--host anthropic`; length and nesting
-are warnings. Optional fields such as `metadata` pass. `tests/test_package.py`
+are warnings. Optional fields are accepted; an empty, non-string, or over-500-character
+`compatibility` and a non-mapping `metadata` fail. An empty `metadata`, non-string
+`metadata` values, and a list-form `allowed-tools` warn, because the reference
+validator (`skills-ref`) accepts them. Inline links are checked; reference-style
+definitions are not. `tests/test_package.py`
 also requires this repository's exact `name`/`description` field set, which is
 not a rule for generated skills.
 
