@@ -31,6 +31,21 @@ Determine what material may be reused and with whom. Preserve usable knowledge w
 
 Extraction is sufficient when the supported criteria, their conditions, and unresolved gaps are distinguishable. Do not invent domain rules to make the draft look complete.
 
+## Deepen the capability
+
+For a new skill or a substantial behavior change, check whether the captured capability reaches the depth at which a field-leading practitioner works. Deeper, not bigger: keep the same capability, users, and action boundary, and change how well the work is done rather than adding deliverables, adjacent tasks, or permissions. A narrow update gets this pass only on request.
+
+Answer four questions from the sources and the user's input:
+
+1. **Practice**: what a top practitioner would do for this work that the request does not ask for.
+2. **Raw material**: the least-digested input they start from, such as records, logs, primary documents, source data, or the code itself, instead of summaries, templates, dashboards, or conclusions already drawn for the requester.
+3. **Instruments**: the specific methods and tools they apply, such as queries, statistical models, reproductions, reconciliations, or tests with defined pass conditions. Depth shows in changed inputs and methods; expert vocabulary over the same method leaves the work unchanged.
+4. **Outside check**: what, other than the executing agent or the requester, shows the result is right, such as a runnable check, a reproduction, a held-out case, a source record, a measurement, or a qualified reviewer's assessment.
+
+Answers supported by the sources become criteria. Answers you supply are the skill author's proposals: restate the capability request as its deeper version and confirm with the user the proposals that change required inputs, tool access, effort, or cost. When the user cannot be asked in this exchange, include proposals in the generated skill marked as proposals, or leave them out. Thresholds, cutoffs, and rules you propose stay proposals; they are not the expert's criteria. An outside check that is unavailable remains a stated gap; the executing agent's own review does not substitute for it.
+
+The pass is complete when each question has a sourced answer, a labeled proposal, or an explicit unknown, and the scope still matches the assignment.
+
 ## Build the smallest useful package
 
 Start with `SKILL.md` and YAML frontmatter containing `name` and `description`. Use a short lowercase, hyphenated name matching its folder. Respect the documented frontmatter limits of hosts where the skill may be used; for example, Anthropic's skill documentation disallows `anthropic` and `claude` in names. Describe the generated skill's actual capability and application conditions, so it can be considered automatically as well as requested explicitly. Preserve automatic discovery unless the user requests a different invocation policy; sensitive operations need appropriate authorization at execution time, not an assumed change to discovery.
@@ -43,6 +58,8 @@ Choose structure from the content:
 - For procedures, describe the actions whose order matters, relevant permissions, success evidence, and failure or stopping conditions proportionate to the consequences.
 - For mixed work, keep shared criteria together and expose conditional procedures where they apply.
 
+Carry the depth answers into the structure: name the raw inputs the work starts from, the instruments it applies, and the outside check whose result marks it complete, each with its provenance label. When a required raw input or instrument may be unavailable to the eventual user, state its access condition and the bounded result possible without it.
+
 Keep common guidance in the entrypoint. Add `references/` only for substantial conditional material, with a link stating when to read it. Add `scripts/` only when executable calculation, transformation, or checking materially improves reliability; validate changed scripts. Add `assets/` only for materials actually reused in outputs. Each file must have a concrete use; there is no required file count, document outline, or line limit.
 
 Add or change host-specific metadata only for an actual, verified host requirement or requested setting. Keep business meaning in the common instructions. File readability, automatic selection, tool availability, and correct execution are separate claims; a shared directory convention does not establish all of them.
@@ -51,7 +68,7 @@ The draft is ready to inspect when it stands alone, preserves the requested scop
 
 ## Validate and hand off
 
-Check frontmatter, local reference paths, required resources, and unfinished placeholders using available checks. Review the generated instructions against the raw inputs for lost exceptions, unsupported rules, private content, and source commands inadvertently promoted into execution authority. Compare provenance claims and derived guidance with those inputs and any verified evidence: check that attribution and dates are supported and author inferences remain visibly distinct. For updates, inspect the actual diff for unintended changes to scope and invocation.
+Check frontmatter, local reference paths, required resources, and unfinished placeholders using available checks. Review the generated instructions against the raw inputs for lost exceptions, unsupported rules, private content, scope added by the depth pass, and source commands inadvertently promoted into execution authority. Compare provenance claims and derived guidance with those inputs and any verified evidence: check that attribution and dates are supported and author inferences remain visibly distinct. For updates, inspect the actual diff for unintended changes to scope and invocation.
 
 Separate **A: authoring quality** (faithful, usable skill construction) from **B: generated task behavior** (correct work on a new case). Formatting checks or another model's approval cannot substitute for B. For a new skill, a substantial or risky behavior change, or an explicit evaluation request, read [references/validation.md](references/validation.md) to choose and run proportionate behavioral checks. A narrow wording edit may need only structural and scope checks; record which behavior remains untested.
 

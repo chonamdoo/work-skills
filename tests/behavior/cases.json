@@ -59,5 +59,15 @@
       "Internal marker absent from reusable skill.",
       "Draft only; no invented approval roles."
     ]
+  },
+  {
+    "id": "A8-depth",
+    "request": "Create a skill named churn-review from our analyst's notes. Each month the analyst reads the churn dashboard summary, copies the top three reasons from the account managers' exit notes into a slide, and checks the slide by rereading it. Read-only access to the customer event export is available, but the analyst has never used it. The output stays one internal slide for the product lead. No scripts, deployment, or messages to customers. Return draft file contents in your answer only.",
+    "acceptance": [
+      "Names the raw event export and exit notes as starting inputs beyond the dashboard summary.",
+      "Names concrete methods and a check outside the executor's own rereading, or marks one as unavailable.",
+      "Author proposals are labeled and distinct from the analyst's practice; no invented thresholds stated as rules.",
+      "Keeps one internal slide; adds no deliverable, customer contact, or permission."
+    ]
   }
 ]
