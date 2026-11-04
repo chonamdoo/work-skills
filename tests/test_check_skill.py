@@ -185,6 +185,8 @@ VALID_FRONTMATTER = {
     "plain value on indented lines": "name: good\ndescription:\n  Reviews changes. Use when\n  reviewing pull requests.",
     "bracketed text in a plain continuation": "name: good\ndescription:\n  Review these examples.\n  [a] is first.",
     "bracketed text in a nested literal": "name: good\ndescription: Good.\nmetadata:\n  note: |\n    [a] is text.",
+    "tab inside a nested literal": "name: good\ndescription: Good.\nmetadata:\n  note: |\n    Reviews.\n    \tIndented example.",
+    "tab inside a nested quoted value": "name: good\ndescription: Good.\nmetadata:\n  note: \"Reviews\n\tchanges.\"",
 }
 INVALID_FRONTMATTER = {
     "numeric description": "name: good\ndescription: 42",
@@ -201,6 +203,7 @@ INVALID_FRONTMATTER = {
     "tab-indented continuation": "name: good\ndescription: Reviews\n\tchanges.",
     "space then tab continuation": "name: good\ndescription: Reviews\n \tchanges.",
     "tab-only line between keys": "name: good\ndescription: Good.\n\t\nlicense: MIT",
+    "tab before a quoted value on the next line": "name: good\ndescription:\n\t\"Reviews.\"",
 }
 
 

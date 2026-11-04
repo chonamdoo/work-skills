@@ -170,8 +170,7 @@ def parse_value(key, value, block):
     parts = [b.strip() for b in block if b.strip()]
     if value and parts and value[:1] in "\"'":
         raise Unsupported(f"multi-line quoted value of '{key}'")
-    quoted = not value and parts and parts[0][:1] in "\"'"
-    if not quoted and any("\t" in re.match(r"[ \t]*", b).group(0) for b in block):
+    if not value and parts and "\t" in indentation(next(b for b in block if b.strip())):
         raise ValueError(f"'{key}' is indented with a tab; YAML allows only spaces")
     if not value and parts and (parts[0] == "-" or parts[0].startswith("- ")):
         return []
@@ -181,8 +180,14 @@ def parse_value(key, value, block):
         if len(parts) > 1:
             raise Unsupported(f"multi-line quoted value of '{key}'")
         return plain_scalar(parts[0])
+    if any("\t" in indentation(b) for b in block):
+        raise ValueError(f"'{key}' is indented with a tab; YAML allows only spaces")
     pieces = ([value] if value else []) + [strip_comment(p) for p in parts]
     return plain_scalar(" ".join(p for p in pieces if p))
+
+
+def indentation(line):
+    return re.match(r"[ \t]*", line).group(0)
 
 
 def parse_frontmatter(text):
