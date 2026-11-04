@@ -92,7 +92,7 @@ def plain_scalar(value):
             raise ValueError(f"malformed single-quoted value: {value}")
         return end.group(0)[1:-1].replace("''", "'")
     value = strip_comment(value)
-    if value[:1] in ("&", "*", "!", "%", "@", "`", "[", "{", "]", "}", ",") or re.match(r"[-?:](?:\s|$)", value):
+    if value[:1] in ("&", "*", "!", "%", "@", "`", "[", "{", "]", "}", ",", "|", ">") or re.match(r"[-?:](?:\s|$)", value):
         raise Unsupported(f"YAML indicator syntax is not validated: {value[:40]}")
     if re.search(r":(?:\s|$)", value):
         raise ValueError(f"unquoted value contains ': ', which YAML reads as a mapping; quote it: {value[:60]}")
@@ -150,6 +150,8 @@ def parse_fields(header):
         while j > i and not lines[j - 1].strip():
             j -= 1
         block, i = lines[i:j], j
+        if any(b[:1] == "\t" for b in block):
+            raise ValueError(f"'{key}' is indented with a tab; YAML allows only spaces")
         try:
             fields[key] = parse_value(key, value, block)
         except Unsupported as exc:
@@ -160,19 +162,15 @@ def parse_fields(header):
 def parse_value(key, value, block):
     value = strip_comment(value) if value.strip()[:1] not in ("\"", "'") else value.strip()
     if value[:1] in (">", "|"):
+        if not re.fullmatch(r"[|>](?:[1-9][+-]?|[+-][1-9]?)?", value):
+            raise ValueError(f"invalid block scalar header for '{key}': {value[:40]}")
         return block_scalar(value, block)
     parts = [b.strip() for b in block if b.strip()]
     if value and parts and value[:1] in "\"'":
         raise Unsupported(f"multi-line quoted value of '{key}'")
-    if not value and parts:
-        for part in parts:
-            item = re.sub(r"^(?:-\s+)+", "", part)
-            nested = re.match(r"^[^\s#\"'\[{][^:]*:(?:\s+|$)(.*)$", item)
-            if (nested.group(1) if nested else item)[:1] in ("[", "{"):
-                raise Unsupported(f"flow collection syntax is not validated in '{key}'")
     if not value and parts and (parts[0] == "-" or parts[0].startswith("- ")):
         return []
-    if not value and parts and re.match(r"^[^\s#\"'][^:]*:(?:\s|$)", parts[0]):
+    if not value and parts and re.match(r"^[^\s#\"'\[{][^:]*:(?:\s|$)", parts[0]):
         return {}
     if not value and parts and parts[0][:1] in "\"'":
         if len(parts) > 1:

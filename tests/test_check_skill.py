@@ -125,11 +125,10 @@ class CheckSkillTests(unittest.TestCase):
                 "unclosed-flow": "name: unclosed-flow\ndescription: Good.\nmetadata: {",
                 "flow-mapping": "name: flow-mapping\ndescription: Good.\nmetadata: {owner: team}",
                 "indented-flow": "name: indented-flow\ndescription: Good.\nmetadata:\n  {owner: team",
-                "nested-flow": "name: nested-flow\ndescription: Good.\nmetadata:\n  owner: team\n  tags: [a, b",
-                "list-item-flow": "name: list-item-flow\ndescription: Good.\nallowed-tools:\n  - [Read",
                 "inline-list": "name: inline-list\ndescription: Good.\nallowed-tools: [Read",
                 "leading-bracket": "name: leading-bracket\ndescription: ] Reviews changes.",
                 "leading-dash": "name: leading-dash\ndescription: - Reviews changes.",
+                "folded-marker-on-next-line": "name: folded-marker-on-next-line\ndescription:\n  > Reviews changes.",
             }
             for folder, frontmatter in frontmatters.items():
                 with self.subTest(folder):
@@ -171,6 +170,8 @@ VALID_FRONTMATTER = {
     "nested metadata and lists": "name: good\ndescription: Good.\nmetadata:\n  owner: team\n  tags:\n    - a\nallowed-tools:\n  - Read\n",
     "YAML hex escape": 'name: good\ndescription: "\\x41 review"',
     "plain value on indented lines": "name: good\ndescription:\n  Reviews changes. Use when\n  reviewing pull requests.",
+    "bracketed text in a plain continuation": "name: good\ndescription:\n  Review these examples.\n  [a] is first.",
+    "bracketed text in a nested literal": "name: good\ndescription: Good.\nmetadata:\n  note: |\n    [a] is text.",
 }
 INVALID_FRONTMATTER = {
     "numeric description": "name: good\ndescription: 42",
@@ -183,6 +184,8 @@ INVALID_FRONTMATTER = {
     "comment-only value": "name: good\ndescription: # none yet",
     "unquoted colon": "name: good\ndescription: Reviews rules. Static review only: do not run code.",
     "unquoted colon on a continuation line": "name: good\ndescription: Reviews rules.\n  Use when: reviewing.",
+    "text after a block scalar header": "name: good\ndescription: >- Reviews\n  changes.",
+    "tab-indented continuation": "name: good\ndescription: Reviews\n\tchanges.",
 }
 
 
@@ -200,20 +203,21 @@ class FrontmatterParsingTests(unittest.TestCase):
             try:
                 with tempfile.TemporaryDirectory() as root:
                     skill = make_skill(root, "good", frontmatter)
-                    results[label] = check_skill.check(skill)[0]
+                    results[label] = check_skill.check(skill)
             finally:
                 check_skill.yaml = installed
         return results
 
     def test_valid_frontmatter_passes(self):
         for label, frontmatter in VALID_FRONTMATTER.items():
-            for parser, errors in self.check_with_each_parser(frontmatter).items():
+            for parser, (errors, warnings) in self.check_with_each_parser(frontmatter).items():
                 with self.subTest(label, parser=parser):
                     self.assertEqual(errors, [])
+                    self.assertFalse([w for w in warnings if w.startswith(check_skill.UNCHECKED)])
 
     def test_wrong_types_and_missing_values_fail(self):
         for label, frontmatter in INVALID_FRONTMATTER.items():
-            for parser, errors in self.check_with_each_parser(frontmatter).items():
+            for parser, (errors, _) in self.check_with_each_parser(frontmatter).items():
                 with self.subTest(label, parser=parser):
                     self.assertEqual(len(errors), 1, errors)
 
