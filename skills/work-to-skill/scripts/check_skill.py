@@ -150,8 +150,6 @@ def parse_fields(header):
         while j > i and not lines[j - 1].strip():
             j -= 1
         block, i = lines[i:j], j
-        if any(b[:1] == "\t" for b in block):
-            raise ValueError(f"'{key}' is indented with a tab; YAML allows only spaces")
         try:
             fields[key] = parse_value(key, value, block)
         except Unsupported as exc:
@@ -164,10 +162,15 @@ def parse_value(key, value, block):
     if value[:1] in (">", "|"):
         if not re.fullmatch(r"[|>](?:[1-9][+-]?|[+-][1-9]?)?", value):
             raise ValueError(f"invalid block scalar header for '{key}': {value[:40]}")
+        if any(b[:1] == "\t" for b in block):
+            raise ValueError(f"'{key}' is indented with a tab; YAML allows only spaces")
         return block_scalar(value, block)
     parts = [b.strip() for b in block if b.strip()]
     if value and parts and value[:1] in "\"'":
         raise Unsupported(f"multi-line quoted value of '{key}'")
+    quoted = not value and parts and parts[0][:1] in "\"'"
+    if not quoted and any("\t" in re.match(r"[ \t]*", b).group(0) for b in block):
+        raise ValueError(f"'{key}' is indented with a tab; YAML allows only spaces")
     if not value and parts and (parts[0] == "-" or parts[0].startswith("- ")):
         return []
     if not value and parts and re.match(r"^[^\s#\"'\[{][^:]*:(?:\s|$)", parts[0]):

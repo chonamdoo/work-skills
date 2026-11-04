@@ -129,6 +129,7 @@ class CheckSkillTests(unittest.TestCase):
                 "leading-bracket": "name: leading-bracket\ndescription: ] Reviews changes.",
                 "leading-dash": "name: leading-dash\ndescription: - Reviews changes.",
                 "folded-marker-on-next-line": "name: folded-marker-on-next-line\ndescription:\n  > Reviews changes.",
+                "tab-in-quoted": "name: tab-in-quoted\ndescription: \"Reviews\n\tchanges.\"",
             }
             for folder, frontmatter in frontmatters.items():
                 with self.subTest(folder):
@@ -161,6 +162,18 @@ class CheckSkillTests(unittest.TestCase):
         self.assertEqual(check_skill.main([str(bad), "--host", "anthropic"]), 1)
 
 
+class TabIndentationTests(unittest.TestCase):
+    def test_tab_after_block_indentation_is_content(self):
+        installed = check_skill.yaml
+        check_skill.yaml = None
+        try:
+            with tempfile.TemporaryDirectory() as root:
+                skill = make_skill(root, "good", "name: good\ndescription: |\n  Reviews.\n  \tIndented example.")
+                self.assertEqual(check_skill.check(skill), ([], []))
+        finally:
+            check_skill.yaml = installed
+
+
 VALID_FRONTMATTER = {
     "blank line after a field": 'name: good\n\ndescription: Good.',
     "inline comments": 'name: "good" # folder name\ndescription: Reviews things # short',
@@ -186,6 +199,7 @@ INVALID_FRONTMATTER = {
     "unquoted colon on a continuation line": "name: good\ndescription: Reviews rules.\n  Use when: reviewing.",
     "text after a block scalar header": "name: good\ndescription: >- Reviews\n  changes.",
     "tab-indented continuation": "name: good\ndescription: Reviews\n\tchanges.",
+    "space then tab continuation": "name: good\ndescription: Reviews\n \tchanges.",
 }
 
 
