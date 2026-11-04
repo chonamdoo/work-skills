@@ -1,5 +1,7 @@
+import contextlib
 import datetime
 import importlib.util
+import io
 import random
 import sys
 import tempfile
@@ -135,7 +137,10 @@ class CheckSkillTests(unittest.TestCase):
                 "An image description may hold a link: ![o [i](SKILL.md)](missing-described.png).\n\n"
                 "Malformed targets are reported, not fatal: [x](<//[>) and [y](a%00.md).\n\n"
                 "Code and escapes are not links: ``[a](missing-code.md)``, `the [b](missing-code2.md)\nform`,\n"
-                "and \\[c](missing-escaped-open.md). An entity is decoded: [d](a&amp;b.md).\n\n"
+                "and \\[c](missing-escaped-open.md). Entities are decoded: [d](a&amp;b.md), [e](SKILL&#46;md).\n\n"
+                "Removed spans join nothing: [f]<!-- x -->(missing-joined.md), [g]`x`(missing-joined2.md).\n\n"
+                "Titles hold no links: [h](SKILL.md \"[i](missing-title.md)\"), and a title with a\n"
+                "blank line ends nothing: [j](missing-blank-title.md \"a\n \nb\").\n\n"
                 "Template lines and definitions are not checked:\n\n[Severity]: high\n\n[r]: missing-ref.md\n")
         skill = make_skill(self.tmp.name, "syntax", "name: syntax\ndescription: S.", body=body,
                            files={"a&b.md": "Entity.\n"})
@@ -193,6 +198,11 @@ class CheckSkillTests(unittest.TestCase):
         finally:
             check_skill.yaml = installed
 
+    def test_cli_survives_unencodable_names(self):
+        skill = make_skill(self.tmp.name, "odd-name", 'name: "\\uD800"\ndescription: Good.')
+        with contextlib.redirect_stdout(io.TextIOWrapper(io.BytesIO(), encoding="utf-8")):
+            self.assertEqual(check_skill.main([str(skill)]), 1)
+
     def test_cli_exit_status(self):
         good = make_skill(self.tmp.name, "good", "name: good\ndescription: Good.")
         bad = make_skill(self.tmp.name, "anthropic-tool", "name: anthropic-tool\ndescription: Bad on Anthropic.")
@@ -226,6 +236,7 @@ VALID_FRONTMATTER = {
     "comment before the value": "name: good\ndescription: # why the skill exists\n  Use when reviewing.",
     "integer and string keys": "name: good\ndescription: Good.\nmetadata:\n  42: x\n  \"42\": y",
     "document end marker": "name: good\ndescription: Good.\n...",
+    "document end marker with a comment": "name: good\ndescription: Good.\n... # end",
     "tabs inside nested quoted and block values": "name: good\ndescription: Good.\nmetadata:\n  owner: \"a\tb\"\n"
     "license: |\n  a\tb",
     "tabs in nested block scalars and quoted list items": "name: good\ndescription: Good.\nmetadata:\n"
@@ -259,6 +270,10 @@ UNCERTAIN_FRONTMATTER = {
     "column-0 comment inside a block value": "name: good\ndescription: >\n# c\n  Reviews changes.",
     "block indicator on the next line with a tab": "name: good\ndescription:\n  >\n  Reviews\tchanges.",
     "flow mapping": "name: good\ndescription: Good.\nmetadata: {a: b}",
+    "quoted value on the next line continued at column 0": "name: good\ndescription:\n  \"Reviews\nchanges.\"",
+    "Unicode space before a boolean word": "name: good\ndescription: \u00a0yes",
+    "indented top-level mapping": "  name: good\n  description: Good.",
+    "NUL character": "name: good\ndescription: Good.\x00",
 }
 
 

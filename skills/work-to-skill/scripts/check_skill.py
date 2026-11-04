@@ -41,8 +41,9 @@ SEQUENCE_ENTRY = re.compile(r"-(?:[ \t]|$)")
 BLOCK_INDICATOR = re.compile(r"([|>])([+-]?)")
 RESERVED = ("anthropic", "claude")
 UNCHECKED = "frontmatter not checked:"
-# Control characters, NEL, line and paragraph separators, BOM, and non-characters.
-UNUSUAL_CHARACTER = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f\u2028\u2029\ufeff\ufffe\uffff\ud800-\udfff]")
+DOCUMENT_END = re.compile(r"\.\.\.(?:[ ]+#.*)?[ ]*$")
+# Control characters, NEL, line and paragraph separators, BOM, non-characters, and Unicode spaces.
+UNUSUAL_CHARACTER = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f\u2028\u2029\ufeff\ufffe\uffff\ud800-\udfff\u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]")
 ENTITY = re.compile(r"&(?:#[0-9]{1,7}|#[xX][0-9a-fA-F]{1,6}|[A-Za-z][A-Za-z0-9]{1,31});")
 CODE_SPAN = re.compile(r"(?<!`)(`+)(?!`)(?:(?!\n[ \t]*\n).)+?(?<!`)\1(?!`)", re.S)
 
@@ -323,12 +324,12 @@ def parse_mapping(lines):
         i += 1
         if not line.strip() or line.lstrip().startswith("#"):
             continue
-        if line.rstrip() == "...":
-            if any(rest.strip() and rest.rstrip() != "..." and not rest.lstrip().startswith("#") for rest in lines[i:]):
+        if DOCUMENT_END.match(line):
+            if any(rest.strip() and not DOCUMENT_END.match(rest) and not rest.lstrip().startswith("#") for rest in lines[i:]):
                 raise ValueError("content after the '...' document end marker")
             break
         if line[0] in " \t":
-            raise ValueError(f"unexpected indented frontmatter line: {line.strip()}")
+            raise Unsupported(f"indented top-level line: {line.strip()[:40]}")
         split = split_key(line)
         if split is None:
             raise ValueError(f"frontmatter line is not 'key: value': {line.strip()}")
@@ -385,7 +386,7 @@ def parse_mapping(lines):
                       else b[indent:] for b in block]
             fields[key] = parse_mapping(nested)
         elif not value and content and first[:1] in "\"'":
-            if len(content) > 1:
+            if len(content) > 1 or not re.match(r"""^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*')""", first):
                 raise Unsupported(f"multi-line quoted value of '{key}'")
             fields[key] = plain_scalar(first)
         else:
@@ -529,16 +530,23 @@ def skip_space(text, i):
     return i
 
 
+def destination_char(text, j):
+    """Read one destination character at text[j], resolving escapes and character references."""
+    if text[j] == "\\" and text[j + 1 : j + 2] and text[j + 1] in string.punctuation:
+        return text[j + 1], j + 2
+    if text[j] == "&":
+        entity = ENTITY.match(text, j)
+        if entity:
+            return html.unescape(entity.group()), entity.end()
+    return text[j], j + 1
+
+
 def angle_destination(text, i):
     """Parse '<...>' at text[i]; return (destination, end) or None."""
     j, out = i + 1, []
     while j < len(text) and text[j] not in "<>\n":
-        if text[j] == "\\" and text[j + 1 : j + 2] and text[j + 1] in string.punctuation:
-            out.append(text[j + 1])
-            j += 2
-            continue
-        out.append(text[j])
-        j += 1
+        char, j = destination_char(text, j)
+        out.append(char)
     if j >= len(text) or text[j] != ">":
         return None
     return "".join(out), j + 1
@@ -549,10 +557,6 @@ def raw_destination(text, i):
     depth, j, out = 0, i, []
     while j < len(text):
         char = text[j]
-        if char == "\\" and text[j + 1 : j + 2] and text[j + 1] in string.punctuation:
-            out.append(text[j + 1])
-            j += 2
-            continue
         if char.isspace() or ord(char) < 32:
             break
         if char == "(":
@@ -563,8 +567,8 @@ def raw_destination(text, i):
             if depth == 0:
                 break
             depth -= 1
+        char, j = destination_char(text, j)
         out.append(char)
-        j += 1
     return "".join(out), j
 
 
@@ -578,19 +582,22 @@ def skip_title(text, i):
             continue
         if text[j] == close:
             return j + 1
-        if text[j] == "\n" and text[j + 1 : j + 2] == "\n":
+        if text[j] == "\n" and re.match(r"\n[ \t]*\n", text[j:]):
             return None
         j += 1
     return None
 
 
 def inline_destination(text, i):
-    """Parse the inside of '(...)' after a link label; return the destination, '' if empty, or None."""
+    """Parse the inside of '(...)' after a link label.
+
+    Return (destination, end after ')'), with '' for an empty destination, or None.
+    """
     i = skip_space(text, i)
     if i is None or i >= len(text):
         return None
     if text[i] == ")":
-        return ""
+        return "", i + 1
     if text[i] == "<":
         parsed = angle_destination(text, i)
         if parsed is None:
@@ -609,7 +616,7 @@ def inline_destination(text, i):
         if k is None:
             return None
     if k < len(text) and text[k] == ")":
-        return ENTITY.sub(lambda m: html.unescape(m.group()), destination)
+        return destination, k + 1
     return None
 
 
@@ -625,7 +632,10 @@ def is_image_opener(text, start):
 
 
 def complete_link(prose, start):
-    """Destination of a complete inline link or image whose label opens at prose[start], or None."""
+    """Parse a complete inline link or image whose label opens at prose[start].
+
+    Return (destination, label end, link end), or None.
+    """
     label = INLINE_LINK.match(prose, start)
     if not label:
         return None
@@ -637,7 +647,10 @@ def complete_link(prose, start):
                 continue
             if complete_link(inner, nested.start()) is not None:
                 return None
-    return inline_destination(prose, label.end())
+    parsed = inline_destination(prose, label.end())
+    if parsed is None:
+        return None
+    return parsed[0], label.end(), parsed[1]
 
 
 def link_targets(prose):
@@ -646,12 +659,21 @@ def link_targets(prose):
     Reference-style definitions are not checked: telling them apart from template
     lines such as "[Severity]: high" needs a full CommonMark block parser.
     """
+    consumed = []  # destination-and-title spans still ahead, which hold no links
     for start in (m.start() for m in re.finditer(r"\[", prose)):
-        if is_escaped(prose, start):
+        consumed = [span for span in consumed if span[1] > start]
+        if is_escaped(prose, start) or any(low <= start for low, _ in consumed):
             continue
-        destination = complete_link(prose, start)
-        if destination is not None:
+        link = complete_link(prose, start)
+        if link is not None:
+            destination, label_end, end = link
+            consumed.append((label_end, end))
             yield destination
+
+
+def mask(pattern, text):
+    """Blank out matches, keeping line breaks, so that removing them joins no text."""
+    return pattern.sub(lambda m: re.sub(r"[^\n]", " ", m.group()), text)
 
 
 def markdown_files(skill_dir, errors, warnings):
@@ -702,9 +724,9 @@ def check(skill_dir, host="generic"):
     documents = list(markdown_files(skill_dir, errors, warnings))
     for path, content in documents:
         rel = path.relative_to(skill_dir)
-        prose = re.sub(r"(?ms)^\s*(```|~~~).*?^\s*\1[^\n]*$", "", content)
-        prose = CODE_SPAN.sub("", prose)
-        prose = re.sub(r"(?s)<!--.*?-->", "", prose)
+        prose = mask(re.compile(r"(?ms)^\s*(```|~~~).*?^\s*\1[^\n]*$"), content)
+        prose = mask(CODE_SPAN, prose)
+        prose = mask(re.compile(r"(?s)<!--.*?-->"), prose)
         for target in link_targets(prose):
             try:
                 url = urlsplit(target)
@@ -738,6 +760,11 @@ def check(skill_dir, host="generic"):
     return errors, warnings
 
 
+def printable(message):
+    """Escape characters, such as lone surrogates, that the output encoding cannot carry."""
+    return message.encode("utf-8", "backslashreplace").decode("utf-8")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("skill_dir")
@@ -746,9 +773,9 @@ def main(argv=None):
     args = parser.parse_args(argv)
     errors, warnings = check(args.skill_dir, args.host)
     for message in errors:
-        print(f"error: {message}")
+        print(f"error: {printable(message)}")
     for message in warnings:
-        print(f"warning: {message}")
+        print(f"warning: {printable(message)}")
     unchecked = any(w.startswith(UNCHECKED) for w in warnings)
     if not errors and not unchecked:
         print(f"ok: {args.skill_dir} ({args.host})")

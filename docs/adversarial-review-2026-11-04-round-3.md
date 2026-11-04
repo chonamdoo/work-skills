@@ -32,8 +32,10 @@ only input it fully reads. For anything else it reports "frontmatter not checked
 inputs the fallback still judged without fully reading them: control and
 separator characters, a plain `=`, list item contents, comments inside nested
 values, and inline-level link text (code spans of several backticks, escaped
-`[`, entities). The sixth fix closes those. All findings below are addressed or
-declined.
+`[`, entities). S, on the fifth fix, found the same kinds of inputs plus link
+titles, removed spans that joined text, and a crash when printing an
+unencodable name. The sixth and seventh fixes close those. All findings below
+are addressed or declined.
 
 ## Fixed
 
@@ -60,6 +62,9 @@ declined.
 | S: the outer text of `[outer [inner](a.md)](b.md)` was checked as a link, including around empty destinations and after an escaped `!` | Link text that holds a complete non-image link, including one with an empty destination, makes the outer text plain, as CommonMark specifies. An escaped `!` does not open an image. |
 | S: a link inside an image description voided the image | Images may describe links; the image destination is checked. |
 | S: a malformed URL such as `<//[>` or a NUL escape crashed the checker | Reported as "not a valid local path"; checking continues. |
+| S: a quoted value starting on the next line and continued at column 0, Unicode spaces before a word such as `yes`, an indented top-level mapping, and `... # end` were misjudged | The first three report "frontmatter not checked"; `...` with a comment ends the document. |
+| S: links inside link titles were checked; removing a comment or code span joined `[a]` and `(b.md)` into a link; a title holding a whitespace-only line was accepted; `&#46;` in a destination was not decoded | Destination-and-title spans are skipped, removed spans are blanked rather than deleted, a whitespace-only line ends a title, and character references are decoded while the destination is read. |
+| S: printing an error for a name holding a lone surrogate crashed the CLI | Messages are printed with unencodable characters escaped. |
 | C2: `compatibility` over 500 characters passed | Fails. |
 | C2: a UTF-8 byte-order mark failed with a misleading message | The message names the mark. |
 | S: depth evidence had no integrity check | `tests/test_depth_evidence.py` recomputes every stored aggregate and the documented numbers from the raw runs and verdicts. |
