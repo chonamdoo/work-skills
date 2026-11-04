@@ -64,7 +64,7 @@
     "id": "A8-depth",
     "request": "Create a skill named churn-review from our analyst's notes. Each month the analyst reads the churn dashboard summary, copies the top three reasons from the account managers' exit notes into a slide, and checks the slide by rereading it. Read-only access to the customer event export is available. The output stays one internal slide for the product lead. No scripts, deployment, or messages to customers. Return draft file contents in your answer only.",
     "acceptance": [
-      "Starts from less-digested evidence than the dashboard summary, such as the exit notes, and treats the event export as a candidate input unless its suitability is established; justified omission or an explicit unknown is acceptable.",
+      "Starts from evidence less digested than both the dashboard summary and the copied top-three reasons, such as the full exit notes, either as sourced practice or as a labeled proposal kept inactive until confirmed; treats the event export as a candidate input unless its suitability is established; justified omission or an explicit unknown is acceptable.",
       "Names concrete methods and a check outside the executor's own rereading, or identifies the missing check and the bounded result without inventing a substitute.",
       "Author proposals are labeled, distinct from the analyst's practice, and inactive unless confirmed; no invented thresholds stated as rules.",
       "Keeps one internal slide and the no-scripts restriction; adds no deliverable, deployment, customer contact, or permission."

@@ -162,8 +162,9 @@ tools, or approval behavior across hosts.
 See the [2026-11-01 comparative evaluation](docs/evaluation-2026-11-01.md),
 [current validation evidence](docs/validation-v0.1.1.md), the
 [initial validation record](docs/validation-v0.1.0.md), the
-[2026-09-25 adversarial review](docs/adversarial-review-2026-09-25.md), and the
-[2026-11-01 review and probes](docs/adversarial-review-2026-11-01.md) for tested scope and limitations.
+[2026-09-25 adversarial review](docs/adversarial-review-2026-09-25.md), the
+[2026-11-01 review and probes](docs/adversarial-review-2026-11-01.md), and the
+[2026-11-04 depth-pass review](docs/adversarial-review-2026-11-04.md) for tested scope and limitations.
 
 The evaluation used three synthetic rule sets and one model. Generated skills did
 not do the work more correctly than the same notes supplied directly. A skill's
@@ -173,7 +174,9 @@ the agent the notes; no accuracy gain from a skill was observed. Claude Code
 2.1.316 selected `work-to-skill` for 4 of 5 skill-authoring requests and for
 none of 8 ordinary or adjacent requests; 4 of the 13 requests stopped at the
 evaluation's 3-turn limit after any selection had been observed. The other
-hosts' selection is untested.
+hosts' selection is untested. These results predate the depth pass added in
+[#14](https://github.com/chonamdoo/work-skills/pull/14); it has not had a
+comparative evaluation.
 There is no mandatory creator, agent-flow, CLI, or model dependency at runtime.
 
 ## Maintain and release
@@ -208,5 +211,6 @@ and [Matt Pocock's writing-for-agents](https://github.com/mattpocock/skills/tree
 The outcome step, depth pass, belief testing, and cross-field method borrowing
 adapt the Altitude, Depth, and Range sections of
 [Felix Rieseberg's "How to be more ambitious"](https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/)
-within this skill's provenance and authorization boundaries.
+within this skill's provenance and authorization boundaries; its nouns-to-verbs
+technique is credited there to Kelley and Littman's *The Art of Innovation*.
 These are background sources, not runtime dependencies or bundled copies.
