@@ -1,0 +1,26 @@
+{
+  "written": "2026-11-04, after the contract.json runs and judgments, before any run listed here",
+  "correction": "contract.json labels A1 as 'main (baa679f)'. The maintainer merged PR #14 (8385f9b) while the snapshot was taken; the A1 digests in contract.json equal 8385f9b/1e10637 (PR #14 as merged). A2 = 3c6f940 (PR #14 before its last commit). main then advanced to 3135f5b (#15). Neither A1 nor A2 is the pre-depth baseline.",
+  "new_arms": {
+    "Abase": {
+      "revision": "baa679f (main before #14)",
+      "SKILL.md": "8e3555e1ab3f40dff77262d7ef23ba7cb98ac18b77fa46808c554c65286e5b02",
+      "references/validation.md": "05f0debd2dbf81ff209534db3de2eb53252b80787f9aacdb4fccacb473661a2f"
+    },
+    "Amain": {
+      "revision": "3135f5b (main after #15)",
+      "SKILL.md": "7ed7989da6e36a3fbee2969e4a68a6f04ae24d818f06f0d5db62884e0c17a02b",
+      "references/validation.md": "73a71d87cb3fb8ba71df7cffe9ddfbf59d4848392b09ccb125a5dc65a579aab1"
+    }
+  },
+  "runs_per_arm": {
+    "D": 5,
+    "P": 3,
+    "N": 3
+  },
+  "decision_rules": {
+    "D_depth": "compare Amain and A1 each to Abase with the contract's D_depth rule (sum over D1-D3 of pass differences >= 4 -> depth pass better; <= -4 worse; else no difference observed)",
+    "regression": "contract rule applied to Amain vs Abase for D4-D8, F1-F7, N1-N3"
+  },
+  "judge": "same judge prompt, system, and model as contract.json; separate blind ids"
+}

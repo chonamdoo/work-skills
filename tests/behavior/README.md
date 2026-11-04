@@ -3,6 +3,13 @@
 These synthetic inputs are maintainer evaluation data, not installed skills.
 Package tests validate structure, not model judgment.
 
+Check generated packages with `skills/work-to-skill/scripts/check_skill.py`, once
+per intended host. Common Agent Skills format errors fail on every host; Anthropic
+reserved names and XML tags fail only with `--host anthropic`; length and nesting
+are warnings. Optional fields such as `metadata` pass. `tests/test_package.py`
+also requires this repository's exact `name`/`description` field set, which is
+not a rule for generated skills.
+
 Combined case JSON containing a request and acceptance criteria is evaluator-only.
 Supply just the request and the complete work-to-skill package to a fresh model
 context. Keep acceptance criteria with the evaluator, not the author. Record

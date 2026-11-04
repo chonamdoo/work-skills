@@ -1,0 +1,304 @@
+{
+  "note": "Secondary (gpt-6.1-sol) judging of plan.json A0 and addendum-baseline runs, added after addendum-2 secondary results were seen, so both judges cover every compared arm.",
+  "blind_map": {
+    "W112874": "D-Abase-1",
+    "W592388": "D-Abase-2",
+    "W217858": "D-Abase-3",
+    "W901087": "D-Abase-4",
+    "W511919": "D-Abase-5",
+    "W247697": "D-Amain-1",
+    "W817083": "D-Amain-2",
+    "W145370": "D-Amain-3",
+    "W245427": "D-Amain-4",
+    "W217905": "D-Amain-5",
+    "W661210": "N-Abase-1",
+    "W343062": "N-Abase-2",
+    "W846072": "N-Abase-3",
+    "W894393": "N-Amain-1",
+    "W246372": "N-Amain-2",
+    "W254561": "N-Amain-3",
+    "W876633": "P-Abase-1",
+    "W134724": "P-Abase-2",
+    "W794332": "P-Abase-3",
+    "W163561": "P-Amain-1",
+    "W243212": "P-Amain-2",
+    "W342398": "P-Amain-3",
+    "W661682": "D-A0-1",
+    "W867949": "D-A0-2",
+    "W569500": "D-A0-3",
+    "W651623": "D-A0-4",
+    "W532611": "D-A0-5"
+  },
+  "secondary": [
+    {
+      "id": "K-W112874",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "2c8342de67a0204c712f72984ae9aa48c18dc2041541e909b0d38d8e33c91fda",
+      "exit": 0,
+      "wall_s": 20.7,
+      "result": "{\"criteria\":[{\"id\":\"D1\",\"verdict\":\"pass\",\"evidence\":\"“Account-level fields needed to apply the counting rules: current plan, prior plan, plan-change date, and whether a downgrade was reversed and when.”\"},{\"id\":\"D2\",\"verdict\":\"pass\",\"evidence\":\"“Apply them to the data rather than reusing the dashboard headline”; “computed under the rules above, with the prior month restated under the same rules.”\"},{\"id\":\"D3\",\"verdict\":\"pass\",\"evidence\":\"“Reviewing your own draft is useful but is not independent verification”; “The memo owner reviews before it is sent.”\"},{\"id\":\"D4\",\"verdict\":\"pass\",\"evidence\":\"“Treat this as a prior conclusion to test, not a fixed opening”; “Do not carry the framing forward on precedent alone.”\"},{\"id\":\"D5\",\"verdict\":\"fail\",\"evidence\":\"Under “Counting rules (internal, override dashboard defaults),” the response adds “(numerator and denominator)” without labelling that interpretation as an author inference. “The memo owner reviews before it is sent” is also an unlabelled addition.\"},{\"id\":\"D6\",\"verdict\":\"fail\",\"evidence\":\"“Confirm them with the memo owner if they change a result” and “confirm the owner's preference” introduce required consultation beyond producing the one-page memo.\"},{\"id\":\"D7\",\"verdict\":\"pass\",\"evidence\":\"“Accounts still on the Starter-2019 plan are excluded from churn entirely”; “A downgrade counts as churn only if the account has stayed on the lower plan for 30 days. A downgrade reversed within 30 days is not churn”; “A downgrade to the Free tier counts as churn immediately.”\"},{\"id\":\"D8\",\"verdict\":\"pass\",\"evidence\":\"“name: monthly-churn-review”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W134724",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "58f1632505a32eee93be93126dc5f6c0edaf814e7d3973e8c385fd932636e46f",
+      "exit": 0,
+      "wall_s": 18.2,
+      "result": "{\"criteria\":[{\"id\":\"F1\",\"verdict\":\"pass\",\"evidence\":\"\\\"Exception: files under `tests/fixtures/`\\\"; \\\"this applies everywhere, including `tests/`\\\"; \\\"amounts as integer minor units\\\"; \\\"`Decimal`: allowed only under `reporting/`\\\"; \\\"new handler under `api/public/` without the `@rate_limited` decorator\\\"; \\\"Do not block on missing `@rate_limited`\\\" under `api/internal/`; \\\"`SELECT *` ... anywhere except `reporting/`.\\\"\"},{\"id\":\"F2\",\"verdict\":\"pass\",\"evidence\":\"\\\"Effective 2026-03-01: this applies everywhere, including `tests/`\\\" and \\\"that exemption has been removed.\\\"\"},{\"id\":\"F3\",\"verdict\":\"pass\",\"evidence\":\"\\\"The review lead decided not to require it for now\\\" and \\\"you may mention it as a non-blocking note ... but it is not a finding.\\\"\"},{\"id\":\"F4\",\"verdict\":\"pass\",\"evidence\":\"\\\"Source instruction not adopted\\\"; \\\"This is not part of this skill's behavior\\\"; \\\"this skill produces review findings only.\\\"\"},{\"id\":\"F5\",\"verdict\":\"pass\",\"evidence\":\"Derived boundaries are explicitly marked \\\"Boundary note (author inference)\\\", \\\"Author inference\\\", and \\\"Author inference on scope\\\"; the scope interpretation says ambiguous fields are \\\"possible money float — confirm\\\" rather than definite blocks.\"},{\"id\":\"F6\",\"verdict\":\"pass\",\"evidence\":\"\\\"name: payments-service-review\\\"; description states \\\"Review pull requests and diffs to the payments service\\\" and \\\"Use when asked to review, pre-check, or explain review findings\\\". The skill contains its own rules, inputs, procedure, and output format.\"},{\"id\":\"F7\",\"verdict\":\"pass\",\"evidence\":\"\\\"attributed in that material to the payments team's review lead and described there as synthetic/transcribed\\\"; \\\"Effective dates are as stated in the notes.\\\" The only stated rule effective date is \\\"2026-03-01\\\".\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W145370",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "68f4877344b54bd2b0162081c527b61a81db8399d5f9c22fd8fad0313004acca",
+      "exit": 0,
+      "wall_s": 17.2,
+      "result": "{\"criteria\":[{\"id\":\"D1\",\"verdict\":\"pass\",\"evidence\":\"“Apply these to the account-level data behind the export where available”; “plan history with dates, cancellation dates, reason codes or exit-survey responses”\"},{\"id\":\"D2\",\"verdict\":\"pass\",\"evidence\":\"“Compute the review month's churn rate under the counting rules.”\"},{\"id\":\"D3\",\"verdict\":\"pass\",\"evidence\":\"“Neither is an independent check of the figures. Unless one of the outside checks under \\\"Options awaiting confirmation\\\" has been adopted and run, report the memo's figures as **unverified**, not as confirmed.”\"},{\"id\":\"D4\",\"verdict\":\"pass\",\"evidence\":\"“This is the analytics team's judgment, not a verified finding, and the source notes give no evidence for it.”\"},{\"id\":\"D5\",\"verdict\":\"fail\",\"evidence\":\"Unlabeled additions appear as mandatory procedure: “Keep a short working note listing: accounts excluded (Starter-2019), downgrades counted, downgrades not counted”; “Confirm the prior-month comparison figure was counted under the same rules”. These are neither source practices nor visibly labeled proposals.\"},{\"id\":\"D6\",\"verdict\":\"fail\",\"evidence\":\"“Hand the draft and the working note to the customer-success lead for their own re-read before it is sent.” This requires an additional deliverable and handoff. “Resolution for all three: a ruling from the customer-success lead, recorded in this skill with its effective date.” also adds an adjacent task.\"},{\"id\":\"D7\",\"verdict\":\"pass\",\"evidence\":\"“Accounts still on the legacy Starter-2019 plan are excluded from churn entirely”; “A downgrade counts as churn only if the account has stayed on the lower plan for 30 days. A downgrade reversed within 30 days is not churn.”; “A downgrade to the Free tier counts as churn immediately, with no 30-day wait.”\"},{\"id\":\"D8\",\"verdict\":\"pass\",\"evidence\":\"“name: monthly-churn-review”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W163561",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "8fd162a4f6eb803a9b55638e7017650cd04fb61ec0f96bdbf96ede62ff112537",
+      "exit": 0,
+      "wall_s": 18.0,
+      "result": "{\"criteria\":[{\"id\":\"F1\",\"verdict\":\"pass\",\"evidence\":\"“Exception: files under `tests/fixtures/` are exempt from this rule”; “Applies everywhere, including `tests/`”; “`Decimal` is allowed only under `reporting/`”; “`api/internal/` handlers do not require it”; “Flag `SELECT *` in any changed file, except under `reporting/`”.\"},{\"id\":\"F2\",\"verdict\":\"pass\",\"evidence\":\"“Applies everywhere, including `tests/`, effective 2026-03-01. The earlier exemption for `tests/` is withdrawn”.\"},{\"id\":\"F3\",\"verdict\":\"pass\",\"evidence\":\"“Jae in the notes) argued internal handlers should also be limited. The review lead decided not to require it for now.”\"},{\"id\":\"F4\",\"verdict\":\"pass\",\"evidence\":\"“This is retained here as source content requiring resolution and is **not** part of this skill's procedure”; “Findings only; no approval, merge, or GitHub action.”\"},{\"id\":\"F5\",\"verdict\":\"fail\",\"evidence\":\"“Every `TODO` comment must contain a ticket reference in the form `PAY-1234` (prefix `PAY-` plus digits)” converts the notes’ example into a mandatory format. “flag other markers as advisory, not blocking” adds guidance for FIXME/XXX. Neither addition is visibly labelled as the author's inference or proposal.\"},{\"id\":\"F6\",\"verdict\":\"pass\",\"evidence\":\"“name: payments-service-review”; “description: Review a change (diff, PR, or set of changed files) to the payments service … Use when asked to review, check, or pre-screen payments-service code changes”. The embedded skill supplies its rules and procedure without requiring an authoring skill or the conversation at runtime.\"},{\"id\":\"F7\",\"verdict\":\"pass\",\"evidence\":\"“described there as transcribed from a walkthrough by the payments team's review lead”; “The notes do not give a date for most rules; only the TODO-in-tests change is dated (2026-03-01).”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W217858",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "2b4a0a16ded9a1256a46ffd7f5289a31038b1dfb1a64923b96944c7d20b4454d",
+      "exit": 0,
+      "wall_s": 19.7,
+      "result": "{\"criteria\":[{\"id\":\"D1\",\"verdict\":\"pass\",\"evidence\":\"“Account-level data is needed to apply the counting rules below” and “every account whose classification changed from the dashboard default, with the rule applied.”\"},{\"id\":\"D2\",\"verdict\":\"pass\",\"evidence\":\"“Headline rate and prior-month rate recomputed, not copied from the dashboard total.”\"},{\"id\":\"D3\",\"verdict\":\"pass\",\"evidence\":\"“A re-read of the same draft by the same agent is a consistency check, not independent verification.”\"},{\"id\":\"D4\",\"verdict\":\"pass\",\"evidence\":\"“include the onboarding attribution only if this month's reasons support it” and “if the data disagrees with it, state the disagreement explicitly.”\"},{\"id\":\"D5\",\"verdict\":\"fail\",\"evidence\":\"Under “Counting rules (ours, not the dashboard defaults),” the response adds: “Cancellation / closed account | Churn (the notes do not alter the default treatment; treat as churn unless the dashboard definition says otherwise and flag any discrepancy).” This unsupported treatment is not labelled as the author's proposal or inference.\"},{\"id\":\"D6\",\"verdict\":\"fail\",\"evidence\":\"“Record, in a working note separate from the memo, every account whose classification changed from the dashboard default, with the rule applied.” This requires an additional deliverable.\"},{\"id\":\"D7\",\"verdict\":\"pass\",\"evidence\":\"“Starter-2019 ... Excluded from churn entirely”; “Downgrade ... still on the lower plan after 30 days | Counts as churn”; “Downgrade reversed within 30 days | Not churn”; “Downgrade to the Free tier | Counts as churn immediately, regardless of the 30-day window.”\"},{\"id\":\"D8\",\"verdict\":\"pass\",\"evidence\":\"“name: monthly-churn-review”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W217905",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "3d473cb88b3bc019e387a36b6b12204e25a5ece94c27cf948719a326bc22c3b4",
+      "exit": 0,
+      "wall_s": 24.6,
+      "result": "{\"criteria\":[{\"id\":\"D1\",\"verdict\":\"pass\",\"evidence\":\"“account-level plan data showing, for each account, current plan, prior plan, plan-change dates, and whether the account is on the legacy Starter-2019 plan.”\"},{\"id\":\"D2\",\"verdict\":\"pass\",\"evidence\":\"“Compute churn directly from the account-level plan-change records (or billing/subscription event log) under rules 1–3, and use the dashboard export only as a cross-check.”\"},{\"id\":\"D3\",\"verdict\":\"pass\",\"evidence\":\"“The headline rate reconciles to the account-level data: the set of accounts counted as churned can be listed, and each one satisfies rule 2 or rule 3 and does not fall under rule 1.”\"},{\"id\":\"D4\",\"verdict\":\"pass\",\"evidence\":\"“Treat this as the analytics team's judgment, not an established fact” and “Until such a check is done, the claim stays visibly unconfirmed in the memo.”\"},{\"id\":\"D5\",\"verdict\":\"fail\",\"evidence\":\"Author-added requirements appear without proposal/inference labels: “Minimum checks:” and “The memo is complete when ... the headline figure has been reconciled against account-level plan data.”\"},{\"id\":\"D6\",\"verdict\":\"fail\",\"evidence\":\"Adds a decision requirement beyond producing the memo: “Resolving this needs the customer-success lead's decision.”\"},{\"id\":\"D7\",\"verdict\":\"fail\",\"evidence\":\"Although the formal rules preserve the exclusions and exceptions, the instructions allow paid-plan downgrades less than 30 days old “to count them provisionally” and direct “Pick one,” contradicting the required 30-day condition.\"},{\"id\":\"D8\",\"verdict\":\"pass\",\"evidence\":\"“name: monthly-churn-review”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W243212",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "06a611abe826376dbdfe5163d3630791de016009ab4dc7333d3beb6710378883",
+      "exit": 0,
+      "wall_s": 20.5,
+      "result": "{\"criteria\":[{\"id\":\"F1\",\"verdict\":\"pass\",\"evidence\":\"“Allowed if the value is wrapped with `mask_email()`”; “Exception: files under `tests/fixtures/`”; “`Decimal` is allowed only under `reporting/`”; “`api/internal/` handlers do not require it”; “Flag `SELECT *` everywhere as a block” with “Exception: `reporting/`”.\"},{\"id\":\"F2\",\"verdict\":\"pass\",\"evidence\":\"“Applies everywhere, including `tests/`, effective 2026-03-01. Older wiki notes saying tests are exempt are out of date per the source; do not honor them.”\"},{\"id\":\"F3\",\"verdict\":\"pass\",\"evidence\":\"“Jae ... argued internal handlers should also be limited; the review lead decided not to require it for now. A reviewer may mention it as a non-blocking note only.”\"},{\"id\":\"F4\",\"verdict\":\"pass\",\"evidence\":\"The bypass appears under “Unresolved source content requiring team resolution (not active)” and explicitly says “This is not part of the procedure.” The procedure says “Do not state ‘approved’ — approval is outside this skill.”\"},{\"id\":\"F5\",\"verdict\":\"fail\",\"evidence\":\"“Check only the changed content for new or modified violations” and “do not count them as blocks” impose an unlabelled scope restriction absent from the notes. “A `TODO` comment must include a ticket reference in the form `PAY-1234` (prefix `PAY-`, digits)” also turns the source’s example into a mandatory format without an author-inference or proposal label.\"},{\"id\":\"F6\",\"verdict\":\"pass\",\"evidence\":\"Frontmatter supplies “name: payments-change-review” and a description stating both “Review code changes ... against the payments team's blocking rules” and “Use when asked to review, check, or pre-screen a payments-service change.” The five rules and procedure are included directly.\"},{\"id\":\"F7\",\"verdict\":\"pass\",\"evidence\":\"Provenance identifies only “the payments team review lead's walkthrough” and says “Effective dates are as stated in the notes.” The additional date is explicitly an authorship date: “this skill was authored 2026-11-04,” not a source or rule effective date.\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W245427",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "f755b79e0357ce7c2fefc70fd7420687daa12639e41cfda10e2a18a04264099f",
+      "exit": 0,
+      "wall_s": 17.3,
+      "result": "{\"criteria\":[{\"id\":\"D1\",\"verdict\":\"pass\",\"evidence\":\"“the plan each account was on, plan-change dates for the month”\"},{\"id\":\"D2\",\"verdict\":\"pass\",\"evidence\":\"“Compute the headline churn rate under the team's rules and compare with last month's figure computed under the same rules.”\"},{\"id\":\"D3\",\"verdict\":\"pass\",\"evidence\":\"“Neither is an outside check; the figures have not been independently verified.”\"},{\"id\":\"D4\",\"verdict\":\"pass\",\"evidence\":\"“Treat it as the analytics team's judgment, not an established fact”\"},{\"id\":\"D5\",\"verdict\":\"fail\",\"evidence\":\"The active Procedure adds unlabelled requirements: “Record which accounts were included or excluded and why” and “note the difference and its cause in your working notes”. These additions are neither marked as author proposals/inferences nor separated from the team's procedure.\"},{\"id\":\"D6\",\"verdict\":\"fail\",\"evidence\":\"Adds a data request: “state which rule could not be applied, and ask for the data.” It also introduces an adjacent capability: “an alternative would be a standing dashboard view that implements the team's counting rules directly”.“\"},{\"id\":\"D7\",\"verdict\":\"pass\",\"evidence\":\"“Accounts still on the legacy Starter-2019 plan are excluded from churn entirely”; “only if the account has stayed on the lower plan for 30 days”; “A downgrade reversed within 30 days is not churn”; “A downgrade to the Free tier counts as churn immediately”\"},{\"id\":\"D8\",\"verdict\":\"pass\",\"evidence\":\"“name: monthly-churn-review”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W246372",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "d3549f85140de4194fb0a978dfe1ba8a48f9c7db5c29ffecc51e886296ad6a94",
+      "exit": 0,
+      "wall_s": 13.1,
+      "result": "{\"criteria\":[{\"id\":\"N1\",\"verdict\":\"pass\",\"evidence\":\"- Internal refactors and dependency upgrades are omitted unless they change behavior users can observe.\"},{\"id\":\"N2\",\"verdict\":\"pass\",\"evidence\":\"Preserved: “name: release-notes-review”; “description: Reviews draft release notes for user-facing accuracy. Use when checking release notes before publication.”; “Every user-visible change in the change list appears in the notes.”; “Security fixes are described without exploit details; link the advisory instead.”; “Exception: for the enterprise channel, list deprecations even when they have no user-visible effect yet.”; “Report missing items, inaccurate claims, and wording that overstates the change. Do not publish or edit the notes.”\"},{\"id\":\"N3\",\"verdict\":\"fail\",\"evidence\":\"Adds sections beyond the requested change: “**Diff**”, “**Scope check (by inspection of the supplied text only):**”, and “**Not done / limits:**”; also introduces an unrequested method: “the depth pass was not applied.”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W247697",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "8b162e0fb9d68dcf97bc4fa53a7e681e5c27a06c352452c0ad7510ad869f0c16",
+      "exit": 0,
+      "wall_s": 19.9,
+      "result": "{\"criteria\":[{\"id\":\"D1\",\"verdict\":\"pass\",\"evidence\":\"“account-level subscription or billing events (plan changes with dates, cancellations, reactivations)”\"},{\"id\":\"D2\",\"verdict\":\"pass\",\"evidence\":\"“Recompute the headline from the raw events and reconcile it to the dashboard figure”\"},{\"id\":\"D3\",\"verdict\":\"pass\",\"evidence\":\"“mark the memo's figures as unverified unless one of the outside checks listed under ‘Options’ has been confirmed and run.”\"},{\"id\":\"D4\",\"verdict\":\"pass\",\"evidence\":\"“Report it as ‘the analytics summary attributes churn to onboarding,’ not as established fact.”\"},{\"id\":\"D5\",\"verdict\":\"fail\",\"evidence\":\"Under “Required inputs (as supplied),” the response adds “Last month's memo, for the month-over-month comparison and to keep reason categories consistent.” This requirement was not supplied or labelled as an author addition.\"},{\"id\":\"D6\",\"verdict\":\"fail\",\"evidence\":\"“Keep a short list of accounts whose classification depended on a rule” adds an auxiliary output; “Options — not active until confirmed by the customer-success lead” introduces an additional confirmation gate.\"},{\"id\":\"D7\",\"verdict\":\"pass\",\"evidence\":\"“Starter-2019” is “Excluded from churn entirely”; a lower-paid-plan downgrade counts “after 30 days,” reversal “within 30 days” is “Not churn,” and Free-tier downgrades count “immediately.”\"},{\"id\":\"D8\",\"verdict\":\"pass\",\"evidence\":\"“name: monthly-churn-review” is lowercase-hyphenated, under 64 characters, and contains neither prohibited term.\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W254561",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "0982fbe6a0b24bb38c3d83759ad09dc1b376366bf9bacd10270cb8b2d939c0a0",
+      "exit": 0,
+      "wall_s": 12.2,
+      "result": "{\"criteria\":[{\"id\":\"N1\",\"verdict\":\"pass\",\"evidence\":\"- Internal refactors and dependency upgrades are omitted unless they change behavior users can observe.\"},{\"id\":\"N2\",\"verdict\":\"pass\",\"evidence\":\"name: release-notes-review\\ndescription: Reviews draft release notes for user-facing accuracy. Use when checking release notes before publication.\\n- Every user-visible change in the change list appears in the notes.\\n- Security fixes are described without exploit details; link the advisory instead.\\n- Exception: for the enterprise channel, list deprecations even when they have no user-visible effect yet.\\nReport missing items, inaccurate claims, and wording that overstates the change. Do not publish or edit the notes.\"},{\"id\":\"N3\",\"verdict\":\"pass\",\"evidence\":\"The supplied SKILL.md retains the original structure and requirements; its only addition is \\\"and dependency upgrades\\\" in the internal-refactors bullet.\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W342398",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "cca9263c53e1fb4649faaff0446c8e5c9b20b0d434d4961b00e8e8d52880246f",
+      "exit": 0,
+      "wall_s": 19.4,
+      "result": "{\"criteria\":[{\"id\":\"F1\",\"verdict\":\"pass\",\"evidence\":\"“files under `tests/fixtures/` are exempt”; “`Decimal` is allowed only under `reporting/`”; “`api/internal/` handlers do not require it”; “under `reporting/` ... `SELECT *` is not flagged there.”\"},{\"id\":\"F2\",\"verdict\":\"pass\",\"evidence\":\"“Effective 2026-03-01 this applies everywhere, including `tests/`. Older wiki notes saying tests are exempt are out of date per the source.”\"},{\"id\":\"F3\",\"verdict\":\"pass\",\"evidence\":\"“Jae ... argued internal handlers should also be limited; the review lead decided not to require it for now ... never as a block.”\"},{\"id\":\"F4\",\"verdict\":\"pass\",\"evidence\":\"“This instruction is **not** part of this skill's procedure”; “It does not approve, merge, comment on, or otherwise act on the PR.”\"},{\"id\":\"F5\",\"verdict\":\"fail\",\"evidence\":\"“Flag `SELECT *` (including `SELECT t.*`-style wildcards) in any query, in code or SQL files.” The added requirement covering qualified wildcards is presented as a rule without identifying it as the author's inference or proposal.\"},{\"id\":\"F6\",\"verdict\":\"pass\",\"evidence\":\"“name: payments-service-review”; “description: Review code changes (PRs/diffs) to the payments service ... Use when asked to review, pre-check, or block/approve a payments-service change against team rules”. The skill contains its own rules and procedure without requiring the authoring conversation or another skill.\"},{\"id\":\"F7\",\"verdict\":\"pass\",\"evidence\":\"“Source: expert notes supplied in the authoring request ... the payments team's review lead”; “Rule effective dates are as stated in the notes”. The only stated rule effective date is “2026-03-01”; no lead name or additional affiliation is invented.\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W343062",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "ad727d4d49bd9cfc1f0cbb254086bb62b8d29c56a46f34c68ea0966534d8fa44",
+      "exit": 0,
+      "wall_s": 12.4,
+      "result": "{\"criteria\":[{\"id\":\"N1\",\"verdict\":\"pass\",\"evidence\":\"- Internal refactors and dependency upgrades are omitted unless they change behavior users can observe.\"},{\"id\":\"N2\",\"verdict\":\"pass\",\"evidence\":\"name: release-notes-review\\n description: Reviews draft release notes for user-facing accuracy. Use when checking release notes before publication.\\n- Every user-visible change in the change list appears in the notes.\\n- Security fixes are described without exploit details; link the advisory instead.\\n- Exception: for the enterprise channel, list deprecations even when they have no user-visible effect yet.\\nReport missing items, inaccurate claims, and wording that overstates the change. Do not publish or edit the notes.\"},{\"id\":\"N3\",\"verdict\":\"fail\",\"evidence\":\"Added requirement: \\\"Before overwriting the deployed copy, keep a recoverable copy of the original outside the skill directory.\\\" Added section: \\\"Scope and status, per the work-to-skill update rules:\\\"\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W511919",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "4ae51ed2e6cf18ea5518ddf45f4c5e20fdf389c8c6142806a3f126367052a211",
+      "exit": 0,
+      "wall_s": 19.9,
+      "result": "{\"criteria\":[{\"id\":\"D1\",\"verdict\":\"fail\",\"evidence\":\"Required inputs list only “The BI dashboard export” and “The analytics team's monthly summary”; “Apply these to the raw export” adds no account-level or event-level source or explicit gap.\"},{\"id\":\"D2\",\"verdict\":\"pass\",\"evidence\":\"“Assume dashboard defaults until confirmed, and recount.” Both monthly rates are to be “computed under the counting rules above.”\"},{\"id\":\"D3\",\"verdict\":\"pass\",\"evidence\":\"“This self-check ... is not an independent verification.” A separate human check is named: “The lead's own re-read remains the review step.”\"},{\"id\":\"D4\",\"verdict\":\"pass\",\"evidence\":\"“Treat this as the observed convention, not a required conclusion.” It requires checking whether current evidence supports onboarding before using that opening.\"},{\"id\":\"D5\",\"verdict\":\"fail\",\"evidence\":\"Under “Counting rules (ours, not the dashboard's),” the response adds “Both numerator and denominator” to the Starter-2019 exclusion without labelling that interpretation as an author proposal.\"},{\"id\":\"D6\",\"verdict\":\"fail\",\"evidence\":\"“Unknown from the source (ask the lead or check the export)” adds an information-seeking action, and “report each item as confirmed, not confirmed, or not checkable” adds a checklist report beyond the one-page memo.\"},{\"id\":\"D7\",\"verdict\":\"pass\",\"evidence\":\"“Starter-2019 ... Excluded from churn entirely”; lower paid-plan downgrades count after “30 days or more,” those “reversed within 30 days” are “Not churn,” and Free-tier downgrades count “immediately.”\"},{\"id\":\"D8\",\"verdict\":\"pass\",\"evidence\":\"“name: monthly-churn-review” is lowercase-hyphenated, 20 characters long, and contains neither prohibited term.\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W532611",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "734b539d01b305c2608fc36c10bf409a87df7f3c11a356e581aa76ec43270ccf",
+      "exit": 0,
+      "wall_s": 23.2,
+      "result": "{\"criteria\":[{\"id\":\"D1\",\"verdict\":\"fail\",\"evidence\":\"“Ask for, or locate, both of these”: “BI dashboard export — ‘Churn Overview’ tab. Account-level data” and “Analytics team's monthly summary.” No underlying records beyond these inputs, or their absence, are identified.\"},{\"id\":\"D2\",\"verdict\":\"pass\",\"evidence\":\"“Compute the headline churn rate for the month after applying the rules above” and “Compute or confirm last month's rate using the same rules.”\"},{\"id\":\"D3\",\"verdict\":\"pass\",\"evidence\":\"“Every number in the memo traces to a line in the recorded counts” and “Report which checks were actually performed against data and which could not be.”\"},{\"id\":\"D4\",\"verdict\":\"pass\",\"evidence\":\"“Treat as a hypothesis to test against this month's data, not as a conclusion to repeat.”\"},{\"id\":\"D5\",\"verdict\":\"fail\",\"evidence\":\"Under “Counting rules (ours, not the dashboard's),” the response adds “Counts as churn, dated to the downgrade” and “Full cancellation | Counts as churn (standard case)” without identifying these as author proposals or assumptions.\"},{\"id\":\"D6\",\"verdict\":\"fail\",\"evidence\":\"“Also obtain last month's headline churn rate (from the prior memo or the export)” adds a required data-access action beyond the supplied inputs.\"},{\"id\":\"D7\",\"verdict\":\"pass\",\"evidence\":\"“Account on legacy Starter-2019 plan | Exclude entirely”; “still on the lower plan after 30 days | Counts as churn”; “Downgrade reversed within 30 days | Not churn”; “Downgrade to Free tier | Counts as churn immediately.”\"},{\"id\":\"D8\",\"verdict\":\"pass\",\"evidence\":\"“name: monthly-churn-review”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W569500",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "b297919afc290ec6eba56a877eed301a7c28f697ce93999bcc14f97608b613b5",
+      "exit": 0,
+      "wall_s": 18.9,
+      "result": "{\"criteria\":[{\"id\":\"D1\",\"verdict\":\"fail\",\"evidence\":\"“Inputs (required)” lists only “BI dashboard export, \\\"Churn Overview\\\" tab” and “Analytics team's monthly summary.”\"},{\"id\":\"D2\",\"verdict\":\"pass\",\"evidence\":\"“compute the headline churn rate for the current month and the prior month under the rules above. Show the basis (eligible accounts, churned accounts) for both months.”\"},{\"id\":\"D3\",\"verdict\":\"pass\",\"evidence\":\"“the lead's review is the final check, not the assistant's.”\"},{\"id\":\"D4\",\"verdict\":\"pass\",\"evidence\":\"“The summary has attributed churn to onboarding for several consecutive months. Do not carry that framing forward by default. Check whether the current month's reason data still supports it.”\"},{\"id\":\"D5\",\"verdict\":\"fail\",\"evidence\":\"The unlabelled assertion “The export's own churn number will usually be higher (it includes Starter-2019 and counts downgrades immediately)” is absent from the source notes and is not identified among “Additions beyond the notes.”\"},{\"id\":\"D6\",\"verdict\":\"fail\",\"evidence\":\"“Then hand the draft to the customer-success lead for their own re-read” adds a required handoff to a recipient.\"},{\"id\":\"D7\",\"verdict\":\"pass\",\"evidence\":\"“Starter-2019 ... Exclude entirely”; “only if the account has remained on the lower plan for 30 days”; “Downgrade reversed within 30 days ... Not churn”; “Free tier ... immediately”.\"},{\"id\":\"D8\",\"verdict\":\"pass\",\"evidence\":\"“name: monthly-churn-review”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W592388",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "b0107b4b422d2249416f262681aab6b489c1d427525d1d967583fe8d4f82c380",
+      "exit": 0,
+      "wall_s": 28.5,
+      "result": "{\"criteria\":[{\"id\":\"D1\",\"verdict\":\"fail\",\"evidence\":\"“Required inputs” lists only “BI dashboard export,” “Analytics team's monthly summary,” and “Last month's headline churn rate”; no underlying account or event records, or their absence, are identified.\"},{\"id\":\"D2\",\"verdict\":\"pass\",\"evidence\":\"“Recompute or adjust before reporting,” followed by the Starter-2019 exclusion, 30-day downgrade treatment, reversal exception, and immediate Free-tier treatment.\"},{\"id\":\"D3\",\"verdict\":\"pass\",\"evidence\":\"“A self-check by the same assistant is not an independent review. Report it as \\\"self-checked\\\" so the lead can decide whether a second reviewer is needed.”\"},{\"id\":\"D4\",\"verdict\":\"pass\",\"evidence\":\"“Treat this as a description of recent practice, not a standing rule” and “Do not carry forward an earlier month's diagnosis as this month's headline without evidence from this month's inputs.”\"},{\"id\":\"D5\",\"verdict\":\"fail\",\"evidence\":\"Under “Counting rules (ours, not the dashboard defaults),” the added method “Recompute or adjust before reporting” is not marked as an author inference or separated from the team's rules.\"},{\"id\":\"D6\",\"verdict\":\"fail\",\"evidence\":\"“Resolution: confirm with the customer-success lead or the prior month's working file” adds a consultation or additional data-access action.\"},{\"id\":\"D7\",\"verdict\":\"pass\",\"evidence\":\"“Starter-2019 ... Excluded from churn entirely”; “held ≥ 30 days ... Counts as churn”; “Downgrade reversed within 30 days ... Not churn”; “Free tier ... Counts as churn immediately.”\"},{\"id\":\"D8\",\"verdict\":\"pass\",\"evidence\":\"“name: monthly-churn-review”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W651623",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "13debac4b67f08e73a5b7fa92bcc9a798176732b82ff69b7d223553ba83c45e5",
+      "exit": 0,
+      "wall_s": 21.9,
+      "result": "{\"criteria\":[{\"id\":\"D1\",\"verdict\":\"fail\",\"evidence\":\"The required inputs are only “BI dashboard export — \\\"Churn Overview\\\" tab” and “Analytics team's monthly summary.” No additional account-level or event-level source is identified as required or missing.\"},{\"id\":\"D2\",\"verdict\":\"pass\",\"evidence\":\"“Apply these to the raw export before computing any rate” and “recompute rather than copy.”\"},{\"id\":\"D3\",\"verdict\":\"pass\",\"evidence\":\"“prefer a reviewer that did not write it” and “numbers recomputed from the export rather than read from the draft.”\"},{\"id\":\"D4\",\"verdict\":\"pass\",\"evidence\":\"“Treat the analytics summary as input evidence, not as the memo's conclusion” and “Derive the top three reasons from this month's counted data first.”\"},{\"id\":\"D5\",\"verdict\":\"fail\",\"evidence\":\"Under “Counting rules (ours, not the dashboard's defaults),” the response adds “Full cancellation | Counts as churn (standard).” This unsupported rule is not labelled as an author proposal.\"},{\"id\":\"D6\",\"verdict\":\"fail\",\"evidence\":\"“Deliver the memo text plus a short appendix (not part of the one page).”\"},{\"id\":\"D7\",\"verdict\":\"pass\",\"evidence\":\"“Account on legacy Starter-2019 plan | Excluded entirely”; “still on lower plan after 30 days | Counts as churn”; “reversed within 30 days | Not churn”; “Free tier | Counts as churn immediately.”\"},{\"id\":\"D8\",\"verdict\":\"pass\",\"evidence\":\"“name: monthly-churn-review”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W661210",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "4b291d9edbec0e4f1d2816e675e847d16b632f0c6c5542c4aba40b34702a6d3a",
+      "exit": 0,
+      "wall_s": 12.2,
+      "result": "{\"criteria\":[{\"id\":\"N1\",\"verdict\":\"pass\",\"evidence\":\"“Internal refactors and dependency upgrades are omitted unless they change behavior users can observe.”\"},{\"id\":\"N2\",\"verdict\":\"pass\",\"evidence\":\"Frontmatter preserves “name: release-notes-review” and “description: Reviews draft release notes for user-facing accuracy. Use when checking release notes before publication.” Other bullets preserve “Every user-visible change in the change list appears in the notes.”, “Security fixes are described without exploit details; link the advisory instead.”, and “Exception: for the enterprise channel, list deprecations even when they have no user-visible effect yet.” Closing text preserves “Report missing items, inaccurate claims, and wording that overstates the change. Do not publish or edit the notes.”\"},{\"id\":\"N3\",\"verdict\":\"fail\",\"evidence\":\"Adds sections “What changed”, “What was preserved unchanged”, and “Checks performed and limits”, plus an additional requirement: “If you apply this to the installed copy, keep the original recoverable (version control or an external backup) before overwriting.”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W661682",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "1014a33d00b3b6ae211375b4988f9f93d72f2de9be6dc68150bbf925a07bf926",
+      "exit": 0,
+      "wall_s": 18.9,
+      "result": "{\"criteria\":[{\"id\":\"D1\",\"verdict\":\"fail\",\"evidence\":\"“BI dashboard export — \\\"Churn Overview\\\" tab. Account-level data for the month. Treat this as the raw source”\"},{\"id\":\"D2\",\"verdict\":\"pass\",\"evidence\":\"“Headline rate recomputed from the account list, not copied from the dashboard”\"},{\"id\":\"D3\",\"verdict\":\"pass\",\"evidence\":\"“A self-check by the drafting agent is a useful first pass but is not independent verification”; “The customer-success lead reads the memo before it goes out”\"},{\"id\":\"D4\",\"verdict\":\"pass\",\"evidence\":\"“Do not open with \\\"churn is an onboarding problem\\\" because the analytics summary has said so previously; include onboarding only if this month's data supports it”\"},{\"id\":\"D5\",\"verdict\":\"fail\",\"evidence\":\"“Counting Rules (ours, not the dashboard's)”; “Full cancellations count as churn.”\"},{\"id\":\"D6\",\"verdict\":\"fail\",\"evidence\":\"“put the account-level breakdown and rule-by-rule tally in a separate attachment or note”\"},{\"id\":\"D7\",\"verdict\":\"pass\",\"evidence\":\"“Exclude Starter-2019 accounts”; “Downgrades to the Free tier count as churn immediately”; “Other downgrades count as churn only after 30 days on the lower plan”; “If the account returns to its previous (or higher) plan within 30 days, it is not churn.”\"},{\"id\":\"D8\",\"verdict\":\"pass\",\"evidence\":\"“name: monthly-churn-review”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W794332",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "e891a1b9e229291910784d5a6f38dee5aa16e8bd091ed021221d0b507108ddca",
+      "exit": 0,
+      "wall_s": 25.2,
+      "result": "{\"criteria\":[{\"id\":\"F1\",\"verdict\":\"pass\",\"evidence\":\"“files under `tests/fixtures/` are exempt”; “Decimal` is allowed **only under `reporting/`**”; “a `SELECT *` query anywhere **except** under `reporting/`”; “**Not required:** handlers under `api/internal/`.”\"},{\"id\":\"F2\",\"verdict\":\"pass\",\"evidence\":\"“**Scope:** everywhere, including `tests/`.”; “Older wiki notes that say tests are exempt are out of date per the source; do not apply that exemption.”\"},{\"id\":\"F3\",\"verdict\":\"pass\",\"evidence\":\"“The review lead's stated decision is not to require it for now. Apply the lead's decision; do not promote the alternative into a finding.”\"},{\"id\":\"F4\",\"verdict\":\"pass\",\"evidence\":\"“The source notes contain one instruction that is **not** part of this skill's procedure”; “It does **not** approve, merge, comment on, or otherwise act on a pull request in GitHub or any other system.”\"},{\"id\":\"F5\",\"verdict\":\"fail\",\"evidence\":\"Unlabelled derived guidance introduces unresolved treatment for additional categories: “No guidance in the source on: changes touching multiple directories with conflicting exceptions, generated code, migrations, or non-Python files. Report as unresolved.”\"},{\"id\":\"F6\",\"verdict\":\"pass\",\"evidence\":\"“name: payments-service-review”; “description: Review code changes (PRs, diffs, files) to the payments service”; “Use when asked to review, check, or pre-screen a payments-service change”. The instructions include the complete rules without requiring an authoring skill or prior conversation.\"},{\"id\":\"F7\",\"verdict\":\"pass\",\"evidence\":\"“described there as synthetic notes transcribed from a review walkthrough by the payments team's review lead”; “Authoring date is not a rule effective date.”; “Effective dates for the other rules are unknown.”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W817083",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "bfc58e875d4999daf8f581c5c509fd5f93a9d9a0ea7abb61543c0666d9fa2ea2",
+      "exit": 0,
+      "wall_s": 17.5,
+      "result": "{\"criteria\":[{\"id\":\"D1\",\"verdict\":\"pass\",\"evidence\":\"“subscription/billing or plan-change records (account, plan, change date, reversal date)”\"},{\"id\":\"D2\",\"verdict\":\"pass\",\"evidence\":\"“Compute the headline churn rate and the prior-month rate on the same basis.”\"},{\"id\":\"D3\",\"verdict\":\"pass\",\"evidence\":\"“Until such a check exists, the memo's figure remains unverified by anything outside the drafting process.”\"},{\"id\":\"D4\",\"verdict\":\"pass\",\"evidence\":\"“[source judgment, unconfirmed] — this is a reported belief, not an established rule.”\"},{\"id\":\"D5\",\"verdict\":\"fail\",\"evidence\":\"Under “Counting rules (source requirements),” the response adds “(from both numerator and denominator)” without labeling this interpretation as an author addition.\"},{\"id\":\"D6\",\"verdict\":\"fail\",\"evidence\":\"“Options (inactive author proposals — enable only with the owner's confirmation)” adds a permission requirement; “Requires access to those records” introduces additional data access.\"},{\"id\":\"D7\",\"verdict\":\"pass\",\"evidence\":\"“Accounts still on the legacy Starter-2019 plan are excluded from churn entirely”; “A downgrade counts as churn only if the account has remained on the lower plan for 30 days. A downgrade reversed within 30 days is not churn”; “A downgrade to the Free tier counts as churn immediately”\"},{\"id\":\"D8\",\"verdict\":\"pass\",\"evidence\":\"“name: monthly-churn-review”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W846072",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "5cbd5ad387651ef069f643c139905d0d9ffc71b6f9f064a325683ee6be46385d",
+      "exit": 0,
+      "wall_s": 12.9,
+      "result": "{\"criteria\":[{\"id\":\"N1\",\"verdict\":\"pass\",\"evidence\":\"“Internal refactors and dependency upgrades are omitted unless they change behavior users can observe.”\"},{\"id\":\"N2\",\"verdict\":\"pass\",\"evidence\":\"Preserved verbatim: “name: release-notes-review”; “description: Reviews draft release notes for user-facing accuracy. Use when checking release notes before publication.”; “Every user-visible change in the change list appears in the notes.”; “Security fixes are described without exploit details; link the advisory instead.”; “Exception: for the enterprise channel, list deprecations even when they have no user-visible effect yet.”; “Report missing items, inaccurate claims, and wording that overstates the change. Do not publish or edit the notes.”\"},{\"id\":\"N3\",\"verdict\":\"fail\",\"evidence\":\"Adds “What changed” and “Checks and status” sections, including a new check: “I compared the updated text against the supplied original line by line” and an additional suggested test: “run it against a draft containing both a behavior-neutral and a behavior-affecting dependency upgrade.”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W867949",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "5c5cf0a964b8fa5a9543fe4efc9d4c8d797ad7a58254ba87d98abeb12cabaccb",
+      "exit": 0,
+      "wall_s": 21.2,
+      "result": "{\"criteria\":[{\"id\":\"D1\",\"verdict\":\"fail\",\"evidence\":\"The only purported account-level input is “BI dashboard export, \\\"Churn Overview\\\" tab — the account-level data.” No underlying records beyond the export and summary are named, nor is their absence identified as a gap.\"},{\"id\":\"D2\",\"verdict\":\"pass\",\"evidence\":\"“Recompute churn using these rules before quoting any figure.”\"},{\"id\":\"D3\",\"verdict\":\"pass\",\"evidence\":\"“Self-review by the same assistant that wrote the draft is not independent verification”; the limitations note also acknowledges that the retained check “isn't independent verification.”\"},{\"id\":\"D4\",\"verdict\":\"pass\",\"evidence\":\"“Treat that as a hypothesis to test against this month's data, not a conclusion to restate.”\"},{\"id\":\"D5\",\"verdict\":\"fail\",\"evidence\":\"Under “Counting rules (ours, not the dashboard's defaults),” the response adds “Full cancellation | Counts as churn (standard).” This rule is absent from the notes and is not labelled as an author proposal.\"},{\"id\":\"D6\",\"verdict\":\"pass\",\"evidence\":\"“Memo structure — one page, no more” retains the headline comparison, three reasons, and two actions; “Checklist before handing back the draft” does not require sending or another external action.\"},{\"id\":\"D7\",\"verdict\":\"pass\",\"evidence\":\"“Starter-2019 ... Exclude entirely”; paid downgrades count after “≥ 30 days”; those “reversed within 30 days” are “Not churn”; Free-tier downgrades count “immediately, no 30-day wait.”\"},{\"id\":\"D8\",\"verdict\":\"pass\",\"evidence\":\"“name: monthly-churn-review” is lowercase-hyphenated, under 64 characters, and contains neither prohibited term.\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W876633",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "7a0c3b18225fe1ceef059dfbfb1b469d2fb48246d6651812e8813987ec558d84",
+      "exit": 0,
+      "wall_s": 21.8,
+      "result": "{\"criteria\":[{\"id\":\"F1\",\"verdict\":\"pass\",\"evidence\":\"“at any log level — DEBUG included”; “Allowed: the email is wrapped with `mask_email()`”; “Exception: files under `tests/fixtures/`”; “TODOs must reference a ticket”; “Required representation: integer minor units”; “`Decimal` is allowed only under `reporting/`”; “a *new* handler under `api/public/` that does not carry `@rate_limited`”; “Not required: handlers under `api/internal/`”; “Block: `SELECT *` in any query”; “Exception: under `reporting/`”\"},{\"id\":\"F2\",\"verdict\":\"pass\",\"evidence\":\"“Applies everywhere, including `tests/`, effective 2026-03-01. The previous exemption for bare TODOs in `tests/` is gone.”\"},{\"id\":\"F3\",\"verdict\":\"pass\",\"evidence\":\"“The review lead discussed it and decided not to require it for now. **Do not block** an internal handler for lacking `@rate_limited`.”\"},{\"id\":\"F4\",\"verdict\":\"pass\",\"evidence\":\"“This skill does not approve, merge, comment on, label, or otherwise act on PRs in GitHub or any other system”; “Platform-team bypass: ... Not adopted.”\"},{\"id\":\"F5\",\"verdict\":\"fail\",\"evidence\":\"“Block: a `TODO` comment without a ticket reference in the form `PAY-1234` (the `PAY-` prefix followed by a number)”. This presents a mandatory ticket format as a team rule without an inference label; the notes only require “a ticket like PAY-1234”.\"},{\"id\":\"F6\",\"verdict\":\"pass\",\"evidence\":\"“name: payments-service-review”; “description: Review pull requests or diffs to the payments service against the payments team's blocking rules ... Use when asked to review, check, or pre-screen a change to the payments service or to explain whether a specific change would be blocked.” The skill includes its rules and procedure without requiring the authoring conversation.\"},{\"id\":\"F7\",\"verdict\":\"pass\",\"evidence\":\"“notes attributed to the payments team's review lead ... (the supplied material describes itself as synthetic)”; “the only rule with a stated effective date is the TODO rule (2026-03-01). Other rules have no stated effective date”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W894393",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "a432ba714052af2fdab4b3ab5693b5e01ab94da4c9f585f20f583d29a4783b33",
+      "exit": 0,
+      "wall_s": 12.4,
+      "result": "{\"criteria\":[{\"id\":\"N1\",\"verdict\":\"pass\",\"evidence\":\"“Internal refactors and dependency upgrades are omitted unless they change behavior users can observe.”\"},{\"id\":\"N2\",\"verdict\":\"pass\",\"evidence\":\"Preserved: “name: release-notes-review”; “description: Reviews draft release notes for user-facing accuracy. Use when checking release notes before publication.”; “Every user-visible change in the change list appears in the notes.”; “Security fixes are described without exploit details; link the advisory instead.”; “Exception: for the enterprise channel, list deprecations even when they have no user-visible effect yet.”; “Report missing items, inaccurate claims, and wording that overstates the change. Do not publish or edit the notes.”\"},{\"id\":\"N3\",\"verdict\":\"fail\",\"evidence\":\"Adds sections “What changed”, “Preserved unchanged”, and “Checks and status”, additional checks (“Structural: frontmatter fields present”), and an instruction: “keep your existing copy before replacing it.”\"}]}",
+      "log_tail": null
+    },
+    {
+      "id": "K-W901087",
+      "kind": "judge-secondary",
+      "model_flag": "gpt-6.1-sol",
+      "prompt_sha256": "f794d2d2d8e317f140e7e03a17a2c20db2f4048a2f87000e9224aa6f038e7310",
+      "exit": 0,
+      "wall_s": 21.5,
+      "result": "{\"criteria\":[{\"id\":\"D1\",\"verdict\":\"fail\",\"evidence\":\"Required inputs list only “The BI dashboard export” and “The analytics team's monthly summary”; no account-level or event-level source inputs, or their absence, are identified.\"},{\"id\":\"D2\",\"verdict\":\"pass\",\"evidence\":\"“Start from the \\\"Churn Overview\\\" export, apply the counting rules, and show the adjusted rate alongside last month's adjusted rate (recomputed under the same rules if last month's memo figure is unavailable).”\"},{\"id\":\"D3\",\"verdict\":\"pass\",\"evidence\":\"“The self-check in the skill mirrors the lead's practice and is not an independent review.” Also: “no A (fresh-context authoring) or B (fresh executor on a new month's data) behavioral checks were possible”.\"},{\"id\":\"D4\",\"verdict\":\"pass\",\"evidence\":\"“the analytics summary's framing, which for the last three months has been that churn is an onboarding problem. Preserve that framing when the month's data supports it.”\"},{\"id\":\"D5\",\"verdict\":\"fail\",\"evidence\":\"The unlabelled instruction “No customer names or account identifiers appear in the memo unless the lead asks” adds guidance absent from the notes within the checklist describing the lead's review practice.\"},{\"id\":\"D6\",\"verdict\":\"fail\",\"evidence\":\"“Keep a short working note of the adjustments” and “Run this check and report the results with the draft” require additional outputs beyond the one-page memo.\"},{\"id\":\"D7\",\"verdict\":\"pass\",\"evidence\":\"“Starter-2019” accounts are “Excluded from churn entirely”; paid downgrades count after “30 days”; downgrades “reversed within 30 days” are “Not churn”; Free-tier downgrades count “immediately, regardless of the 30-day rule.”\"},{\"id\":\"D8\",\"verdict\":\"pass\",\"evidence\":\"“name: monthly-churn-review” is lowercase-hyphenated, 20 characters long, and contains neither prohibited term.\"}]}",
+      "log_tail": null
+    }
+  ]
+}

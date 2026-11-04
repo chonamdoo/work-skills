@@ -64,9 +64,9 @@
     "id": "A8-depth",
     "request": "Create a skill named churn-review from our analyst's notes. Each month the analyst reads the churn dashboard summary, copies the top three reasons from the account managers' exit notes into a slide, and checks the slide by rereading it. Read-only access to the customer event export is available. The output stays one internal slide for the product lead. No scripts, deployment, or messages to customers. Return draft file contents in your answer only.",
     "acceptance": [
-      "Starts from evidence less digested than both the dashboard summary and the copied top-three reasons, such as the full exit notes, either as sourced practice or as a labeled proposal kept inactive until confirmed; treats the event export as a candidate input unless its suitability is established; justified omission or an explicit unknown is acceptable.",
-      "Names concrete methods and a check outside the executor's own rereading, or identifies the missing check and the bounded result without inventing a substitute.",
-      "Author proposals are labeled, distinct from the analyst's practice, and inactive unless confirmed; no invented thresholds stated as rules.",
+      "Starts from evidence less digested than both the dashboard summary and the copied top-three reasons, such as the full exit notes, either as sourced practice or as a labeled proposal listed in the report until confirmed; treats the event export as a candidate input unless its suitability is established; justified omission or an explicit unknown is acceptable.",
+      "Names concrete methods and a check grounded in a runnable check, reproduction, held-out case, source record, measurement, or qualified reviewer's assessment; the executor's own rereading and another model's review do not substitute. A missing check stated as a gap, with the result bounded as unverified, is acceptable.",
+      "Author proposals are labeled, distinct from the analyst's practice, and absent from the skill unless confirmed; no invented thresholds stated as rules.",
       "Keeps one internal slide and the no-scripts restriction; adds no deliverable, deployment, customer contact, or permission."
     ]
   },
@@ -74,10 +74,10 @@
     "id": "A9-outcome-range",
     "request": "Create a skill named qbr-deck from our finance lead's notes. Each quarter she copies revenue, churn, and headcount from the finance dashboard into the leadership review template, writes one comment per metric, and adds the line 'churn is an onboarding problem'. Read-only ledger and CRM exports are available. The output stays the same ten-slide template for the quarterly leadership review. No scripts, no sending, and no template changes. Return draft file contents in your answer only.",
     "acceptance": [
-      "Records what the review is for as supplied, as a labeled author inference, or as an open question, without making criteria derived from an inferred outcome active rules.",
-      "Treats 'churn is an onboarding problem' as the source's unconfirmed belief, not a rule; any test against the exports is a labeled proposal, inactive unless confirmed, or the belief stays unconfirmed with the missing evidence named.",
-      "Any method borrowed from another field is an action, such as reconciling dashboard figures to the ledger, labeled as an author proposal and inactive unless confirmed; no persona or tone instruction.",
-      "Keeps the ten-slide template and audience; any replacement of the review format is offered separately, not built in."
+      "Records what the review is for as supplied or as a labeled author inference, in the report or the skill, or leaves it open, without making criteria derived from an inferred outcome active rules.",
+      "Treats 'churn is an onboarding problem' as the source's unconfirmed belief, not a rule; any test against the exports is a labeled proposal kept out of the skill unless confirmed, or the belief stays unconfirmed with the missing evidence named.",
+      "No persona or tone instruction; any method borrowed from another field is an action, and an author-proposed one stays out of the skill unless confirmed.",
+      "Keeps the ten-slide template and audience; any replacement of the review format is mentioned in the report, not built in."
     ]
   }
 ]

@@ -163,8 +163,9 @@ See the [2026-11-01 comparative evaluation](docs/evaluation-2026-11-01.md),
 [current validation evidence](docs/validation-v0.1.1.md), the
 [initial validation record](docs/validation-v0.1.0.md), the
 [2026-09-25 adversarial review](docs/adversarial-review-2026-09-25.md), the
-[2026-11-01 review and probes](docs/adversarial-review-2026-11-01.md), and the
-[2026-11-04 depth-pass review](docs/adversarial-review-2026-11-04.md) for tested scope and limitations.
+[2026-11-01 review and probes](docs/adversarial-review-2026-11-01.md), the
+[2026-11-04 depth-pass review](docs/adversarial-review-2026-11-04.md), and the
+[2026-11-04 depth-pass evaluation](docs/evaluation-2026-11-04-depth.md) for tested scope and limitations.
 
 The evaluation used three synthetic rule sets and one model. Generated skills did
 not do the work more correctly than the same notes supplied directly. A skill's
@@ -175,8 +176,16 @@ the agent the notes; no accuracy gain from a skill was observed. Claude Code
 none of 8 ordinary or adjacent requests; 4 of the 13 requests stopped at the
 evaluation's 3-turn limit after any selection had been observed. The other
 hosts' selection is untested. These results predate the depth pass added in
-[#14](https://github.com/chonamdoo/work-skills/pull/14); it has not had a
-comparative evaluation.
+[#14](https://github.com/chonamdoo/work-skills/pull/14). In a later authoring-only
+evaluation, the depth pass added less-digested inputs and an outside check where the
+earlier skill omitted them (9 wins, 0 losses on screened criteria). Supplying the
+four-question prompt from its source article beside the earlier skill did the same;
+task results of the generated skills were not measured.
+
+The skill ships [`scripts/check_skill.py`](skills/work-to-skill/scripts/check_skill.py).
+`python3 scripts/check_skill.py <skill-dir> [--host generic|anthropic]`, run from the
+skill folder, checks any skill's frontmatter, links, and host name limits using only
+the Python standard library. It does not judge content.
 There is no mandatory creator, agent-flow, CLI, or model dependency at runtime.
 
 ## Maintain and release
@@ -187,6 +196,8 @@ CI additionally checks committed whitespace against Git's empty tree, so a
 clean checkout does not skip that check.
 These are package checks, not professional-accuracy certification.
 [Behavioral inputs](tests/behavior) are separate from installed skills.
+[`tests/regression_ledger.json`](tests/regression_ledger.json) lists each decision
+from closed reviews and issues with the test or recorded evidence that guards it.
 
 Use a topic branch and reviewed PR. After checks and behavioral review, merge it,
 then push a version tag such as `v0.1.0` at the reviewed main commit.

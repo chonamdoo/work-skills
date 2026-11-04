@@ -6,6 +6,7 @@ class WorkToSkill < Formula
 
   def install
     pkgshare.install "SKILL.md", "references"
+    pkgshare.install "scripts" if File.directory?("scripts")
   end
 
   def caveats

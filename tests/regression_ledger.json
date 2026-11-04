@@ -1,0 +1,448 @@
+[
+  {
+    "id": "I9-host-names",
+    "source": "#9 R1; docs/adversarial-review-2026-11-01.md",
+    "decision": "Generated names respect host frontmatter limits; Anthropic reserved words fail only for Anthropic hosts",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_check_skill.CheckSkillTests.test_reserved_words_fail_only_for_anthropic_hosts",
+          "test_check_skill.CheckSkillTests.test_xml_tags_fail_only_for_anthropic_hosts_and_comparisons_do_not"
+        ]
+      },
+      {
+        "kind": "model",
+        "evidence": "tests/behavior/evidence/depth-2026-11-04/addendum-2-judgments.json",
+        "criteria": [
+          "R1",
+          "D8",
+          "X8",
+          "Y8"
+        ],
+        "why": "name choice is model behavior"
+      }
+    ]
+  },
+  {
+    "id": "I9-no-line-failure",
+    "source": "#9 §2",
+    "decision": "500 lines is guidance, not a mechanical failure",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_check_skill.CheckSkillTests.test_body_length_is_advice_not_failure"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I9-optional-fields",
+    "source": "#9 §2",
+    "decision": "Optional specification fields such as metadata are preserved, not rejected",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_check_skill.CheckSkillTests.test_optional_specification_fields_are_preserved_not_rejected"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I9-format",
+    "source": "agentskills.io specification",
+    "decision": "Generated packages have valid name, description, and resolvable local links",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_check_skill.CheckSkillTests.test_invalid_names_are_rejected",
+          "test_check_skill.CheckSkillTests.test_description_must_exist_and_fit",
+          "test_check_skill.CheckSkillTests.test_local_links_must_resolve_inside_the_skill",
+          "test_package.PackageTests.test_skill_metadata_and_body",
+          "test_package.PackageTests.test_skill_files_are_self_contained"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I9-no-eval-dependency",
+    "source": "#9 §2, P0",
+    "decision": "The distributed package does not depend on evaluation data or runners",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_package.PackageTests.test_maintainer_dependencies_are_outside_skills"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I9-fidelity",
+    "source": "#9 §2; eval-2026-11-01 F1-F7",
+    "decision": "Exceptions, provenance, permission boundaries, and source-command isolation are preserved in generated skills",
+    "checks": [
+      {
+        "kind": "model",
+        "evidence": "tests/behavior/evidence/depth-2026-11-04/addendum-2-judgments.json",
+        "criteria": [
+          "F1",
+          "F2",
+          "F3",
+          "F4",
+          "F5",
+          "F6",
+          "F7"
+        ],
+        "why": "fidelity is model behavior"
+      }
+    ]
+  },
+  {
+    "id": "I9-narrow-update",
+    "source": "#9 §2; validation.md narrow update",
+    "decision": "A narrow update changes only the requested behavior",
+    "checks": [
+      {
+        "kind": "model",
+        "evidence": "tests/behavior/evidence/depth-2026-11-04/addendum-2-judgments.json",
+        "criteria": [
+          "N1",
+          "N2",
+          "N3"
+        ],
+        "why": "edit scope is model behavior"
+      }
+    ]
+  },
+  {
+    "id": "I9-reproduced-failure",
+    "source": "#9 P2",
+    "decision": "Body changes need a reproduced failure and a same-condition candidate rerun",
+    "checks": [
+      {
+        "kind": "model",
+        "evidence": "tests/behavior/evidence/depth-2026-11-04/results.json",
+        "criteria": [
+          "D1",
+          "Y3"
+        ],
+        "why": "baa679f failed D1 4/5 and Y3 5/5; candidate rerun passed"
+      }
+    ]
+  },
+  {
+    "id": "I9-empty-screen",
+    "source": "#9 §4-5",
+    "decision": "Empty or baseline screening precedes value claims",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_evaluation_evidence.EvidenceIntegrityTests.test_contract_case_without_screening_runs_is_missing"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I9-value-rule",
+    "source": "#9 §6",
+    "decision": "Value needs 5 wins and 0 losses; no value needs 10 discriminating cases",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_evaluation_evidence.DecisionRuleTests.test_value_needs_five_wins_and_no_loss",
+          "test_evaluation_evidence.DecisionRuleTests.test_no_value_needs_ten_discriminating_cases"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I9-same-knowledge-arm",
+    "source": "#9 §4",
+    "decision": "Compare against the same knowledge supplied without the skill",
+    "checks": [
+      {
+        "kind": "model",
+        "evidence": "tests/behavior/evidence/depth-2026-11-04/results.json",
+        "criteria": [
+          "Abase+F"
+        ],
+        "why": "Amin vs Abase+F inconclusive: the four-question prompt alone reaches the same result"
+      }
+    ]
+  },
+  {
+    "id": "I9-belief",
+    "source": "#9; #15",
+    "decision": "A source's unevidenced causal claim stays its unconfirmed judgment",
+    "checks": [
+      {
+        "kind": "model",
+        "evidence": "tests/behavior/evidence/depth-2026-11-04/addendum-2-judgments.json",
+        "criteria": [
+          "D4",
+          "X4",
+          "Y4"
+        ],
+        "why": "model behavior"
+      }
+    ]
+  },
+  {
+    "id": "I9-scope",
+    "source": "#9; Felix 'deeper, not bigger'",
+    "decision": "The depth pass adds no deliverable, adjacent task, or permission",
+    "checks": [
+      {
+        "kind": "model",
+        "evidence": "tests/behavior/evidence/depth-2026-11-04/addendum-2-judgments.json",
+        "criteria": [
+          "D6",
+          "X6",
+          "Y6"
+        ],
+        "why": "model behavior"
+      }
+    ]
+  },
+  {
+    "id": "I9-proposal-labels",
+    "source": "#9 §2 provenance; #15",
+    "decision": "Author additions are labeled and unconfirmed proposals stay out of active procedure",
+    "checks": [
+      {
+        "kind": "model",
+        "evidence": "tests/behavior/evidence/depth-2026-11-04/addendum-2-judgments.json",
+        "criteria": [
+          "D5",
+          "X5",
+          "Y5"
+        ],
+        "why": "secondary judge scores X5/Y5 2 runs worse than Abase; open risk"
+      },
+      {
+        "kind": "unverified",
+        "why": "posthoc-proposal-activation.json fails every arm under a strict reading; unresolved"
+      }
+    ]
+  },
+  {
+    "id": "I9-B-behavior",
+    "source": "#9 §4 B",
+    "decision": "Generated skills do the task better than the same notes",
+    "checks": [
+      {
+        "kind": "unverified",
+        "why": "no B runs for the depth pass; 2026-11-01 B found no accuracy gain"
+      }
+    ]
+  },
+  {
+    "id": "I9-host-selection",
+    "source": "#9 P1 host",
+    "decision": "Automatic selection observed on the host before compatibility claims",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_evaluation_evidence.RecordedEvaluationTests.test_e5_reports_incomplete_requests_without_voiding_observed_selection"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I13-truncation",
+    "source": "#13",
+    "decision": "Truncated output is not a completed run",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_evaluation_evidence.EvidenceIntegrityTests.test_truncated_output_is_not_a_completed_run"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I13-usage",
+    "source": "#13",
+    "decision": "Missing usage is distinguished from declared unavailable usage; values are non-negative",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_evaluation_evidence.EvidenceIntegrityTests.test_missing_usage_is_distinguished_from_declared_unavailable_usage",
+          "test_evaluation_evidence.EvidenceIntegrityTests.test_usage_and_cost_must_be_non_negative_numbers"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I13-generation-link",
+    "source": "#13",
+    "decision": "A generated skill links to its run-1 authoring run",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_evaluation_evidence.EvidenceIntegrityTests.test_generated_skill_must_come_from_the_run_one_authoring_run"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I13-unverified",
+    "source": "#13",
+    "decision": "Unverified judgments are not ties",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_evaluation_evidence.EvidenceIntegrityTests.test_unverified_judgment_is_not_a_tie"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I13-criteria",
+    "source": "#13",
+    "decision": "Empty or partial criteria do not pass",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_evaluation_evidence.EvidenceIntegrityTests.test_unscored_or_partially_scored_criteria_do_not_pass"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I13-e5-negatives",
+    "source": "#13",
+    "decision": "Missing negative host requests fail E5; E5 file cannot be omitted",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_evaluation_evidence.EvidenceIntegrityTests.test_missing_negative_host_requests_fail_e5",
+          "test_evaluation_evidence.EvidenceIntegrityTests.test_e5_file_required_by_the_contract_cannot_be_omitted"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I13-pooling",
+    "source": "#13",
+    "decision": "The same evidence pooled twice is rejected",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_evaluation_evidence.RecordedEvaluationTests.test_pooling_the_same_evidence_twice_is_rejected"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I13-reps",
+    "source": "#13",
+    "decision": "Repeated rep labels do not multiply pairs; case must match id",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_evaluation_evidence.EvidenceIntegrityTests.test_repeated_rep_labels_do_not_multiply_authoring_pairs",
+          "test_evaluation_evidence.EvidenceIntegrityTests.test_task_run_case_must_match_its_id"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I13-transcription",
+    "source": "#13",
+    "decision": "Verdicts transcribe the judge output; duplicate keys rejected",
+    "checks": [
+      {
+        "kind": "auto",
+        "tests": [
+          "test_evaluation_evidence.EvidenceIntegrityTests.test_altered_judge_output_breaks_transcription",
+          "test_evaluation_evidence.EvidenceIntegrityTests.test_duplicate_json_keys_are_rejected"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "I13-claims",
+    "source": "#13 §4",
+    "decision": "README makes no equivalence or unmeasured downstream claims",
+    "checks": [
+      {
+        "kind": "unverified",
+        "why": "prose claim; reviewed by hand in docs/evaluation-2026-11-04-depth.md and README"
+      }
+    ]
+  },
+  {
+    "id": "I7-evidence-not-confidence",
+    "source": "#7; docs/adversarial-review-2026-09-25.md",
+    "decision": "Reviewer agreement is not execution evidence; untested hypotheses stay flags",
+    "checks": [
+      {
+        "kind": "model",
+        "evidence": "tests/behavior/evidence/depth-2026-11-04/results.json",
+        "criteria": [
+          "comparisons_primary",
+          "comparisons_secondary"
+        ],
+        "why": "adoption decided by pre-registered runs, two judges"
+      }
+    ]
+  },
+  {
+    "id": "I7-verification-reachable",
+    "source": "#7",
+    "decision": "Validation stays reachable and reports unverified behavior",
+    "checks": [
+      {
+        "kind": "model",
+        "evidence": "tests/behavior/evidence/depth-2026-11-04/addendum-2-runs.json",
+        "criteria": [
+          "N"
+        ],
+        "why": "hand-off reports list checks not run"
+      }
+    ]
+  },
+  {
+    "id": "WFW2-no-forced-counts",
+    "source": "write-for-work#2 §0",
+    "decision": "No forced group counts or arbitrary quotas in instructions or generated skills",
+    "checks": [
+      {
+        "kind": "unverified",
+        "why": "writing-quality rule for generated writing skills; no deterministic check"
+      }
+    ]
+  },
+  {
+    "id": "WFW2-obligation-strength",
+    "source": "write-for-work#2 §2-7",
+    "decision": "Preferences, examples, and requirements keep their strength",
+    "checks": [
+      {
+        "kind": "model",
+        "evidence": "tests/behavior/evidence/depth-2026-11-04/addendum-2-judgments.json",
+        "criteria": [
+          "F3",
+          "F5"
+        ],
+        "why": "model behavior"
+      }
+    ]
+  }
+]

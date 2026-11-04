@@ -55,3 +55,9 @@ it, although the skill requires exactly that when the user cannot confirm. The
 criterion now accepts either sourced practice or an inactive labeled proposal.
 The three A8 runs after the build-step sentence and the main run were rescored
 with the revised criterion; all four pass criterion 1.
+
+These observations do not meet issue #9's reproduction and adoption conditions, and
+raw outputs and the served model are missing, so they cannot be reconstructed.
+The later [depth-pass evaluation](evaluation-2026-11-04-depth.md) pre-registered
+the comparison against `baa679f`, archived every run, and narrowed this text;
+use that record for comparative claims.
