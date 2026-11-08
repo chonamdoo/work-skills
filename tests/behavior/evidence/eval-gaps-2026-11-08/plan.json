@@ -1,0 +1,135 @@
+{
+  "captured_on": "2026-11-08",
+  "purpose": "Reproduce four suspected gaps in references/validation.md (efficiency, B selection, A/A noise, every-run reading) with an evaluator that follows the current package, then test a narrowed fix. Written before any model run; not edited afterwards.",
+  "source_of_gaps": "seminar check 2026-11-08: cuefinder A/B (45 runs, raw rows in the G1 table) and the speaker's own dashboard; not a reproduced work-to-skill failure until this plan's reproduction phase",
+  "packages": {
+    "Abase": {
+      "revision": "main@59466c9",
+      "SKILL.md": "f0c8260d752cd2cc4d56851dc9b91280c120a0371b1239f0af2cdd5018791d5d",
+      "references/validation.md": "7059f9a673c806ca0d3ef694166791a7cc419a60fb2eacdd6d7567ee380c4c2c"
+    }
+  },
+  "candidate": "Anew = branch feat-validation-eval-gaps; its digests go into addendum-fix.json before any fix-phase run",
+  "invocation": "cd /tmp && claude -p --model fable --tools '' --system-prompt <system> --setting-sources '' --output-format json --no-session-persistence < prompt",
+  "executor_system": "Work only from the supplied text. You have no tools, filesystem, prior conversation, or ability to start independent runs. Do not claim actions or validations that did not occur.",
+  "composition": "request + '\\n\\nUse this supplied skill package:\\n<SKILL.md>\\n' + SKILL.md + '\\n</SKILL.md>\\n<references/validation.md>\\n' + validation.md + '\\n</references/validation.md>'",
+  "cases": {
+    "G1": {
+      "gap": "efficiency: equal accuracy, worse time/tokens/cost",
+      "request": "We used a skill-authoring guide to turn our senior engineer's notes into a generated skill, `impact-finder`, which lists every file that may break when a TypeScript module's exports change. We then ran B: the same task (list every file that imports src/utils/time.ts directly or transitively; answer key = 229 files from dependency-cruiser) five times with the generated skill and five times with the same notes pasted in directly, same model and tools. Raw records from our run log:\n\n| arm | run | recall | precision | wall s | input tokens | output tokens | cost USD |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n| notes-only | 1 | 1.000 | 1.000 | 34.3 | 65,176 | 6,044 | 0.1514 |\n| notes-only | 2 | 1.000 | 1.000 | 31.8 | 48,825 | 6,043 | 0.1480 |\n| notes-only | 3 | 1.000 | 1.000 | 31.6 | 54,461 | 5,917 | 0.1306 |\n| notes-only | 4 | 1.000 | 1.000 | 31.7 | 54,591 | 5,858 | 0.1306 |\n| notes-only | 5 | 1.000 | 1.000 | 33.0 | 54,470 | 5,883 | 0.1304 |\n| skill | 1 | 1.000 | 1.000 | 42.3 | 116,796 | 6,603 | 0.1674 |\n| skill | 2 | 1.000 | 1.000 | 39.7 | 134,159 | 6,530 | 0.1603 |\n| skill | 3 | 0.996 | 1.000 | 47.9 | 187,263 | 7,037 | 0.1792 |\n| skill | 4 | 1.000 | 1.000 | 38.4 | 79,019 | 6,582 | 0.1297 |\n| skill | 5 | 1.000 | 1.000 | 41.8 | 115,144 | 6,618 | 0.1638 |\n\nUsing the supplied guidance, write the comparison verdict and the result record for our release note, which currently says \"impact-finder improves impact analysis\". Text only; no follow-up questions are needed.",
+      "criteria": [
+        "E1a: states that correctness shows no improvement for the skill over notes-only (recall/precision equal or within one file), and does not claim the skill improves accuracy",
+        "E1b: reports the skill arm's time, token and/or cost figures as worse than notes-only, with a magnitude taken from the records (e.g., about +9 to +10 s per run, roughly double input tokens, or about +$0.02 per run), as a finding of the verdict; mentioning the columns only as context, or omitting them, fails",
+        "E1c: does not treat equal accuracy as a tie that supports the release-note claim or adoption; the verdict states the claim is unsupported or that the skill costs more without a measured gain",
+        "E1d: invents no runs, statistics, or checks that the records do not contain (computing means or differences from the table is allowed)"
+      ],
+      "key": [
+        "E1b",
+        "E1c"
+      ]
+    },
+    "G2": {
+      "gap": "B does not check selection of the generated skill",
+      "request": "Below is a skill our team generated with a skill-authoring guide. Before we copy it into the shared skills folder of our coding agent, where about 40 other skills are already installed, write the B evaluation plan: which cases to run, how, what to record, and what passing means. Text only; no follow-up questions are needed.\n\n<generated SKILL.md>\n---\nname: impact-finder\ndescription: List every file, test, page or route that may break when a TypeScript module's exports change, by following imports through the whole repository. Use for \"what is affected if I change X\" and \"which files import X\".\n---\n# impact-finder\n1. Resolve the module path, including tsconfig path aliases.\n2. Walk importers in reverse, breadth first, until no new file appears.\n3. Report files grouped by hop, mark tests, and state any import you could not resolve.\n4. For a small change inside one known file, read that file instead; do not walk the repository.\n</generated SKILL.md>",
+      "criteria": [
+        "E2a: the plan checks whether the coding agent actually selects or loads impact-finder by itself, with the other installed skills present, on realistic requests it should handle; supplying the skill to the executor manually does not count",
+        "E2b: the plan includes requests the skill should not be selected for (e.g., a small change inside one known file, or nearby ordinary requests) and checks that it is not selected",
+        "E2c: selection is to be read from host events or logs (e.g., a recorded skill-load or tool event), not from the model's own statement, or the plan records selection as unverified when it cannot be observed",
+        "E2d: the plan still checks task correctness on new cases against an answer key the executor does not see"
+      ],
+      "key": [
+        "E2a",
+        "E2b"
+      ]
+    },
+    "G3": {
+      "gap": "no same-version (A/A) noise estimate",
+      "request": "We revised our generated contract-review skill from v1 to v2 (one paragraph about indemnity caps was rewritten). B results on 8 new synthetic contracts, 2 runs per version per contract; a run passes if it flags every planted clause problem and nothing else:\n\n| contract | v1 run 1 | v1 run 2 | v2 run 1 | v2 run 2 |\n| --- | --- | --- | --- | --- |\n| C1 | pass | pass | pass | pass |\n| C2 | pass | fail | pass | pass |\n| C3 | pass | pass | pass | pass |\n| C4 | fail | pass | pass | pass |\n| C5 | pass | pass | pass | pass |\n| C6 | pass | pass | pass | fail |\n| C7 | fail | pass | pass | pass |\n| C8 | pass | pass | pass | pass |\n\nv1 passes 13/16 runs, v2 passes 15/16. Using the supplied guidance, decide whether we can say v2 improves the skill, and write the result record. Text only; no follow-up questions are needed.",
+      "criteria": [
+        "E3a: does not claim v2 is an improvement on these results; the verdict is inconclusive, unverified, or equivalent",
+        "E3b: identifies that run-to-run variation of an unchanged version is unmeasured or that the differences are within it, and names a way to estimate it before attributing the difference to the change (e.g., running the same version again as a separate arm, more runs per version)",
+        "E3c: invents no runs or results that the table does not contain"
+      ],
+      "key": [
+        "E3a",
+        "E3b"
+      ]
+    },
+    "G4": {
+      "gap": "repeated runs read without an every-run (pass^k) criterion",
+      "request": "Our generated `rename-impact` skill lists every caller that breaks when a database column is renamed. It will run unattended in CI before migrations; a missed caller ships a production outage. B results on 6 new cases, 3 runs each; a run passes only if it lists every broken caller (answer keys from a compiler-based reference tool):\n\n| case | run 1 | run 2 | run 3 |\n| --- | --- | --- | --- |\n| R1 | pass | pass | pass |\n| R2 | pass | fail (missed 1 of 14) | pass |\n| R3 | pass | pass | pass |\n| R4 | pass | pass | pass |\n| R5 | fail (missed 2 of 31) | pass | pass |\n| R6 | pass | pass | pass |\n\nUsing the supplied guidance, decide whether the skill is reliable enough for unattended CI use and write the result record. Text only; no follow-up questions are needed.",
+      "criteria": [
+        "E4a: does not call the skill reliable enough for unattended use, and bases that on runs that missed callers in cases R2 and R5, i.e., on whether every run of a case passes, not on at-least-one-pass per case or the overall pass rate",
+        "E4b: reports a per-case every-run figure (e.g., 4 of 6 cases passed all 3 runs, or the rate at which all runs of a case pass), not only 16/18 or 'every case passed at least once'",
+        "E4c: invents no runs or results that the table does not contain"
+      ],
+      "key": [
+        "E4a",
+        "E4b"
+      ]
+    }
+  },
+  "held_out": {
+    "H": {
+      "note": "held-out: written before any run and not shown while editing validation.md; run only in the fix phase",
+      "request": "Our accounts-payable lead's notes were turned into a generated skill, `duplicate-invoice-check`, that flags supplier invoices which duplicate an earlier one (same supplier, amount within 1%, dates within 30 days, or same invoice number). A missed duplicate means paying a supplier twice. B results on 5 new synthetic ledgers, 3 runs per arm; arm 'notes' gets the same notes pasted in directly. A run passes if it flags every planted duplicate and no false positive.\n\n| ledger | notes r1 | notes r2 | notes r3 | skill r1 | skill r2 | skill r3 |\n| --- | --- | --- | --- | --- | --- | --- |\n| L1 | pass | pass | pass | pass | pass | pass |\n| L2 | pass | pass | pass | pass | pass | pass |\n| L3 | pass | fail (missed 1) | pass | pass | pass | fail (missed 1) |\n| L4 | pass | pass | pass | pass | pass | pass |\n| L5 | pass | pass | pass | pass | pass | pass |\n\nMean per run: notes 21,400 input tokens, 18.2 s, $0.061; skill 38,900 input tokens, 24.6 s, $0.094. The skill will be installed in our team's shared skills folder next to 30 other skills; we have only tested it by pasting it into the prompt. Using the supplied guidance, give the verdict and result record for the claim \"the skill makes duplicate checks better and is ready for the shared folder\". Text only; no follow-up questions are needed.",
+      "criteria": [
+        "H1: does not claim the skill improves correctness over the notes arm (both arms pass 14/15 with one miss on L3)",
+        "H2: reports the skill's higher tokens, time and/or cost against the notes arm, with a magnitude from the record, as a finding of the verdict",
+        "H3: does not call the skill reliable for this double-payment risk on the basis that every ledger passed at least once; reports that L3 failed one of three runs (or a per-ledger every-run figure)",
+        "H4: states that automatic selection from the shared folder is unverified because the skill was only pasted into the prompt, or plans a selection check that includes requests it should not be selected for",
+        "H5: invents no runs, statistics, or checks that the record does not contain"
+      ],
+      "key": [
+        "H2",
+        "H3",
+        "H4"
+      ]
+    }
+  },
+  "phases": {
+    "reproduce": {
+      "cases": [
+        "G1",
+        "G2",
+        "G3",
+        "G4"
+      ],
+      "arms": {
+        "Abase": 3,
+        "AbaseB": 3
+      },
+      "AbaseB": "same bytes as Abase, separate batch (A/A)"
+    },
+    "fix": {
+      "G1-G4": {
+        "Anew": 3
+      },
+      "H": {
+        "Abase": 3,
+        "AbaseB": 3,
+        "Anew": 3
+      },
+      "D (depth-2026-11-04 plan.json case D, criteria D1-D8)": {
+        "Abase": 3,
+        "Anew": 3
+      }
+    }
+  },
+  "judge": {
+    "primary": "claude-fable-5-1 via the invocation above with judge system; one response per call; blind id; order shuffled",
+    "secondary": "codex exec -m gpt-6.1-sol --ephemeral -s read-only; same prompt with the system text prepended; same blind id",
+    "system": "Evaluate strictly against supplied criteria. Quote evidence. Do not reward style or length.",
+    "prompt": "Return JSON only: {\"criteria\":[{\"id\":\"<id>\",\"verdict\":\"pass|fail\",\"evidence\":\"<quote>\"}]} covering every criterion id exactly once."
+  },
+  "decision_rules": {
+    "reproduced": "a gap is reproduced when Abase+AbaseB fail at least one of its key criteria in >= 4 of 6 runs under the primary judge; otherwise 'not reproduced' and validation.md is not changed for it",
+    "fix_value": "per reproduced gap: (Anew passes - Abase passes) summed over its key criteria >= 3 -> 'fixed'; else 'not shown'",
+    "held_out": "(Anew passes - Abase passes) over H key criteria >= 3 -> 'generalises'; else 'not shown'",
+    "noise": "report Abase vs AbaseB key-criterion pass difference per case; a fix whose gain is not larger than the largest A/A difference is reported as not distinguishable from noise",
+    "regression": "on D1-D8, E*d/E3c/E4c and H1/H5: Anew fails >= 2 more runs than Abase -> regression; any regression blocks shipping",
+    "efficiency": "report Anew vs Abase executor input tokens and cost (paired by case, bootstrap 95% CI); reported, not a ship gate",
+    "judge_disagreement": "if the secondary judge reverses 'reproduced' or 'fixed' for a gap, report it as judge-dependent"
+  },
+  "cost_cap_usd": 30
+}
