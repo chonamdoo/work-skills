@@ -1,0 +1,15 @@
+{
+ "name": "work-to-skill",
+ "skill_dir": "skills/work-to-skill",
+ "cases_from": {
+  "path": "tests/behavior/cases.json",
+  "format": "request-acceptance"
+ },
+ "max_usd": 10,
+ "model": "sonnet",
+ "judge_model": "sonnet",
+ "reps": 1,
+ "jobs": 4,
+ "min_pass_rate": 0.0,
+ "max_drop": 0.1
+}

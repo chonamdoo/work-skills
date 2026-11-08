@@ -237,3 +237,15 @@ adapt the Altitude, Depth, and Range sections of
 within this skill's provenance and authorization boundaries; its nouns-to-verbs
 technique is credited there to Kelley and Littman's *The Art of Innovation*.
 These are background sources, not runtime dependencies or bundled copies.
+
+## Skill eval on every change
+
+Run this locally before merging any change to the skill or its eval cases (it is not wired to GitHub Actions):
+
+```bash
+python3 evals/skill-eval/skill_eval.py evals/skill-eval/suite.json --base-ref origin/main
+```
+
+`skill_eval.py` gives each case in `evals/skill-eval/suite.json` to `claude -p` twice, once with the working-tree skill and once with the skill at `--base-ref`, each without tools. A separate judge call marks every required criterion. The run exits 1 when the working-tree required pass rate drops more than `max_drop` below base, or falls below `min_pass_rate`. Results go to `skill-eval-results.json`. Spend is capped by `max_usd`. `--dry-run` prints the call count; `--select ID,ID` and `--reps N` narrow the run. Requires a logged-in `claude` CLI.
+
+Limits: one fixed case set, an LLM judge, and few repetitions. It catches regressions against the previous version, not held-out improvement.
