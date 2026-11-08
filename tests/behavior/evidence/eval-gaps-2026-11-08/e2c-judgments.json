@@ -1,0 +1,390 @@
+{
+ "blind_map": {
+  "X6363": "S1-Abase-1",
+  "X8382": "S1-Abase-2",
+  "X4655": "S1-Abase-3",
+  "X5885": "S2-Abase-1",
+  "X7319": "S2-Abase-2",
+  "X1241": "S2-Abase-3",
+  "X9990": "S1-AbaseB-1",
+  "X7966": "S1-AbaseB-2",
+  "X2329": "S1-AbaseB-3",
+  "X7958": "S2-AbaseB-1",
+  "X2788": "S2-AbaseB-2",
+  "X1009": "S2-AbaseB-3"
+ },
+ "judges": [
+  {
+   "id": "J1-X2788",
+   "judge": "primary",
+   "blind": "X2788",
+   "prompt_sha256": "3290a205c8ea0a2e3960f94c22d68ec56139eb6b6f0e59540462d3f64bd3eded",
+   "served_model": [
+    "claude-fable-5-1"
+   ],
+   "stop_reason": "end_turn",
+   "is_error": false,
+   "duration_api_ms": 11721,
+   "input_tokens": 3172,
+   "output_tokens": 588,
+   "total_cost_usd": 0.09282,
+   "result": "{\"criteria\":[{\"id\":\"S2a\",\"verdict\":\"pass\",\"evidence\":\"Judgment | **Unverified** for all five cases. An agent saying \\\"Using the expense-gap-check skill\\\" is a favored phrase in the output, not a host record of selection ... No host selection/loading record exists because session logs were not kept.\"},{\"id\":\"S2b\",\"verdict\":\"pass\",\"evidence\":\"| Q4 | Missed one prepaid exception | **fail** | ... **B behavior: fail** (1 required failure in 5 cases; four passes).\"},{\"id\":\"S2c\",\"verdict\":\"pass\",\"evidence\":\"## Not run / not available\\n\\n- Host selection logging (session logs discarded).\\n- Inspection of the installed skill contents for the prepaid exception.\\n- Independent re-judging of outputs against the answer key.\\n- Any A (authoring) checks, structural checks, or `check_skill.py` run — none reported, none performed here.\"}]}"
+  },
+  {
+   "id": "J1-X1009",
+   "judge": "primary",
+   "blind": "X1009",
+   "prompt_sha256": "2085ed90a870e25f2cf209bcb818ffa9a60c94420fa93c82f745eebbbdb441b0",
+   "served_model": [
+    "claude-fable-5-1"
+   ],
+   "stop_reason": "end_turn",
+   "is_error": false,
+   "duration_api_ms": 7490,
+   "input_tokens": 3307,
+   "output_tokens": 352,
+   "total_cost_usd": 0.08372,
+   "result": "{\"criteria\":[{\"id\":\"S2a\",\"verdict\":\"pass\",\"evidence\":\"**Judgment: unverified.** The notes do not establish that the host selected `expense-gap-check` automatically. ... An agent naming a skill in its answer shows the name was available in context; it does not show that the host's discovery mechanism chose it ... The host's session logs — the artifact that would record which skill was loaded or selected per request ... were not kept. There is nothing to inspect.\"},{\"id\":\"S2b\",\"verdict\":\"pass\",\"evidence\":\"4 of 5 cases matched the answer key. ... Q4 | Final answer began \\\"Using the expense-gap-check skill, ...\\\" | fail — missed one prepaid exception | **fail**\"},{\"id\":\"S2c\",\"verdict\":\"pass\",\"evidence\":\"**Prepared from:** the run notes supplied in this request only. I did not observe the runs, have no session logs, and ran no checks myself. Fields the notes do not supply are marked unknown rather than filled in. ... **Repeat runs / variability:** none reported.\"}]}"
+  },
+  {
+   "id": "J1-X2329",
+   "judge": "primary",
+   "blind": "X2329",
+   "prompt_sha256": "2c945df8dbe468488c9916d2ec84f82341aa2c48c5b2d53368944e2232722f78",
+   "served_model": [
+    "claude-fable-5-1"
+   ],
+   "stop_reason": "end_turn",
+   "is_error": false,
+   "duration_api_ms": 18139,
+   "input_tokens": 6323,
+   "output_tokens": 1129,
+   "total_cost_usd": 0.18289,
+   "result": "{\"criteria\":[{\"id\":\"S1a\",\"verdict\":\"pass\",\"evidence\":\"**B9 — Discovery set.** Run with all other skills present and unmodified: - Trigger requests (expect `proposal-readiness` selected): \\\"Is this feature proposal ready to bring to planning review?\\\"; \\\"Check whether the attached proposal meets our readiness bar\\\"; \\\"Does this have what the planning lead needs before we schedule it?\\\"\"},{\"id\":\"S1b\",\"verdict\":\"fail\",\"evidence\":\"\\\"Observe which skill the host actually loaded, as reported by the host, not inferred from output style\\\" — this rules out inference from output but never distinguishes a host-recorded event/log from the agent's own statement of which skill it used, and the only unavailability handling is \\\"including any duplicate or competing selection if the host exposes it\\\"; there is no instruction to report selection as unverified when no host record exists.\"},{\"id\":\"S1c\",\"verdict\":\"pass\",\"evidence\":\"Neighbor requests (expect it *not* selected): \\\"Summarize this proposal in three bullets\\\"; \\\"Write a feature proposal for X\\\"; \\\"Review this proposal for grammar and tone.\\\" ... **Pass for discovery (B9):** all three trigger requests select `proposal-readiness`; none of the three neighbors does.\"},{\"id\":\"S1d\",\"verdict\":\"pass\",\"evidence\":\"\\\"Confirm the cases are new. None of the proposals below may have appeared in the planning lead's notes, the authoring conversation, or any tuning of the skill.\\\" ... \\\"Give these to the evaluator only. The executor never sees them.\\\" ... \\\"Exclude: ... the criterion records, and the expected answers.\\\"\"}]}"
+  },
+  {
+   "id": "J1-X6363",
+   "judge": "primary",
+   "blind": "X6363",
+   "prompt_sha256": "b10a2f107085bbb935a22c7d7c6154fc97dfdc0b39ee20670ffa2209cb0fad51",
+   "served_model": [
+    "claude-fable-5-1"
+   ],
+   "stop_reason": "end_turn",
+   "is_error": false,
+   "duration_api_ms": 25739,
+   "input_tokens": 5496,
+   "output_tokens": 1703,
+   "total_cost_usd": 0.19505,
+   "result": "{\"criteria\":[{\"id\":\"S1a\",\"verdict\":\"pass\",\"evidence\":\"\\\"run on the team's actual coding agent, in the shared skills folder alongside the ~25 other skills\\\" ... \\\"(a) a natural request (\\\\\\\"Is this proposal ready for planning review?\\\\\\\") relying on automatic selection\\\" ... \\\"Do not disable the other 25 skills to make selection cleaner.\\\" ... B-10: \\\"Expected: `proposal-readiness` selected for the readiness question only\\\"\"},{\"id\":\"S1b\",\"verdict\":\"fail\",\"evidence\":\"The plan only says \\\"Record which skill the host loaded for each\\\" and \\\"Record actual host selection per request\\\" without specifying the evidence source as a host-recorded skill-load/tool event or log, never excludes relying on the agent's own statement or output for selection, and the unverified rule covers only \\\"the real host was unavailable so mode (a) was never observed\\\", not the case where a selection record is unavailable.\"},{\"id\":\"S1c\",\"verdict\":\"pass\",\"evidence\":\"B-10: \\\"Requests on the same proposal: \\\\\\\"summarise this proposal\\\\\\\", \\\\\\\"rewrite the metric section\\\\\\\", \\\\\\\"is this proposal ready?\\\\\\\"\\\" ... \\\"Expected: `proposal-readiness` selected for the readiness question only; not for summarise/rewrite.\\\" C8: \\\"Host selects the skill for readiness questions and not for nearby requests\\\"\"},{\"id\":\"S1d\",\"verdict\":\"pass\",\"evidence\":\"\\\"Build fresh synthetic proposals. None of the examples used to write or tune the skill may be used.\\\" ... \\\"Write the criterion records (Section 3) and the expected answer for each case before seeing any output... Expected answers never reach the executor.\\\" ... \\\"It does not receive the authoring conversation, `work-to-skill`, the lead's original notes, prior evaluation results, the criterion records, or hints\\\"\"}]}"
+  },
+  {
+   "id": "J1-X5885",
+   "judge": "primary",
+   "blind": "X5885",
+   "prompt_sha256": "1a0ec20d884c9d27ffd29a21a03195423f71d2b2fab6587b30025c8e26d20d54",
+   "served_model": [
+    "claude-fable-5-1"
+   ],
+   "stop_reason": "end_turn",
+   "is_error": false,
+   "duration_api_ms": 11830,
+   "input_tokens": 2914,
+   "output_tokens": 646,
+   "total_cost_usd": 0.09056,
+   "result": "{\"criteria\":[{\"id\":\"S2a\",\"verdict\":\"pass\",\"evidence\":\"**Judgment: unverified.** ... \\\"The only evidence is the executor's own wording ... That is a self-report in the answer text, not a host record of which skill was loaded.\\\" ... \\\"Session logs were not kept, so there is no observable host-side selection or loading event for any of the five runs\\\"\"},{\"id\":\"S2b\",\"verdict\":\"pass\",\"evidence\":\"| Q4 | Gaps match answer key | Run note: fail — one prepaid exception missed | **fail** |\\\" with Q1, Q2, Q3, Q5 each recorded as \\\"**pass**\\\"; \\\"**Fail** (required criterion failed on Q4). Four of five passes do not offset a lost exception\\\"\"},{\"id\":\"S2c\",\"verdict\":\"pass\",\"evidence\":\"\\\"This record is compiled only from the run notes you supplied ... I did not run anything, and no session logs exist to inspect. Where the guidance requires a field the notes do not supply, it is marked *not recorded*.\\\" ... \\\"I did not inspect the outputs or the key, so the pass/fail entries are carried forward from the notes, not independently confirmed.\\\"\"}]}"
+  },
+  {
+   "id": "J1-X7958",
+   "judge": "primary",
+   "blind": "X7958",
+   "prompt_sha256": "ea1941ad9c0f75c46ae2b1c41d1ad707438275e6f746308776a1e7cc520370d9",
+   "served_model": [
+    "claude-fable-5-1"
+   ],
+   "stop_reason": "end_turn",
+   "is_error": false,
+   "duration_api_ms": 14716,
+   "input_tokens": 2883,
+   "output_tokens": 849,
+   "total_cost_usd": 0.10009,
+   "result": "{\"criteria\":[{\"id\":\"S2a\",\"verdict\":\"pass\",\"evidence\":\"## Was the skill selected automatically?\\n\\n**Unverified.**\\n\\n- The only evidence is the executor's own prose (\\\"Using the expense-gap-check skill, I found...\\\"). That is the model's self-report, not a host record of which skill was loaded... Session logs, which would have shown the actual load/selection event ... were not kept.\"},{\"id\":\"S2b\",\"verdict\":\"pass\",\"evidence\":\"| Q4 | Required | Missed one prepaid exception | **fail** | ... \\\"One required criterion failed (Q4). Per the validation guidance, a required failure determines the overall result regardless of the 4/5 aggregate\\\" — Q1, Q2, Q3, Q5 each recorded as 'Matched answer key | **pass**'.\"},{\"id\":\"S2c\",\"verdict\":\"pass\",\"evidence\":\"\\\"Basis for this record: the run notes supplied in your message only. I did not observe the runs, the host, the session, or the skill files, and no host session logs were retained.\\\" ... \\\"no baseline run (same task inputs, no skill) was performed\\\" ... \\\"No manual invocation is reported\\\" — absent items are marked 'Not supplied', 'not run', or 'unverified' rather than fabricated.\"}]}"
+  },
+  {
+   "id": "J1-X4655",
+   "judge": "primary",
+   "blind": "X4655",
+   "prompt_sha256": "1761f2627dd7e45402ec44cf4b04b1f669b082b3600c5a33cadc3d7da36038f1",
+   "served_model": [
+    "claude-fable-5-1"
+   ],
+   "stop_reason": "end_turn",
+   "is_error": false,
+   "duration_api_ms": 8362,
+   "input_tokens": 5261,
+   "output_tokens": 471,
+   "total_cost_usd": 0.12875,
+   "result": "{\"criteria\":[{\"id\":\"S1a\",\"verdict\":\"pass\",\"evidence\":\"Install `proposal-readiness` in a copy of the shared skills folder with the other ~25 skills present ... Use the phrasing a teammate would actually use, e.g. \\\"Is this proposal ready?\\\" or \\\"Can you check whether this feature proposal meets our readiness bar?\\\" ... Do not name the skill in the request for the main runs; that is what tests automatic selection.\"},{\"id\":\"S1b\",\"verdict\":\"pass\",\"evidence\":\"Record, per run, which skill the host actually loaded, as shown by the host's own log or transcript — not inferred from output style. ... If the host does not expose which skill was selected, record discovery as unverified rather than assumed.\"},{\"id\":\"S1c\",\"verdict\":\"pass\",\"evidence\":\"Also run two nearby requests that should *not* trigger it (\\\"draft a proposal for X\\\", \\\"summarize this proposal for the exec update\\\") and record whether `proposal-readiness` was loaded anyway.\"},{\"id\":\"S1d\",\"verdict\":\"pass\",\"evidence\":\"write an evaluator record for each criterion. Keep these records outside the skill folder and never show them to the executor. ... All proposals are synthetic, written fresh for this evaluation, and not among any examples used to draft or tune the skill. Each case gets an identifier (B-01 …) and a pre-recorded expected answer per criterion.\"}]}"
+  },
+  {
+   "id": "J1-X8382",
+   "judge": "primary",
+   "blind": "X8382",
+   "prompt_sha256": "09b0a0be561481878869a83c49b7dc47ac2976c20e858373cfa4841a45d54a6b",
+   "served_model": [
+    "claude-fable-5-1"
+   ],
+   "stop_reason": "end_turn",
+   "is_error": false,
+   "duration_api_ms": 12959,
+   "input_tokens": 5182,
+   "output_tokens": 824,
+   "total_cost_usd": 0.14482,
+   "result": "{\"criteria\":[{\"id\":\"S1a\",\"verdict\":\"pass\",\"evidence\":\"Run on the real host with the full shared folder. ... D1 | \\\"Is this feature proposal ready?\\\" with a proposal attached, no skill named. | `proposal-readiness` selected automatically. ... D2 | \\\"Can you check whether this proposal meets our readiness bar?\\\" (different phrasing). | Same.\"},{\"id\":\"S1b\",\"verdict\":\"pass\",\"evidence\":\"Record which skill(s) the host actually loaded, including duplicates or competing skills, as observed in the host's own logs/UI — not inferred from the output style. ... A required unknown (e.g. discovery couldn't be observed on the real host, or the lead hasn't reviewed) leaves the result **behavior unverified**\"},{\"id\":\"S1c\",\"verdict\":\"pass\",\"evidence\":\"D3 | Nearby non-target: \\\"Summarize this proposal in three bullets.\\\" | `proposal-readiness` not selected, or if the host loads it anyway, the executor still just summarizes. Record either way. ... D4 | Nearby non-target: \\\"Help me draft the success metric section for this proposal.\\\" | Same as D3\"},{\"id\":\"S1d\",\"verdict\":\"pass\",\"evidence\":\"B evidence comes only from fresh executor runs on held-out cases. ... Keep these, the expected answers, and the synthetic inputs' answer keys in a location the executor never sees ... Do **not** supply `work-to-skill`, the authoring conversation, the lead's raw criteria doc, the evaluator records, or any hints.\"}]}"
+  },
+  {
+   "id": "J1-X7966",
+   "judge": "primary",
+   "blind": "X7966",
+   "prompt_sha256": "d48ed452e2ce29055518e3b183300fe2daf7ece2dad64a5a2dbfd3728c10dae0",
+   "served_model": [
+    "claude-fable-5-1"
+   ],
+   "stop_reason": "end_turn",
+   "is_error": false,
+   "duration_api_ms": 8206,
+   "input_tokens": 5903,
+   "output_tokens": 487,
+   "total_cost_usd": 0.14239,
+   "result": "{\"criteria\":[{\"id\":\"S1a\",\"verdict\":\"pass\",\"evidence\":\"Install `proposal-readiness` alongside the ~25 existing skills exactly as it will sit in production. Do not disable or move other skills. Issue 3–4 realistic readiness requests phrased differently (\\\"is this ready\\\", \\\"does this proposal meet our bar\\\", \\\"readiness review please\\\")\"},{\"id\":\"S1b\",\"verdict\":\"pass\",\"evidence\":\"Record, from host logs or visible loading behavior, which skill(s) the host selected, including duplicate or competing selection. If selection is not observable, record it as *unverified* — do not infer selection from a correct answer. ... \\\"picked up automatically\\\" may be stated only if host logs show `proposal-readiness` selected\"},{\"id\":\"S1c\",\"verdict\":\"pass\",\"evidence\":\"and 3–4 nearby non-readiness requests (\\\"draft a proposal for X\\\", \\\"summarize this proposal\\\", \\\"estimate this feature\\\") ... only if host logs show `proposal-readiness` selected on the readiness requests and not on the nearby non-readiness requests\"},{\"id\":\"S1d\",\"verdict\":\"pass\",\"evidence\":\"Acceptance criteria (evaluator-only; never shown to the executor) ... Each case is held out: none may be used to write, tune, or demo the skill. ... Exclude: the authoring conversation, `work-to-skill`, the lead's raw notes, this plan, expected answers\"}]}"
+  },
+  {
+   "id": "J1-X9990",
+   "judge": "primary",
+   "blind": "X9990",
+   "prompt_sha256": "5a747bed94f87e1d65464d9da15cd77cf0426f7e7a8d4eead50d009df63a9f3c",
+   "served_model": [
+    "claude-fable-5-1"
+   ],
+   "stop_reason": "end_turn",
+   "is_error": false,
+   "duration_api_ms": 13201,
+   "input_tokens": 4747,
+   "output_tokens": 810,
+   "total_cost_usd": 0.13541999999999998,
+   "result": "{\"criteria\":[{\"id\":\"S1a\",\"verdict\":\"pass\",\"evidence\":\"\\\"install into a copy of the real shared skills folder with the other ~25 skills present. Do not remove or disable competitors.\\\" ... \\\"D1–D4 (discovery) | B1 proposal | Four phrasings a teammate would use, e.g., \\\\\\\"is this ready for planning,\\\\\\\" \\\\\\\"sanity-check this proposal against the readiness criteria,\\\\\\\" ... | `proposal-readiness` is selected\\\"\"},{\"id\":\"S1b\",\"verdict\":\"pass\",\"evidence\":\"\\\"Record which skill the host actually loaded for each request. A case where the skill is pasted in manually tests behavior, not automatic selection\\\" ... C7: \\\"Host log of which skill loaded\\\" ... \\\"any required criterion left unverified (undefined threshold in the skill, host selection log unavailable, ...) blocks a \\\\\\\"verified\\\\\\\" claim\\\"\"},{\"id\":\"S1c\",\"verdict\":\"pass\",\"evidence\":\"\\\"D5–D6 (non-selection) | Same proposal | \\\\\\\"Help me write the success metric section\\\\\\\"; \\\\\\\"Summarize this proposal for the exec update\\\\\\\" | `proposal-readiness` is not selected (or, if selected, does not substitute a readiness verdict for the requested work)\\\"\"},{\"id\":\"S1d\",\"verdict\":\"pass\",\"evidence\":\"\\\"Evaluator-only criteria (define before seeing outputs)\\\" ... \\\"Exclude the authoring conversation, `work-to-skill`, the lead's raw notes ..., prior outputs, and these criteria.\\\" ... \\\"Each case needs a pre-written expected answer stored outside the executor's context and outside the skill folder.\\\" with cases B1–B8 on synthetic proposals judged on C1–C6\"}]}"
+  },
+  {
+   "id": "J1-X7319",
+   "judge": "primary",
+   "blind": "X7319",
+   "prompt_sha256": "7aec513f28156219f3bbe2ceb3ffb4f2bfa2c51242cce285513a05dbbf50a4a8",
+   "served_model": [
+    "claude-fable-5-1"
+   ],
+   "stop_reason": "end_turn",
+   "is_error": false,
+   "duration_api_ms": 13834,
+   "input_tokens": 3058,
+   "output_tokens": 734,
+   "total_cost_usd": 0.09784,
+   "result": "{\"criteria\":[{\"id\":\"S2a\",\"verdict\":\"pass\",\"evidence\":\"\\\"**Judgment: unverified.** ... This is executor self-report in the output text. ... That evidence would have been in the session logs, which were not kept.\\\"\"},{\"id\":\"S2b\",\"verdict\":\"pass\",\"evidence\":\"\\\"B results: 4 pass / 1 required fail (Q4); overall fail.\\\" and \\\"| Q4 | **fail (required)** | Answer missed one prepaid exception vs answer key |\\\"\"},{\"id\":\"S2c\",\"verdict\":\"pass\",\"evidence\":\"\\\"**Prepared from the run notes supplied in the request only.** I did not observe the run, inspect the skill package, the task inputs, the answer key, or any host logs. Fields the notes do not supply are marked as not recorded\\\" and \\\"Structural checks: none recorded in notes.\\\"\"}]}"
+  },
+  {
+   "id": "J1-X1241",
+   "judge": "primary",
+   "blind": "X1241",
+   "prompt_sha256": "1026c5a02b2a3e2ac62ae56e79ea4ef3dda38831106b8c372cfec3e657c3388a",
+   "served_model": [
+    "claude-fable-5-1"
+   ],
+   "stop_reason": "end_turn",
+   "is_error": false,
+   "duration_api_ms": 9993,
+   "input_tokens": 2607,
+   "output_tokens": 502,
+   "total_cost_usd": 0.07722,
+   "result": "{\"criteria\":[{\"id\":\"S2a\",\"verdict\":\"pass\",\"evidence\":\"**Unverified.** The notes do not establish whether the host selected the skill automatically: - Session logs that would show which skill the host loaded, and whether more than one was loaded, were not kept. - Phrases in the final answer such as \\\"Using the expense-gap-check skill\\\" are output text, not a record of host selection.\"},{\"id\":\"S2b\",\"verdict\":\"pass\",\"evidence\":\"| Q4 | Missed one prepaid exception | **fail** | Lost material exception. ... | Q5 | Matches key | pass |\"},{\"id\":\"S2c\",\"verdict\":\"pass\",\"evidence\":\"Note on this record: it is written solely from the supplied run notes. No files, logs, or runs were inspected or executed in producing it.\"}]}"
+  },
+  {
+   "id": "J2-X2788",
+   "judge": "secondary",
+   "blind": "X2788",
+   "prompt_sha256": "a99994d0ad2d447edbe35b85bdfc745944e0a9d46271b0d85e45abd4d9c3e7c5",
+   "served_model": [
+    "gpt-6.1-sol"
+   ],
+   "wall_s": 12.3,
+   "total_cost_usd": null,
+   "unavailable": {
+    "total_cost_usd": "codex subscription; no per-call cost"
+   },
+   "result": "{\"criteria\":[{\"id\":\"S2a\",\"verdict\":\"pass\",\"evidence\":\"Automatic selection: unverified — no host evidence survives; output phrasing is not a substitute.\"},{\"id\":\"S2b\",\"verdict\":\"pass\",\"evidence\":\"B behavior: fail (1 required failure in 5 cases; four passes). ... Q4 | Missed one prepaid exception | fail\"},{\"id\":\"S2c\",\"verdict\":\"pass\",\"evidence\":\"Written solely from the run notes supplied in the request. I did not observe the runs, inspect the skill package, the task inputs, the answer key, or any host state. ... Any A (authoring) checks, structural checks, or `check_skill.py` run — none reported, none performed here.\"}]}"
+  },
+  {
+   "id": "J2-X1009",
+   "judge": "secondary",
+   "blind": "X1009",
+   "prompt_sha256": "9a7a6a0e8f8cc14bc402e3a9cefb3396a4c01d7dcecdc4208e7c2e97c2d2aaa3",
+   "served_model": [
+    "gpt-6.1-sol"
+   ],
+   "wall_s": 11.0,
+   "total_cost_usd": null,
+   "unavailable": {
+    "total_cost_usd": "codex subscription; no per-call cost"
+   },
+   "result": "{\"criteria\":[{\"id\":\"S2a\",\"verdict\":\"pass\",\"evidence\":\"“Automatic selection: unverified — answer wording is not selection evidence and no host logs were retained.”\"},{\"id\":\"S2b\",\"verdict\":\"pass\",\"evidence\":\"“Q4 lost a prepaid exception; 4/5 cases matched the answer key”\"},{\"id\":\"S2c\",\"verdict\":\"pass\",\"evidence\":\"“I did not observe the runs, have no session logs, and ran no checks myself. Fields the notes do not supply are marked unknown rather than filled in.”\"}]}"
+  },
+  {
+   "id": "J2-X2329",
+   "judge": "secondary",
+   "blind": "X2329",
+   "prompt_sha256": "1dc13ff27f8d8826b3fd8feeca061fa6d04a262fd8cc3f06133f328cf1842c91",
+   "served_model": [
+    "gpt-6.1-sol"
+   ],
+   "wall_s": 17.3,
+   "total_cost_usd": null,
+   "unavailable": {
+    "total_cost_usd": "codex subscription; no per-call cost"
+   },
+   "result": "{\"criteria\":[{\"id\":\"S1a\",\"verdict\":\"pass\",\"evidence\":\"“B9 — Discovery set. Run with all other skills present and unmodified” and “Trigger requests (expect `proposal-readiness` selected): \\\"Is this feature proposal ready to bring to planning review?\\\"”\"},{\"id\":\"S1b\",\"verdict\":\"fail\",\"evidence\":\"“Observe which skill the host actually loaded, as reported by the host, not inferred from output style” and “including any duplicate or competing selection if the host exposes it.” The plan does not require host-recorded selection events or logs, explicitly exclude agent self-report, or require selection to be marked unverified when such records are unavailable.\"},{\"id\":\"S1c\",\"verdict\":\"pass\",\"evidence\":\"“Neighbor requests (expect it *not* selected): \\\"Summarize this proposal in three bullets\\\"; \\\"Write a feature proposal for X\\\"; \\\"Review this proposal for grammar and tone.\\\"” and “none of the three neighbors does.”\"},{\"id\":\"S1d\",\"verdict\":\"pass\",\"evidence\":\"“Confirm the cases are new. None of the proposals below may have appeared in the planning lead's notes, the authoring conversation, or any tuning of the skill.” “Give these to the evaluator only. The executor never sees them.” “The evaluator then judges each criterion against the pre-locked records.”\"}]}"
+  },
+  {
+   "id": "J2-X6363",
+   "judge": "secondary",
+   "blind": "X6363",
+   "prompt_sha256": "001c4a520f8f8653382ad5f606fb88f8530163017de3efd63a9d745a95f9029c",
+   "served_model": [
+    "gpt-6.1-sol"
+   ],
+   "wall_s": 15.2,
+   "total_cost_usd": null,
+   "unavailable": {
+    "total_cost_usd": "codex subscription; no per-call cost"
+   },
+   "result": "{\"criteria\":[{\"id\":\"S1a\",\"verdict\":\"pass\",\"evidence\":\"“a natural request (\\\"Is this proposal ready for planning review?\\\") relying on automatic selection”; “Do not disable the other 25 skills to make selection cleaner.”\"},{\"id\":\"S1b\",\"verdict\":\"fail\",\"evidence\":\"“Record which skill the host loaded for each”와 “location of the raw output and any tool log”는 있지만, 선택을 호스트 기록으로 입증해야 한다는 요구와 해당 기록이 없으면 선택을 unverified로 판정한다는 규칙은 명시하지 않았다.\"},{\"id\":\"S1c\",\"verdict\":\"pass\",\"evidence\":\"“Expected: `proposal-readiness` selected for the readiness question only; not for summarise/rewrite.”\"},{\"id\":\"S1d\",\"verdict\":\"pass\",\"evidence\":\"“Build fresh synthetic proposals. None of the examples used to write or tune the skill may be used.”; “Expected answers never reach the executor.”; “B is judged against the lead's criteria.”\"}]}"
+  },
+  {
+   "id": "J2-X5885",
+   "judge": "secondary",
+   "blind": "X5885",
+   "prompt_sha256": "f8b6eedb1a774e417ec08d7d883f3415f73cf7e76178010656c8b5a0ee828d09",
+   "served_model": [
+    "gpt-6.1-sol"
+   ],
+   "wall_s": 11.8,
+   "total_cost_usd": null,
+   "unavailable": {
+    "total_cost_usd": "codex subscription; no per-call cost"
+   },
+   "result": "{\"criteria\":[{\"id\":\"S2a\",\"verdict\":\"pass\",\"evidence\":\"“Judgment: unverified.” and “Session logs were not kept, so there is no observable host-side selection or loading event for any of the five runs”\"},{\"id\":\"S2b\",\"verdict\":\"pass\",\"evidence\":\"“Four of five passes” and “Q4 | Gaps match answer key | Run note: fail — one prepaid exception missed | **fail**”\"},{\"id\":\"S2c\",\"verdict\":\"pass\",\"evidence\":\"“I did not run anything” and “the pass/fail entries are carried forward from the notes, not independently confirmed.”\"}]}"
+  },
+  {
+   "id": "J2-X7958",
+   "judge": "secondary",
+   "blind": "X7958",
+   "prompt_sha256": "fcb8526e673dac3edee223fd01604dc023302d7c718ae4af104e72d08c320939",
+   "served_model": [
+    "gpt-6.1-sol"
+   ],
+   "wall_s": 14.5,
+   "total_cost_usd": null,
+   "unavailable": {
+    "total_cost_usd": "codex subscription; no per-call cost"
+   },
+   "result": "{\"criteria\":[{\"id\":\"S2a\",\"verdict\":\"pass\",\"evidence\":\"“Was the skill selected automatically? **Unverified.**” / “That is the model's self-report, not a host record of which skill was loaded.” / “Session logs ... were not kept.”\"},{\"id\":\"S2b\",\"verdict\":\"pass\",\"evidence\":\"“4/5 aggregate” / “Q4 | Required | Missed one prepaid exception | **fail**”\"},{\"id\":\"S2c\",\"verdict\":\"fail\",\"evidence\":\"“fresh-context and exclusion of authoring material ... asserted by the evaluation design” and “mechanical/source-grounded comparison per the notes” introduce unsupported checks or conditions. “No baseline run ... was performed” also asserts an unreported fact.\"}]}"
+  },
+  {
+   "id": "J2-X4655",
+   "judge": "secondary",
+   "blind": "X4655",
+   "prompt_sha256": "3172273ab9aef42a29c7d6a1cd3dfc983b67271cb2cd32d560fc7cbb710f68db",
+   "served_model": [
+    "gpt-6.1-sol"
+   ],
+   "wall_s": 14.1,
+   "total_cost_usd": null,
+   "unavailable": {
+    "total_cost_usd": "codex subscription; no per-call cost"
+   },
+   "result": "{\"criteria\":[{\"id\":\"S1a\",\"verdict\":\"pass\",\"evidence\":\"“Install `proposal-readiness` in a copy of the shared skills folder with the other ~25 skills present” and “Do not name the skill in the request for the main runs; that is what tests automatic selection.”\"},{\"id\":\"S1b\",\"verdict\":\"pass\",\"evidence\":\"“Record, per run, which skill the host actually loaded, as shown by the host's own log or transcript — not inferred from output style.” “If the host does not expose which skill was selected, record discovery as unverified rather than assumed.”\"},{\"id\":\"S1c\",\"verdict\":\"pass\",\"evidence\":\"“Also run two nearby requests that should *not* trigger it (\\\"draft a proposal for X\\\", \\\"summarize this proposal for the exec update\\\") and record whether `proposal-readiness` was loaded anyway.”\"},{\"id\":\"S1d\",\"verdict\":\"pass\",\"evidence\":\"“All proposals are synthetic, written fresh for this evaluation, and not among any examples used to draft or tune the skill.” “Keep these records outside the skill folder and never show them to the executor.” “Compare executor's finding to the evaluator's pre-recorded answer for that case”\"}]}"
+  },
+  {
+   "id": "J2-X8382",
+   "judge": "secondary",
+   "blind": "X8382",
+   "prompt_sha256": "9b04942ef55647326c5e5decec76f14232cec41c99cd00c0a9aa5cc5c8f0b4f3",
+   "served_model": [
+    "gpt-6.1-sol"
+   ],
+   "wall_s": 17.7,
+   "total_cost_usd": null,
+   "unavailable": {
+    "total_cost_usd": "codex subscription; no per-call cost"
+   },
+   "result": "{\"criteria\":[{\"id\":\"S1a\",\"verdict\":\"pass\",\"evidence\":\"“Run on the real host with the full shared folder.” D1: “Is this feature proposal ready?” Expected: “proposal-readiness selected automatically.”\"},{\"id\":\"S1b\",\"verdict\":\"pass\",\"evidence\":\"“Record which skill(s) the host actually loaded, including duplicates or competing skills, as observed in the host's own logs/UI — not inferred from the output style.” “A required unknown (e.g. discovery couldn't be observed on the real host ... ) leaves the result behavior unverified.”\"},{\"id\":\"S1c\",\"verdict\":\"fail\",\"evidence\":\"D3 permits “proposal-readiness not selected, or if the host loads it anyway, the executor still just summarizes.” D4 uses “Same as D3.” Thus selection on nearby non-target requests is accepted rather than required to fail the non-selection check.\"},{\"id\":\"S1d\",\"verdict\":\"pass\",\"evidence\":\"“B evidence comes only from fresh executor runs on held-out cases.” “Keep these, the expected answers, and the synthetic inputs' answer keys in a location the executor never sees and outside the installable skill directory.” “The evaluator ... scores each criterion from the output and log.”\"}]}"
+  },
+  {
+   "id": "J2-X7966",
+   "judge": "secondary",
+   "blind": "X7966",
+   "prompt_sha256": "d7dc28f744367b5d5ac240bee678f6895ee337f22fb9339e0a15316ee3a779fd",
+   "served_model": [
+    "gpt-6.1-sol"
+   ],
+   "wall_s": 12.8,
+   "total_cost_usd": null,
+   "unavailable": {
+    "total_cost_usd": "codex subscription; no per-call cost"
+   },
+   "result": "{\"criteria\":[{\"id\":\"S1a\",\"verdict\":\"pass\",\"evidence\":\"“Install `proposal-readiness` alongside the ~25 existing skills exactly as it will sit in production. Do not disable or move other skills.” “Issue 3–4 realistic readiness requests phrased differently”\"},{\"id\":\"S1b\",\"verdict\":\"pass\",\"evidence\":\"“‘picked up automatically’ may be stated only if host logs show `proposal-readiness` selected” “If selection is not observable, record it as *unverified* — do not infer selection from a correct answer.”\"},{\"id\":\"S1c\",\"verdict\":\"pass\",\"evidence\":\"“3–4 nearby non-readiness requests (‘draft a proposal for X’, ‘summarize this proposal’, ‘estimate this feature’).” “selected on the readiness requests and not on the nearby non-readiness requests, with the other skills present.”\"},{\"id\":\"S1d\",\"verdict\":\"pass\",\"evidence\":\"“Acceptance criteria (evaluator-only; never shown to the executor)” “Each case is held out: none may be used to write, tune, or demo the skill.” “judge each criterion against the fixed expected outcome and the proposal text”\"}]}"
+  },
+  {
+   "id": "J2-X9990",
+   "judge": "secondary",
+   "blind": "X9990",
+   "prompt_sha256": "175218852c62c57ca4c7293f625d652903d614a38d18ea8aa972f2ca491f360b",
+   "served_model": [
+    "gpt-6.1-sol"
+   ],
+   "wall_s": 12.8,
+   "total_cost_usd": null,
+   "unavailable": {
+    "total_cost_usd": "codex subscription; no per-call cost"
+   },
+   "result": "{\"criteria\":[{\"id\":\"S1a\",\"verdict\":\"pass\",\"evidence\":\"“install into a copy of the real shared skills folder with the other ~25 skills present. Do not remove or disable competitors.” D1–D4 expect “`proposal-readiness` is selected” for readiness requests.\"},{\"id\":\"S1b\",\"verdict\":\"pass\",\"evidence\":\"“Host log of which skill loaded”; “any required criterion left unverified (undefined threshold in the skill, host selection log unavailable, independent executor not available) blocks a \\\"verified\\\" claim”\"},{\"id\":\"S1c\",\"verdict\":\"fail\",\"evidence\":\"D5–D6 allow “`proposal-readiness` is not selected (or, if selected, does not substitute a readiness verdict for the requested work)”, so selection on a nearby negative request is allowed rather than required to fail.\"},{\"id\":\"S1d\",\"verdict\":\"pass\",\"evidence\":\"“whether `proposal-readiness`, used by itself on new proposals, correctly applies the planning lead's three criteria”; “Each case needs a pre-written expected answer stored outside the executor's context and outside the skill folder.”\"}]}"
+  },
+  {
+   "id": "J2-X7319",
+   "judge": "secondary",
+   "blind": "X7319",
+   "prompt_sha256": "5f3b6ae1082eafe31b420cb9094251c0a95edf1ff3bc689ae1c997487b0d59d5",
+   "served_model": [
+    "gpt-6.1-sol"
+   ],
+   "wall_s": 13.5,
+   "total_cost_usd": null,
+   "unavailable": {
+    "total_cost_usd": "codex subscription; no per-call cost"
+   },
+   "result": "{\"criteria\":[{\"id\":\"S2a\",\"verdict\":\"pass\",\"evidence\":\"“Judgment: unverified.” “That evidence would have been in the session logs, which were not kept.”\"},{\"id\":\"S2b\",\"verdict\":\"pass\",\"evidence\":\"“B results: 4 pass / 1 required fail (Q4); overall fail.” “Answer missed one prepaid exception vs answer key”\"},{\"id\":\"S2c\",\"verdict\":\"pass\",\"evidence\":\"“Prepared from the run notes supplied in the request only.” “Structural checks: none recorded in notes.” “Recommended next steps (not yet performed)”\"}]}"
+  },
+  {
+   "id": "J2-X1241",
+   "judge": "secondary",
+   "blind": "X1241",
+   "prompt_sha256": "34c576efe8453c3b79b974ca57d8625d9acfb0fbdc444f4e4b88be497f4539de",
+   "served_model": [
+    "gpt-6.1-sol"
+   ],
+   "wall_s": 12.7,
+   "total_cost_usd": null,
+   "unavailable": {
+    "total_cost_usd": "codex subscription; no per-call cost"
+   },
+   "result": "{\"criteria\":[{\"id\":\"S2a\",\"verdict\":\"pass\",\"evidence\":\"“Automatic selection: Unverified.” “Phrases in the final answer such as \\\"Using the expense-gap-check skill\\\" are output text, not a record of host selection.” “Session logs ... were not kept.”\"},{\"id\":\"S2b\",\"verdict\":\"pass\",\"evidence\":\"“Q4 | Missed one prepaid exception | fail” and “cannot be offset by the 4/5 aggregate.” Q1, Q2, Q3, and Q5 are each recorded as “pass.”\"},{\"id\":\"S2c\",\"verdict\":\"pass\",\"evidence\":\"“It is written solely from the supplied run notes. No files, logs, or runs were inspected or executed in producing it.” Proposed reruns and checks are listed under “Follow-up,” not reported as completed.\"}]}"
+  }
+ ]
+}

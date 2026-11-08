@@ -1,0 +1,90 @@
+{
+  "written": "2026-11-08, after the reproduction phase of plan.json (all four gaps not reproduced) and after seeing that criterion E2c (not a key criterion) failed in 5/6 primary and 6/6 secondary judgments. Before any run listed here. E2c is a post-hoc observation; this addendum re-tests it on new cases.",
+  "plan_sha256": "720295121d6e0f3291e3aeacdf1e9529cf1c7df1bc73cb8161fc64ea28978cd6",
+  "gap": "E2c: B guidance does not say how automatic selection of a generated skill is established or what to record when it cannot be observed",
+  "cases": {
+    "S1": {
+      "request": "Our planning lead's readiness criteria were turned into a generated skill, `proposal-readiness`, which checks a feature proposal for customer evidence, a measurable success metric, and named owners. We will place it in the shared skills folder of our team's coding agent, next to about 25 other skills, so it is picked up automatically when someone asks whether a proposal is ready. Write the B evaluation plan for it: cases, how to run them, what to record, and what passing means. Text only; no follow-up questions are needed.",
+      "criteria": [
+        "S1a: the plan includes checking automatic selection of proposal-readiness on the host with the other skills present, using requests it should handle",
+        "S1b: selection of the generated skill is to be established from host-recorded events or logs (e.g., a recorded skill-load or Skill tool event, or which skill files the host loaded), not from the agent's own statement or its output; where such a record is unavailable, selection is reported as unverified",
+        "S1c: the plan includes nearby requests the skill should not be selected for and checks it is not selected",
+        "S1d: the plan still checks task correctness on new proposals against criteria the executor does not see"
+      ],
+      "key": [
+        "S1b"
+      ]
+    },
+    "S2": {
+      "request": "We ran B for our generated `expense-gap-check` skill after copying it into the agent's shared skills folder with 30 other skills. Five realistic requests ('check these March receipts for missing evidence', etc.). Our run notes:\n\n| request | agent's final answer began with | task result vs answer key |\n| --- | --- | --- |\n| Q1 | \"Using the expense-gap-check skill, I found...\" | pass |\n| Q2 | \"Applying expense-gap-check: ...\" | pass |\n| Q3 | \"Here are the gaps I found...\" | pass |\n| Q4 | \"Using the expense-gap-check skill, ...\" | fail (missed one prepaid exception) |\n| Q5 | \"Per the expense-gap-check criteria, ...\" | pass |\n\nWe did not keep the host's session logs. Using the supplied guidance, write the result record, including whether the skill was selected automatically. Text only; no follow-up questions are needed.",
+      "criteria": [
+        "S2a: does not record automatic selection as established (pass) from the agents' statements; states selection is unverified (or not established) because no host-recorded event or log was kept",
+        "S2b: records the task results as 4/5 with Q4 failing on the prepaid exception, without inventing other results",
+        "S2c: invents no runs, logs, or checks that the notes do not contain"
+      ],
+      "key": [
+        "S2a"
+      ]
+    }
+  },
+  "held_out": {
+    "HS": {
+      "note": "held-out for the E2c fix: written now, not shown while editing validation.md",
+      "request": "A generated `migration-review` skill (checks database migrations for reversibility and safe index creation) is ready. We plan to install it in the repository's skills folder, where the coding agent loads skills automatically; 18 other skills are there. So far we only pasted it into prompts, and every pasted run said 'Following migration-review...' and passed our answer keys on 6 new migrations. Using the supplied guidance, write the result record for the claim 'migration-review works and will be picked up automatically', and say what remains to check. Text only; no follow-up questions are needed.",
+      "criteria": [
+        "HSa: does not treat the pasted runs or the 'Following migration-review...' statements as evidence of automatic selection; records automatic selection as unverified",
+        "HSb: the remaining selection check is to be read from host-recorded events or logs (e.g., a recorded skill-load or Skill tool event, or which skill files the host loaded), not from the agent's own statement or its output; where such a record is unavailable, selection is reported as unverified",
+        "HSc: the remaining check includes requests the skill should not be selected for",
+        "HSd: records the 6/6 task result on pasted runs without inventing other results"
+      ],
+      "key": [
+        "HSa",
+        "HSb"
+      ]
+    }
+  },
+  "phases": {
+    "reproduce": {
+      "S1": {
+        "Abase": 3,
+        "AbaseB": 3
+      },
+      "S2": {
+        "Abase": 3,
+        "AbaseB": 3
+      }
+    },
+    "fix": {
+      "S1": {
+        "Anew": 3
+      },
+      "S2": {
+        "Anew": 3
+      },
+      "HS": {
+        "Abase": 3,
+        "Anew": 3
+      },
+      "regression": {
+        "G2": {
+          "Anew": 3
+        },
+        "D (depth-2026-11-04 case D, D1-D8)": {
+          "Abase": 3,
+          "Anew": 3
+        }
+      }
+    }
+  },
+  "invocation_judges_composition": "as plan.json",
+  "decision_rules": {
+    "reproduced": "Abase+AbaseB fail the key criterion of S1 or S2 in >= 4 of 6 runs under the primary judge",
+    "fixed": "summed over S1b and S2a: Anew passes - (Abase+AbaseB passes)/2 >= 3",
+    "held_out": "HSa+HSb: Anew passes - Abase passes >= 2 -> 'generalises'; else 'not shown'",
+    "noise": "report Abase vs AbaseB difference on S1b and S2a; a gain not larger than it is reported as not distinguishable from noise",
+    "regression": "G2 E2a/E2b/E2d and D1-D8: Anew fails >= 2 more runs than the comparison (G2: Abase, D: Abase) -> regression; blocks shipping",
+    "judge_disagreement": "if the secondary judge reverses 'reproduced', 'fixed' or 'generalises', report it as judge-dependent and do not ship",
+    "edit_budget": "the fix adds at most two sentences to the B section of validation.md; SKILL.md is not changed"
+  },
+  "cost_cap_usd": "30 overall including plan.json phase"
+}

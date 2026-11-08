@@ -1,0 +1,21 @@
+{
+  "decision": "no change: none of the four suspected gaps (G1 efficiency, G2 B selection, G3 A/A noise, G4 every-run reading) and not the post-hoc E2c observation reproduced under the pre-registered rule; validation.md and SKILL.md are unchanged",
+  "package": "Abase = AbaseB = main@59466c9 (SKILL.md f0c8260d…, references/validation.md 7059f9a6…)",
+  "primary_judge": "claude-fable-5-1",
+  "secondary_judge": "gpt-6.1-sol (codex exec)",
+  "reproduce_plan": {
+    "rule": "a gap is reproduced when Abase+AbaseB fail at least one of its key criteria in >= 4 of 6 runs under the primary judge",
+    "key_failures_primary": {"G1": [0, 6], "G2": [1, 6], "G3": [0, 6], "G4": [0, 6]},
+    "key_failures_secondary": {"G1": [0, 6], "G2": [0, 6], "G3": [0, 6], "G4": [0, 6]},
+    "verdict": {"G1": "not reproduced", "G2": "not reproduced", "G3": "not reproduced", "G4": "not reproduced"},
+    "post_hoc": "non-key criterion E2c failed 5/6 (primary) and 6/6 (secondary); re-tested in addendum-e2c.json"
+  },
+  "reproduce_addendum_e2c": {
+    "rule": "Abase+AbaseB fail the key criterion of S1 or S2 in >= 4 of 6 runs under the primary judge",
+    "key_failures_primary": {"S1b": [2, 6], "S2a": [0, 6]},
+    "key_failures_secondary": {"S1b": [2, 6], "S2a": [0, 6]},
+    "aa_difference": {"S1b": 0, "S2a": 0},
+    "verdict": "not reproduced; fix, held-out HS and regression phases not run, as the addendum's phases depend on reproduction"
+  },
+  "cost_usd": {"plan_exec": 5.58, "plan_judge_primary": 3.17, "addendum_exec": 3.40, "addendum_judge_primary": 1.47, "total": 13.62, "secondary_judge": "codex subscription; no per-call cost", "cap": 30}
+}
