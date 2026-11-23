@@ -237,6 +237,154 @@ class CheckSkillTests(unittest.TestCase):
         self.assertEqual(check_skill.main([str(bad)]), 0)
         self.assertEqual(check_skill.main([str(bad), "--host", "anthropic"]), 1)
 
+    def test_nested_duplicate_frontmatter_keys_fail_under_both_parsers(self):
+        frontmatter = "name: dup-nested\ndescription: D.\nmetadata:\n  owner: a\n  owner: b"
+        installed = check_skill.yaml
+        for parser in (installed, None):
+            if parser is None or installed is not None:
+                check_skill.yaml = parser
+                try:
+                    with tempfile.TemporaryDirectory() as root:
+                        skill = make_skill(root, "dup-nested", frontmatter)
+                        errors, _ = self.run_check(skill)
+                        self.assertEqual(len(errors), 1, errors)
+                        self.assertIn("duplicate", errors[0].lower())
+                finally:
+                    check_skill.yaml = installed
+
+    def test_unhashable_frontmatter_keys_report_clean_error_not_crash(self):
+        for label, extra in (("list-key", "[a, b]: 1"), ("dict-key", "{a: 1}: 2")):
+            with self.subTest(label):
+                skill = make_skill(self.tmp.name, label, f"name: {label}\ndescription: D.\n{extra}")
+                errors, _ = self.run_check(skill)
+                self.assertEqual(len(errors), 1, errors)
+                self.assertIn("invalid YAML", errors[0])
+                self.assertEqual(check_skill.main([str(skill)]), 1)
+
+    def test_multi_harness_portability_warnings_preserve_exit_zero(self):
+        tab_skill = make_skill(self.tmp.name, "tabbed", 'name: tabbed\ndescription: "Tab\there."')
+        errors, warnings = self.run_check(tab_skill)
+        self.assertEqual(errors, [])
+        self.assertTrue(any("tab characters" in w for w in warnings), warnings)
+        self.assertEqual(check_skill.main([str(tab_skill)]), 0)
+
+        non_str_key = make_skill(self.tmp.name, "bool-key", "name: bool-key\ndescription: D.\ntrue: yes")
+        errors, warnings = self.run_check(non_str_key)
+        self.assertEqual(errors, [])
+        self.assertTrue(any("not a string" in w for w in warnings), warnings)
+
+        utf16_desc = "\U0001f680" * 600
+        utf16_skill = make_skill(self.tmp.name, "utf16-desc", f"name: utf16-desc\ndescription: {utf16_desc}")
+        errors, warnings = self.run_check(utf16_skill)
+        self.assertEqual(errors, [])
+        self.assertTrue(any("UTF-16" in w for w in warnings), warnings)
+
+        host_tokens = make_skill(
+            self.tmp.name,
+            "host-tokens",
+            "name: host-tokens\ndescription: Uses Claude tokens.\nalwaysApply: true\nglobs: '*.py'\ndisable-model-invocation: true",
+            body="# Skill\n\nRun `${CLAUDE_SKILL_DIR}/run.sh $ARGUMENTS`.\n",
+        )
+        errors, warnings = self.run_check(host_tokens)
+        self.assertEqual(errors, [])
+        self.assertTrue(any("$ARGUMENTS" in w and "${CLAUDE_SKILL_DIR}" in w for w in warnings), warnings)
+        self.assertTrue(any(w.startswith("alwaysApply:") for w in warnings), warnings)
+        self.assertTrue(any(w.startswith("globs:") for w in warnings), warnings)
+        self.assertTrue(any(w.startswith("disable-model-invocation:") for w in warnings), warnings)
+
+        nested_manifest = make_skill(
+            self.tmp.name,
+            "nested-manifest",
+            "name: nested-manifest\ndescription: Has nested manifest.",
+            files={"sub/SKILL.md": "---\nname: inner\ndescription: Inner.\n---\n\nBody.\n"},
+        )
+        errors, warnings = self.run_check(nested_manifest)
+        self.assertEqual(errors, [])
+        self.assertTrue(any("nested skill manifest" in w for w in warnings), warnings)
+
+        symlink_target = Path(self.tmp.name) / "real-skill.md"
+        symlink_target.write_text("---\nname: sym-skill\ndescription: Symlinked.\n---\n\nBody.\n", encoding="utf-8")
+        sym_dir = Path(self.tmp.name) / "sym-skill"
+        sym_dir.mkdir()
+        (sym_dir / "SKILL.md").symlink_to(symlink_target)
+        errors, warnings = self.run_check(sym_dir)
+        self.assertEqual(errors, [])
+        self.assertTrue(any("symlinked manifest" in w for w in warnings), warnings)
+
+    def test_size_and_context_budget_warnings_are_advisory(self):
+        for label, body, expected in (
+            ("chars-15k", "a" * 16_000 + "\n", "15000-character"),
+            ("bytes-32k", "b" * 34_000 + "\n", "32768-byte"),
+            ("bytes-51k", "c" * 52_000 + "\n", "51200 bytes"),
+        ):
+            with self.subTest(label):
+                skill = make_skill(self.tmp.name, label, f"name: {label}\ndescription: Large skill.", body=body)
+                errors, warnings = self.run_check(skill)
+                self.assertEqual(errors, [])
+                self.assertTrue(any(expected in w for w in warnings), warnings)
+                self.assertEqual(check_skill.main([str(skill)]), 0)
+
+    def test_unicode_smuggling_characters_warn_across_skill_files(self):
+        skill = make_skill(
+            self.tmp.name,
+            "unicode-smuggle",
+            "name: unicode-smuggle\ndescription: Checks hidden unicode.",
+            body="# Skill\n\nHidden tag \U000e0041 and bidi \u202e override.\n\nSee [ref](references/guide.md).\n",
+            files={"references/guide.md": "Zero-width \u200b and invisible \u2062 operator.\n"},
+        )
+        errors, warnings = self.run_check(skill)
+        self.assertEqual(errors, [])
+        self.assertTrue(any("unicode tag character" in w for w in warnings), warnings)
+        self.assertTrue(any("bidirectional override/isolate" in w for w in warnings), warnings)
+        self.assertTrue(any("zero-width character" in w for w in warnings), warnings)
+        self.assertTrue(any("invisible format/operator" in w for w in warnings), warnings)
+
+    def test_static_secrets_and_pii_warn_while_placeholders_stay_clean(self):
+        pem = "-" * 5 + "BEGIN RSA PRIVATE KEY" + "-" * 5
+        aws = "AKIA" + "0123456789ABCDEF"
+        gh = "ghp_" + "a" * 36
+        jwt = "eyJhbGciOiJIUzI1NiJ9." + "eyJzdWIiOiIxMjM0NTY3ODkwIn0." + "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        db_url = "postgres://" + "alice:SuperSecret99@prod.db.internal:5432/app"
+        secret_assign = 'api_key = "' + 'live_prod_secret_9876543210"'
+        personal = "/Users/" + "jdoe/project/notes.md"
+        ssn = "123" + "-45-" + "6789"
+        email = "jane.doe@" + "acme-corp.io"
+        dirty = make_skill(
+            self.tmp.name,
+            "dirty-secrets",
+            "name: dirty-secrets\ndescription: Contains synthetic findings.",
+            body="\n".join([pem, aws, gh, jwt, db_url, secret_assign, personal, ssn, email]) + "\n",
+        )
+        errors, warnings = self.run_check(dirty)
+        self.assertEqual(errors, [])
+        for token in (
+            "private-key",
+            "aws-key",
+            "github-token",
+            "jwt",
+            "db-url",
+            "hardcoded secret",
+            "personal user path",
+            "SSN pattern",
+            "non-placeholder email",
+        ):
+            self.assertTrue(any(token in w for w in warnings), (token, warnings))
+
+        clean = make_skill(
+            self.tmp.name,
+            "clean-placeholders",
+            "name: clean-placeholders\ndescription: Uses safe placeholders.",
+            body=(
+                "# Skill\n\n"
+                "Contact user@example.com or reviewer@acme.invalid.\n"
+                'api_key = "your_placeholder_secret_value"\n'
+                "postgres://user:example_password@localhost:5432/app\n"
+                "Path: /Users/username/project/file.md\n"
+                "Example SSN: 000-12-3456\n"
+            ),
+        )
+        self.assertEqual(self.run_check(clean), ([], []))
+
 
 VALID_FRONTMATTER = {
     "blank line after a field": 'name: good\n\ndescription: Good.',
