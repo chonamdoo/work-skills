@@ -27,6 +27,21 @@ try:
 except ImportError:  # the fallback parser below covers skill frontmatter
     yaml = None
 
+MAX_NAME_LENGTH = 64
+MAX_DESCRIPTION_LENGTH = 1024
+MAX_DESCRIPTION_UTF16_UNITS = 1024
+MAX_COMPATIBILITY_LENGTH = 500
+RECOMMENDED_BODY_LINES = 500
+DELIVERY_CHAR_BUDGET = 15_000
+SKILL_SIZE_WARN_BYTES = 32_768
+OPENCODE_BYTE_LIMIT = 51_200
+MAX_PAREN_DEPTH = 32
+SNIPPET_LENGTH = 40
+ERROR_SNIPPET_LENGTH = 60
+PLACEHOLDER_SNIPPET_LENGTH = 80
+ASCII_CONTROL_LIMIT = 32
+UTF16_BYTES_PER_UNIT = 2
+
 NAME = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 XML_TAG = re.compile(r"</?[A-Za-z][\w.-]*(?:\s[^<>]*)?/?>")
 # Link text may hold one level of nested brackets and single line breaks, not a blank line.
@@ -46,6 +61,50 @@ DOCUMENT_END = re.compile(r"\.\.\.(?:[ ]+#.*)?[ ]*$")
 UNUSUAL_CHARACTER = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f\u2028\u2029\ufeff\ufffe\uffff\ud800-\udfff\u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]")
 ENTITY = re.compile(r"&(?:#[0-9]{1,7}|#[xX][0-9a-fA-F]{1,6}|[A-Za-z][A-Za-z0-9]{1,31});")
 CODE_SPAN = re.compile(r"(?<!`)(`+)(?!`)(?:(?!\n[ \t]*\n).)+?(?<!`)\1(?!`)", re.S)
+
+HOST_PLACEHOLDER_TOKEN = re.compile(r"\$(?:ARGUMENTS\b|\{CLAUDE_SKILL_DIR\})")
+NON_SKILL_FIELDS = ("alwaysApply", "globs")
+UNICODE_SMUGGLE_PATTERNS = (
+    ("unicode tag character", re.compile("[\U000e0000-\U000e007f]")),
+    ("bidirectional override/isolate character", re.compile("[\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]")),
+    ("zero-width character", re.compile("[\u034f\u180e\u200b-\u200d\u2060\ufeff]")),
+    ("invisible format/operator character", re.compile("[\u2061-\u2064\u206a-\u206f]")),
+)
+PEM_PRIVATE_KEY = re.compile(r"-{5}BEGIN(?: [A-Z0-9]+)* PRIVATE KEY-{5}")
+AWS_KEY_ID = re.compile(r"\b(?:AKIA|ASIA)[A-Z0-9]{16}\b")
+GITHUB_TOKEN = re.compile(r"\bgh[ps]_[A-Za-z0-9]{36}\b")
+SLACK_WEBHOOK = re.compile(r"https://hooks\.slack\.com/services/T[A-Z0-9]{8}/B[A-Z0-9]{8}/[A-Za-z0-9]{24}")
+DISCORD_WEBHOOK = re.compile(r"https://discord\.com/api/webhooks/[0-9]{18}/[A-Za-z0-9_-]{68}")
+DB_CREDENTIAL_URL = re.compile(r"\b(?:postgres(?:ql)?|mysql|mariadb|mongodb(?:\+srv)?|redis)://[^:\s/]+:[^@\s/]+@[^/\s]+")
+JWT_TOKEN = re.compile(r"\beyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b")
+HARDCODED_SECRET = re.compile(
+    r"(?i)\b(?:secret|password|passwd|api[-_]?key|apikey|auth[-_]?token)\s*[=:]\s*['\"][^'\"]{16,}['\"]"
+)
+PERSONAL_PATH = re.compile(r"(?<![A-Za-z0-9_])(?:/[U]sers/([A-Za-z0-9._-]+)/|C:\\[U]sers\\([A-Za-z0-9._-]+)\\)")
+SSN_PATTERN = re.compile(r"\b(\d{3})-(\d{2})-(\d{4})\b")
+EMAIL_PATTERN = re.compile(
+    r"(?<![A-Za-z0-9._%+-])[A-Za-z0-9._%+-]+@"
+    r"(?!(?:[a-z0-9-]+\.)*(?:example\.(?:com|net|org)|test\.com|test|example|invalid|localhost)\.*(?![a-z0-9.-])|odata\.)"
+    r"[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
+    re.I,
+)
+SECRET_PLACEHOLDER_HINTS = (
+    "example",
+    "test",
+    "dummy",
+    "placeholder",
+    "your_",
+    "your-",
+    "<your",
+    "{your",
+    "${",
+    "$(",
+    "insert_",
+    "redacted",
+    "changeme",
+)
+GENERIC_USERNAMES = {"user", "username", "yourname", "your-user", "example", "alice", "bob", "name"}
+EMAIL_LINE_EXCEPTIONS = ("copyright", "license", "(c)", "authors", "://", "@odata.")
 
 # PyYAML's YAML 1.1 implicit resolvers for plain scalars.
 TIMESTAMP = re.compile(r"^([0-9]{4})-([0-9]{2})-([0-9]{2})$|^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})(?:[Tt]|[ \t]+)"
@@ -436,11 +495,47 @@ def yaml_loader():
     return UniqueKeyLoader
 
 
+def check_unique_yaml_nodes(node, loader, visited=None):
+    """Reject duplicate mapping keys across a PyYAML SafeLoader node tree."""
+    if visited is None:
+        visited = set()
+    node_id = id(node)
+    if node_id in visited:
+        return
+    visited.add(node_id)
+    if isinstance(node, yaml.MappingNode):
+        seen = set()
+        for key_node, value_node in node.value:
+            if key_node.tag != "tag:yaml.org,2002:merge":
+                key = loader.construct_object(key_node, deep=True)
+                try:
+                    duplicate = key in seen
+                except TypeError:
+                    pass
+                else:
+                    if duplicate:
+                        raise yaml.constructor.ConstructorError(
+                            None, None, f"duplicate key: {key}", key_node.start_mark
+                        )
+                    seen.add(key)
+            check_unique_yaml_nodes(value_node, loader, visited)
+    elif isinstance(node, yaml.SequenceNode):
+        for item in node.value:
+            check_unique_yaml_nodes(item, loader, visited)
+
+
 def parse_fields(header):
     """Parse frontmatter into a mapping."""
     if yaml is not None:
         try:
-            fields = yaml.load(header, Loader=yaml_loader())
+            loader = yaml.SafeLoader(header)
+            try:
+                node = loader.get_single_node()
+                if node is not None:
+                    check_unique_yaml_nodes(node, loader)
+            finally:
+                loader.dispose()
+            fields = yaml.safe_load(header)
         except yaml.YAMLError as exc:
             raise ValueError(f"invalid YAML: {exc}") from None
         if fields is None:
@@ -488,6 +583,12 @@ def check_fields(fields, skill_dir, host, errors, warnings):
     unchecked = {key for key, value in fields.items() if isinstance(value, Unchecked)}
     for key in unchecked:
         warnings.append(f"{UNCHECKED} {key}: {fields.pop(key).reason}; install PyYAML to check it")
+    for key in fields:
+        if not isinstance(key, str):
+            warnings.append(
+                f"{key}: frontmatter key is {type(key).__name__}, not a string; "
+                "quote keys so strict YAML skill loaders agree"
+            )
     name = fields.get("name")
     if "name" in unchecked:
         pass
@@ -496,8 +597,8 @@ def check_fields(fields, skill_dir, host, errors, warnings):
     elif not isinstance(name, str):
         errors.append(f"name: must be a string, not {type(name).__name__}")
     else:
-        if len(name) > 64:
-            errors.append(f"name: {len(name)} characters; the limit is 64")
+        if len(name) > MAX_NAME_LENGTH:
+            errors.append(f"name: {len(name)} characters; the limit is {MAX_NAME_LENGTH}")
         if not NAME.match(name):
             errors.append("name: use lowercase letters, digits, and single hyphens, not at either end")
         if name != skill_dir.resolve().name:
@@ -514,15 +615,22 @@ def check_fields(fields, skill_dir, host, errors, warnings):
         errors.append(f"description: must be a string, not {type(description).__name__}")
     elif not isinstance(description, str) or not description.strip():
         errors.append("description: required")
-    elif len(description) > 1024:
-        errors.append(f"description: {len(description)} characters; the limit is 1024")
+    elif len(description) > MAX_DESCRIPTION_LENGTH:
+        errors.append(f"description: {len(description)} characters; the limit is {MAX_DESCRIPTION_LENGTH}")
+    else:
+        utf16_units = len(description.encode("utf-16-le")) // UTF16_BYTES_PER_UNIT
+        if utf16_units > MAX_DESCRIPTION_UTF16_UNITS:
+            warnings.append(
+                f"description: {utf16_units} UTF-16 code units; "
+                f"Copilot CLI rejects descriptions over {MAX_DESCRIPTION_UTF16_UNITS} UTF-16 units"
+            )
 
     if "compatibility" in fields:
         compatibility = fields["compatibility"]
         if not isinstance(compatibility, str) or not compatibility.strip():
             errors.append("compatibility: must be a non-empty string when present")
-        elif len(compatibility) > 500:
-            errors.append(f"compatibility: {len(compatibility)} characters; the limit is 500")
+        elif len(compatibility) > MAX_COMPATIBILITY_LENGTH:
+            errors.append(f"compatibility: {len(compatibility)} characters; the limit is {MAX_COMPATIBILITY_LENGTH}")
 
     # The specification types these fields, but its reference validator (skills-ref)
     # stringifies metadata values and does not type allowed-tools, so mismatches warn.
@@ -544,6 +652,19 @@ def check_fields(fields, skill_dir, host, errors, warnings):
         warnings.append(
             "allowed-tools: the specification defines a space-separated string; "
             "support for other forms varies by host"
+        )
+
+    for key in NON_SKILL_FIELDS:
+        if key in fields:
+            warnings.append(
+                f"{key}: rule/workflow frontmatter field is not part of the Agent Skills schema "
+                "and is rejected by strict validators"
+            )
+
+    if "disable-model-invocation" in fields:
+        warnings.append(
+            "disable-model-invocation: ignored by Codex, Hermes, and OpenCode; "
+            "do not rely on it alone for cross-harness invocation policy"
         )
 
     if host == "anthropic":
@@ -725,6 +846,159 @@ def markdown_files(skill_dir, errors, warnings):
             warnings.append(f"{rel}: cannot be read as UTF-8 text ({type(exc).__name__}); links not checked")
 
 
+def readable_text_files(skill_dir):
+    """Yield (rel_path, text) for readable UTF-8 regular files inside skill_dir."""
+    for path in sorted(skill_dir.rglob("*")):
+        if not path.is_file():
+            continue
+        rel = path.relative_to(skill_dir)
+        try:
+            raw = path.read_bytes()
+        except OSError:
+            continue
+        if b"\x00" in raw:
+            continue
+        try:
+            yield rel, raw.decode("utf-8")
+        except UnicodeDecodeError:
+            continue
+
+
+def check_unicode_smuggling(rel, content, warnings):
+    """Warn on hidden Unicode smuggling, Trojan Source bidi marks, and zero-width chars."""
+    reported = set()
+    for lineno, line in enumerate(content.splitlines(), 1):
+        for label, pattern in UNICODE_SMUGGLE_PATTERNS:
+            if label in reported:
+                continue
+            for match in pattern.finditer(line):
+                char = match.group()
+                if char == "\ufeff" and lineno == 1 and match.start() == 0:
+                    continue
+                warnings.append(
+                    f"{rel}:{lineno}: contains {label} U+{ord(char):04X}; "
+                    "remove invisible or directional-override Unicode characters"
+                )
+                reported.add(label)
+                break
+
+
+def _has_placeholder_hint(text):
+    lowered = text.lower()
+    return any(hint in lowered for hint in SECRET_PLACEHOLDER_HINTS)
+
+
+def check_secrets_and_pii(rel, content, warnings):
+    """Warn on high-signal credentials, secrets, and personal identifiers in skill files."""
+    reported = set()
+    for lineno, line in enumerate(content.splitlines(), 1):
+        lowered = line.lower()
+        for category, pattern, guidance in (
+            ("private-key", PEM_PRIVATE_KEY, "remove PEM private key material"),
+            ("aws-key", AWS_KEY_ID, "remove AWS access key ID"),
+            ("github-token", GITHUB_TOKEN, "remove GitHub token"),
+            ("slack-webhook", SLACK_WEBHOOK, "remove Slack webhook URL"),
+            ("discord-webhook", DISCORD_WEBHOOK, "remove Discord webhook URL"),
+            ("jwt", JWT_TOKEN, "remove JWT token or replace with a redacted placeholder"),
+        ):
+            if category not in reported and pattern.search(line):
+                warnings.append(f"{rel}:{lineno}: potential secret ({category}); {guidance}")
+                reported.add(category)
+
+        if "db-url" not in reported:
+            db_match = DB_CREDENTIAL_URL.search(line)
+            if db_match and not _has_placeholder_hint(db_match.group()):
+                warnings.append(
+                    f"{rel}:{lineno}: potential secret (db-url); "
+                    "replace embedded database credentials with an environment variable"
+                )
+                reported.add("db-url")
+
+        if "hardcoded-secret" not in reported:
+            sec_match = HARDCODED_SECRET.search(line)
+            if sec_match and not _has_placeholder_hint(sec_match.group()):
+                warnings.append(
+                    f"{rel}:{lineno}: potential hardcoded secret; "
+                    "use an environment variable or placeholder instead"
+                )
+                reported.add("hardcoded-secret")
+
+        if "personal-path" not in reported:
+            for path_match in PERSONAL_PATH.finditer(line):
+                username = (path_match.group(1) or path_match.group(2) or "").lower()
+                if username and username not in GENERIC_USERNAMES:
+                    warnings.append(
+                        f"{rel}:{lineno}: personal user path; "
+                        "use $HOME or a generic path instead"
+                    )
+                    reported.add("personal-path")
+                    break
+
+        if "ssn" not in reported and not _has_placeholder_hint(line):
+            for ssn_match in SSN_PATTERN.finditer(line):
+                area, group, serial = ssn_match.groups()
+                if area not in ("000", "666") and not area.startswith("9") and group != "00" and serial != "0000":
+                    warnings.append(
+                        f"{rel}:{lineno}: potential PII (SSN pattern); "
+                        "remove or replace with a synthetic placeholder"
+                    )
+                    reported.add("ssn")
+                    break
+
+        if "email" not in reported and not any(exc in lowered for exc in EMAIL_LINE_EXCEPTIONS):
+            if EMAIL_PATTERN.search(line):
+                warnings.append(
+                    f"{rel}:{lineno}: non-placeholder email address; "
+                    "replace with user@example.com or a handle unless required"
+                )
+                reported.add("email")
+
+
+def check_harness_portability(entry, skill_dir, header, text, body, warnings):
+    """Warn on multi-harness loader pitfalls (tabs, symlinks, budgets, host-only tokens)."""
+    if entry.is_symlink():
+        warnings.append(
+            "SKILL.md: symlinked manifest; Codex, Hermes, and OpenClaw skip symlinked SKILL.md files"
+        )
+    if "\t" in header and not any(w.startswith(UNCHECKED) for w in warnings):
+        warnings.append(
+            "SKILL.md: frontmatter contains tab characters; "
+            "strict YAML harnesses (Codex, Copilot CLI, OpenClaw) reject tab indentation"
+        )
+    text_bytes = len(text.encode("utf-8"))
+    text_chars = len(text)
+    if text_bytes > OPENCODE_BYTE_LIMIT:
+        warnings.append(
+            f"SKILL.md: {text_bytes} bytes; OpenCode truncates reads past {OPENCODE_BYTE_LIMIT} bytes "
+            "(move conditional detail into references/)"
+        )
+    elif text_bytes > SKILL_SIZE_WARN_BYTES:
+        warnings.append(
+            f"SKILL.md: {text_bytes} bytes; exceeds {SKILL_SIZE_WARN_BYTES}-byte per-skill budget "
+            "(move conditional detail into references/)"
+        )
+    elif text_chars > DELIVERY_CHAR_BUDGET:
+        warnings.append(
+            f"SKILL.md: {text_chars} characters; exceeds ~{DELIVERY_CHAR_BUDGET}-character delivery budget "
+            "(tight-budget harnesses such as OpenClaw may truncate delivery)"
+        )
+    host_tokens = sorted(set(HOST_PLACEHOLDER_TOKEN.findall(body)))
+    if host_tokens:
+        warnings.append(
+            f"SKILL.md: uses host-specific placeholder {', '.join(host_tokens)}; "
+            "non-Claude harnesses (Codex, Hermes, OpenClaw) deliver it literally"
+        )
+    for path in sorted(skill_dir.rglob("*")):
+        if path == entry or not path.is_file():
+            continue
+        if path.name.lower() == "skill.md":
+            rel = path.relative_to(skill_dir)
+            warnings.append(
+                f"{rel}: nested skill manifest inside skill directory; "
+                "harnesses may ignore or mis-route nested SKILL.md files"
+            )
+
+
 def check(skill_dir, host="generic"):
     errors, warnings = [], []
     skill_dir = Path(skill_dir)
@@ -751,8 +1025,12 @@ def check(skill_dir, host="generic"):
     if not body.strip():
         errors.append("SKILL.md: body is empty")
     body_lines = body.strip("\n").count("\n") + 1
-    if body_lines > 500:
-        warnings.append(f"SKILL.md: body has {body_lines} lines; host guidance suggests under 500 (not a format rule)")
+    if body_lines > RECOMMENDED_BODY_LINES:
+        warnings.append(
+            f"SKILL.md: body has {body_lines} lines; host guidance suggests under {RECOMMENDED_BODY_LINES} (not a format rule)"
+        )
+
+    check_harness_portability(entry, skill_dir, header, text, body, warnings)
 
     root = skill_dir.resolve()
     linked_from_entry = set()
@@ -782,7 +1060,11 @@ def check(skill_dir, host="generic"):
                 linked_from_entry.add(resolved)
         for lineno, line in enumerate(content.splitlines(), 1):
             if PLACEHOLDER.search(line):
-                warnings.append(f"{rel}:{lineno}: unfinished placeholder: {line.strip()[:80]}")
+                warnings.append(f"{rel}:{lineno}: unfinished placeholder: {line.strip()[:PLACEHOLDER_SNIPPET_LENGTH]}")
+
+    for rel, content in readable_text_files(skill_dir):
+        check_unicode_smuggling(rel, content, warnings)
+        check_secrets_and_pii(rel, content, warnings)
 
     for path, _ in documents:
         if path == entry or path.resolve() in linked_from_entry:
